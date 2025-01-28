@@ -86,9 +86,9 @@
                 filterable
               >
                 <el-option
-                  v-for="obj of teachingbuildings"
-                  :label="obj.name"
-                  :value="obj"
+                  v-for="type of types"
+                  :label="type.name"
+                  :value="type.id"
                 />
               </el-select>
             </el-form-item>
@@ -263,6 +263,7 @@ export default {
     const CampusStore = useCampusStore();
     const TeachingBuildingStore = useTeachingBuildingStore();
     const { campuses } = storeToRefs(CampusStore)
+    const { classrooms,types } = storeToRefs(ClassroomStore)
     const { teachingBuildings } = storeToRefs(TeachingBuildingStore)
     const classroomFormRef = ref();
     const data = reactive({
@@ -474,6 +475,7 @@ export default {
       classroomFormRef,
       inputRule,
       filtedArray,
+      types,
     };
   },
 };

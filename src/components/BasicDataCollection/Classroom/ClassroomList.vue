@@ -14,11 +14,7 @@
         class="filterSelector"
         value-key="id"
         filterable
-        @change="
-          filters.teachingBuildingOptionFilter();
-          filters.classroomFilter();
-          filterCriteria.teachingbuilding = '*';
-        "
+        @change="filterCriteria.teachingbuilding = '*'"
       >
         <template #header>
           <el-button type="primary"> 添加校区 </el-button>
@@ -30,7 +26,6 @@
           :value="campus.id"
         />
       </el-select>
-
       <el-text class="filterLabel">教学楼:</el-text>
       <el-select
         v-model="filterCriteria.teachingbuilding"
@@ -38,7 +33,6 @@
         class="filterSelector"
         value-key="id"
         filterable
-        @change="filters.classroomFilter();"
       >
         <template #header>
           <el-button type="primary"> 添加教学楼 </el-button>
@@ -54,26 +48,23 @@
 
       <el-text class="filterLabel">教室类型:</el-text>
       <el-select
-        v-model="classroomType"
+        v-model="filterCriteria.type"
         placeholder="搜索教室类型"
         class="filterSelector"
         value-key="id"
         filterable
       >
         <template #header>
-          <el-button type="primary"> 添加类型 </el-button>
+          <el-button type="primary" @click="HandleTypeEditClick()">
+            教室类型管理
+          </el-button>
         </template>
         <el-option label="全部" value="*" />
-        <el-option
-          v-for="faculty of faculties"
-          :label="faculty.name"
-          :value="faculty"
-        />
+        <el-option v-for="type of types" :label="type.name" :value="type.id" />
       </el-select>
     </div>
-
     <el-table
-      :data="classrooms"
+      :data="filtedArray.filtedClassrooms"
       :row-style="rowStyle"
       @selection-change="HandleSelectChange"
       height="400"
@@ -84,8 +75,6 @@
         prop="name"
         label="教室名称"
         fixed="left"
-
-        
         min-width="155px"
       />
       <el-table-column prop="campus" label="所属校区" min-width="155px" />
@@ -136,6 +125,7 @@
     </el-table>
   </div>
   <ClassroomEditDialog />
+  <ClassroomTypeListDrawer />
 </template>
 
 <script>
@@ -145,6 +135,7 @@ import { computed, reactive, toRefs } from "vue";
 import { ElMessageBox } from "element-plus";
 
 import ClassroomEditDialog from "./ClassroomEditDialog.vue";
+import ClassroomTypeListDrawer from "./ClassroomTypeListDrawer.vue";
 
 import { ArrayDelete, SingleDelete } from "@/hooks/list/useDelete.js";
 
@@ -156,10 +147,9 @@ export default {
   name: "ClassroomList",
   components: {
     ClassroomEditDialog,
+    ClassroomTypeListDrawer,
   },
-  mounted(){
-    this.filters.classroomFilter()
-  },
+  mounted() {},
   setup() {
     const ClassroomStore = useClassroomStore();
     const CampusStore = useCampusStore();
@@ -180,40 +170,65 @@ export default {
     });
 
     const filtedArray = reactive({
-      filtedTeachingBuildingOptions: [],
-      filtedClassrooms:[],
-    });
-
-    const filters = {
-      campusFilter: {},
-      teachingBuildingFilter: {},
-      teachingBuildingOptionFilter: () => {
+      filtedTeachingBuildingOptions: computed(() => {
         if (filterCriteria.campus == "*") {
-          filtedArray.filtedTeachingBuildingOptions = []
+          return [];
         } else {
-          filtedArray.filtedTeachingBuildingOptions = teachingBuildings.value.filter(
-            (obj) => {
-              return obj.campus.id == filterCriteria.campus;
+          return teachingBuildings.value.filter((obj) => {
+            return obj.campus.id == filterCriteria.campus;
+          });
+        }
+      }),
+      filtedClassrooms: computed(
+        () => {
+          if (filterCriteria.campus == "*") {
+            if (filterCriteria.type == "*") {
+              return classrooms.value;
+            } else {
+              return classrooms.value.filter((classroom) => {
+                return classroom.type == filterCriteria.type;
+              });
             }
-          );
-        }
-      },
-      classroomFilter:()=>{
-        if (filterCriteria.campus == "*") {
-          filtedArray.filtedClassrooms = classrooms
-        } else {
-           if (filterCriteria.teachingbuilding == "*") {
-            filtedArray.filtedClassrooms = classrooms.value.filter((classroom)=>{
-              return classroom.campus == filterCriteria.campus
-            })
-           }else{
-            filtedArray.filtedClassrooms = classrooms.value.filter((classroom)=>{
-              return classroom.teachingbuilding == filterCriteria.teachingbuilding
-            })
-           }
-        }
-      }
-    };
+          } else {
+            if (filterCriteria.teachingbuilding == "*") {
+              if (filterCriteria.type == "*") {
+                return classrooms.value.filter((classroom) => {
+                  return classroom.campus == filterCriteria.campus;
+                });
+              } else {
+                return classrooms.value
+                  .filter((classroom) => {
+                    return classroom.campus == filterCriteria.campus;
+                  })
+                  .filter((classroom) => {
+                    return classroom.type == filterCriteria.type;
+                  });
+              }
+            } else {
+              if (filterCriteria.type == "*") {
+                return classrooms.value.filter((classroom) => {
+                  return (
+                    classroom.teachingbuilding ==
+                    filterCriteria.teachingbuilding
+                  );
+                });
+              }else{
+                return classrooms.value.filter((classroom) => {
+                  return (
+                    classroom.teachingbuilding ==
+                    filterCriteria.teachingbuilding
+                  );
+                }).filter((classroom)=>{
+                  return classroom.type == filterCriteria.type;
+                });
+                
+              }
+            }
+          }
+        },
+        { immediate: true }
+      ),
+    });
 
     const HandleSelectChange = (value) => {
       data.deleteValue = value;
@@ -236,6 +251,9 @@ export default {
 
     const HandleEditClick = (value) => {
       bus.emit("showClassroomEdit", value);
+    };
+    const HandleTypeEditClick = () => {
+      bus.emit("showClassroomTypeDrawer");
     };
 
     const HandleArrayDelete = () => {
@@ -282,10 +300,10 @@ export default {
       HandleSelectChange,
       HandleAddClick,
       HandleEditClick,
+      HandleTypeEditClick,
       rowStyle,
       isAssigned,
       filterCriteria,
-      filters,
       filtedArray,
     };
   },
