@@ -43,7 +43,7 @@
                 filterable
               >
                 <el-option
-                  v-for="obj of Campuses"
+                  v-for="obj of campuses"
                   :label="obj.name"
                   :value="obj.id"
                 />
@@ -58,7 +58,7 @@
                 filterable
               >
                 <el-option
-                  v-for="obj of teachingbuildings"
+                  v-for="obj of filtedArray.filtedTeachingBuildingOptions"
                   :label="obj.name"
                   :value="obj"
                 />
@@ -233,8 +233,11 @@ import bus from "@/bus/bus";
 
 import { useClassroomStore } from "@/store/classroom.js"; //store
 import { useCampusStore } from "@/store/campus";
+import { useTeachingBuildingStore } from "@/store/teachingBuilding";
+
 
 import nonEmptyValidator from "@/hooks/validator/useNonEmpty";
+import { storeToRefs } from 'pinia';
 export default {
   name: "ClassroomEditDialog",
   mounted() {
@@ -257,7 +260,10 @@ export default {
   },
   setup() {
     const ClassroomStore = useClassroomStore();
-    const Campuses = useCampusStore().campuses;
+    const CampusStore = useCampusStore();
+    const TeachingBuildingStore = useTeachingBuildingStore();
+    const { campuses } = storeToRefs(CampusStore)
+    const { teachingBuildings } = storeToRefs(TeachingBuildingStore)
     const classroomFormRef = ref();
     const data = reactive({
       isDialogFormVisible: false, //是否弹窗
@@ -284,6 +290,18 @@ export default {
       hasAirConditioner: true,
       isAvailable: true,
     });
+
+    const filtedArray = reactive({
+      filtedTeachingBuildingOptions:computed(()=>{
+         return teachingBuildings.value.filter(
+            (obj) => {
+              return obj.campus.id == formInput.classroomCampus
+            }
+          ) || []
+      }),
+    });
+
+
 
     const inputRule = {
       classroomCampus: [
@@ -452,9 +470,10 @@ export default {
       ClearInput,
       editItem,
       addItem,
-      Campuses,
+      campuses,
       classroomFormRef,
       inputRule,
+      filtedArray,
     };
   },
 };

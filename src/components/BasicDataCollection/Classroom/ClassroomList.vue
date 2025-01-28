@@ -84,6 +84,8 @@
         prop="name"
         label="教室名称"
         fixed="left"
+
+        
         min-width="155px"
       />
       <el-table-column prop="campus" label="所属校区" min-width="155px" />
