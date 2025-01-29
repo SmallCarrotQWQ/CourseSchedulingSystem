@@ -47,48 +47,43 @@
 </template>
 
 <script>
+import TeachingBuildingEditDialog from "./TeachingBuildingEditDialog.vue";
+
 import bus from "@/bus/bus.js";
 import { storeToRefs } from "pinia";
-import { computed, reactive, toRefs } from "vue";
+import { computed, onMounted, reactive, toRefs } from "vue";
 import { ElMessageBox } from "element-plus";
-import { useCampusStore } from "@/store/campus.js";
-import { useTeachingBuildingStore } from "@/store/teachingBuilding.js";
+import { useLocationStore } from "@/store/locationStore/index.js";
+
 import { ArrayDelete, SingleDelete } from "@/hooks/list/useDelete.js";
-import TeachingBuildingEditDialog from "./TeachingBuildingEditDialog.vue";
 
 export default {
   name: "TeachingBuildingListDrawer",
   components: {
     TeachingBuildingEditDialog,
   },
-  mounted() {
-    bus.on("showTeachingBuildingListDrawer", (value) => {
-      this.campus = this.campuses.filter((obj)=>{
-        return obj.id == value.id
-      })[0]
-      this.isDrawerVisible = true; //打开抽屉
-    });
-  },
-
   setup() {
-    const CampusStore = useCampusStore();
-    const TeachingBuildingStore = useTeachingBuildingStore();
-    const { campuses } = storeToRefs(CampusStore);
-    const { teachingBuildings } = storeToRefs(TeachingBuildingStore);
+    const locationStore = useLocationStore();
+    const { campuses,campusMap,teachingBuildings } = storeToRefs(locationStore);
+
+    onMounted(() => {
+      locationStore.initLocationDatas()
+      bus.on("showTeachingBuildingListDrawer", (value) => {
+        data.campusId = value.id;
+        data.isDrawerVisible = true; //打开抽屉
+      });
+    });
 
     const data = reactive({
       isDeleteShow: false,
       isDrawerVisible: false,
-      campus:"",
+      campusId: "",
       deleteValue: [],
     });
 
-
-    const teachingBuildingsOfcampus = computed(()=>{
-        return teachingBuildings.value.filter((obj)=>{
-            return obj.campus.id == data.campus.id
-        })
-    })
+    const teachingBuildingsOfcampus = computed(() => {
+      return locationStore.getBuildingsByCampus(data.campusId).map(t=>({...t,campus:campusMap.value.get(t.campusId)}));
+    });
 
     const HandleSelectChange = (value) => {
       data.deleteValue = value;
@@ -106,11 +101,11 @@ export default {
     };
 
     const HandleAddClick = () => {
-      bus.emit("showTeachingBuildingAdd",data.campus);
+      bus.emit("showTeachingBuildingAdd", data.campusId);
     };
 
     const HandleEditClick = (value) => {
-      bus.emit("showTeachingBuildingEdit", value,data.campus);
+      bus.emit("showTeachingBuildingEdit", value);
     };
 
     const HandleArrayDelete = () => {
@@ -120,7 +115,10 @@ export default {
         type: "warning",
       })
         .then(() => {
-          teachingBuildings.value = ArrayDelete(teachingBuildings.value, data.deleteValue);
+          teachingBuildings.value = ArrayDelete(
+            teachingBuildings.value,
+            data.deleteValue
+          );
         })
         .catch(() => {
           console("canceled...");
@@ -134,7 +132,10 @@ export default {
         type: "warning",
       })
         .then(() => {
-          teachingBuildings.value = SingleDelete(teachingBuildings.value, value);
+          teachingBuildings.value = SingleDelete(
+            teachingBuildings.value,
+            value
+          );
         })
         .catch(() => {
           console("canceled...");
@@ -149,7 +150,6 @@ export default {
       ...toRefs(data),
       campuses,
       teachingBuildings,
-      CampusStore,
       HandleArrayDelete,
       HandleSingleDelete,
       HandleSelectChange,

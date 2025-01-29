@@ -16,7 +16,7 @@
         >
       </div>
       <el-table
-        :data="types"
+        :data="classroomtypes"
         :row-style="rowStyle"
         @selection-change="HandleSelectChange"
       >
@@ -44,7 +44,7 @@ import bus from "@/bus/bus.js";
 import { storeToRefs } from "pinia";
 import { computed, reactive, toRefs } from "vue";
 import { ElMessageBox } from "element-plus";
-import { useClassroomStore } from "@/store/classroom.js";
+import { useLocationStore } from "@/store/locationStore/index.js";
 import { ArrayDelete, SingleDelete } from "@/hooks/list/useDelete.js";
 import ClassroomTypeEditDialog from './ClassroomTypeEditDialog.vue';
 
@@ -60,8 +60,8 @@ export default {
   },
 
   setup() {
-    const ClassroomStore = useClassroomStore();
-    const { types } = storeToRefs(ClassroomStore);
+    const locationStore = useLocationStore();
+    const { classroomtypes } = storeToRefs(locationStore);
 
     const data = reactive({
       isDeleteShow: false,
@@ -128,8 +128,7 @@ export default {
 
     return {
       ...toRefs(data),
-      ClassroomStore,
-      types,
+      classroomtypes,
       HandleArrayDelete,
       HandleSingleDelete,
       HandleSelectChange,

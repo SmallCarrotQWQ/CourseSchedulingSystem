@@ -1,0 +1,4 @@
+faculties: [],
+majors: [],
+teachers: [],
+courses: [],

@@ -35,12 +35,13 @@
                 placeholder="请输入教室名称"
               />
             </el-form-item>
-            <el-form-item label="所属校区" prop="classroomCampus"
+            <el-form-item label="所属校区" prop="classroomCampusId"
               ><!--下拉框-->
               <el-select
-                v-model="formInput.classroomCampus"
+                v-model="formInput.classroomCampusId"
                 placeholder="请选择校区"
                 filterable
+                value-key="id"
               >
                 <el-option
                   v-for="obj of campuses"
@@ -50,17 +51,18 @@
               </el-select>
             </el-form-item>
 
-            <el-form-item label="教学楼" prop="classroomTeachingBuilding"
+            <el-form-item label="教学楼" prop="classroomTeachingBuildingId"
               ><!--下拉框-->
               <el-select
-                v-model="formInput.classroomTeachingBuilding"
+                v-model="formInput.classroomTeachingBuildingId"
                 placeholder="请选择教学楼"
                 filterable
+                value-key="id"
               >
                 <el-option
                   v-for="obj of filtedArray.filtedTeachingBuildingOptions"
                   :label="obj.name"
-                  :value="obj"
+                  :value="obj.id"
                 />
               </el-select>
             </el-form-item>
@@ -78,15 +80,16 @@
               </div>
             </el-form-item>
 
-            <el-form-item label="教室类型" prop="classroomType"
+            <el-form-item label="教室类型" prop="classroomTypeId"
               ><!--下拉框-->
               <el-select
-                v-model="formInput.classroomType"
+                v-model="formInput.classroomTypeId"
                 placeholder="请选择教室类型"
                 filterable
+                value-key="id"
               >
                 <el-option
-                  v-for="type of types"
+                  v-for="type of classroomtypes"
                   :label="type.name"
                   :value="type.id"
                 />
@@ -121,7 +124,7 @@
             <div class="checkboxGroup">
               <el-form-item prop="isAssigned">
                 <el-checkbox
-                  v-model="formInput.assigned"
+                  v-model="formInput.isAssigned"
                   label="是否为固定教室"
                 />
               </el-form-item>
@@ -230,27 +233,33 @@ console.log(app);
 import { computed, reactive, ref, toRefs } from "vue";
 import { v1 as uuid } from "uuid";
 import bus from "@/bus/bus";
-
-import { useClassroomStore } from "@/store/classroom.js"; //store
-import { useCampusStore } from "@/store/campus";
-import { useTeachingBuildingStore } from "@/store/teachingBuilding";
-
-
+import { useLocationStore } from "@/store/locationStore/index.js"; //store
 import nonEmptyValidator from "@/hooks/validator/useNonEmpty";
-import { storeToRefs } from 'pinia';
+import { storeToRefs } from "pinia";
 export default {
   name: "ClassroomEditDialog",
   mounted() {
     bus.on("showClassroomEdit", (value) => {
+      this.id = value.id;
+      this.classroomCampusId = value.campusId;
+      this.classroomTeachingBuildingId = value.teachingBuildingId; //input内容
+      this.classroomName = value.name;
+      this.classroomCode = value.code;
+      this.capacity = value.capacity;
+      this.classroomFloor = value.floor;
+      this.classroomTags = value.tags;
+      this.classroomTypeId = value.typeId;
+      this.classroomCapacity = value.capacity;
+      this.classroomDescribe = value.describe;
+      this.classroomDepartmentId = value.departmentId;
+      this.classhour = value.classhour;
+      this.classroomArea = value.area;
+      this.desktype = value.desktype;
+      this.isAvailable = value.available;
+      this.isAssigned = value.assigned;
+      this.hasAirConditioner = value.airconditioner;
       this.mode = false;
       this.isDialogFormVisible = true; //List中按下按钮弹窗
-      this.classroomCampus = value.campus;
-      this.classroomAddress = value.address; //input内容
-      this.classroomName = value.name;
-      this.capacity = value.capacity;
-      this.classroomRemark = value.remark;
-      this.id = value.id;
-      this.isAssigned = value.assigned;
     });
 
     bus.on("showClassroomAdd", () => {
@@ -259,13 +268,12 @@ export default {
     });
   },
   setup() {
-    const ClassroomStore = useClassroomStore();
-    const CampusStore = useCampusStore();
-    const TeachingBuildingStore = useTeachingBuildingStore();
-    const { campuses } = storeToRefs(CampusStore)
-    const { classrooms,types } = storeToRefs(ClassroomStore)
-    const { teachingBuildings } = storeToRefs(TeachingBuildingStore)
+    const locationStore = useLocationStore();
+    const { campuses, classroomtypes, teachingBuildings } =
+      storeToRefs(locationStore);
+
     const classroomFormRef = ref();
+
     const data = reactive({
       isDialogFormVisible: false, //是否弹窗
       id: "",
@@ -274,16 +282,16 @@ export default {
     });
 
     const formInput = reactive({
-      classroomCampus: "",
+      classroomCampusId: "",
       classroomName: "",
       classroomCode: "",
-      classroomTeachingBuilding: "",
+      classroomTeachingBuildingId: "",
       classroomFloor: "",
       classroomTags: "",
-      classroomType: "",
+      classroomTypeId: "",
       classroomCapacity: "",
       classroomDescribe: "",
-      classroomDepartment: "",
+      classroomDepartmentId: "",
       classhour: "",
       classroomArea: "",
       desktype: "",
@@ -293,19 +301,13 @@ export default {
     });
 
     const filtedArray = reactive({
-      filtedTeachingBuildingOptions:computed(()=>{
-         return teachingBuildings.value.filter(
-            (obj) => {
-              return obj.campus.id == formInput.classroomCampus
-            }
-          ) || []
+      filtedTeachingBuildingOptions: computed(() => {
+        return locationStore.getBuildingsByCampus(formInput.classroomCampusId);
       }),
     });
 
-
-
     const inputRule = {
-      classroomCampus: [
+      classroomCampusId: [
         { required: true, trigger: "change", message: "请选择校区!" },
       ],
       classroomName: [
@@ -324,7 +326,7 @@ export default {
           message: "请输入教室编号!",
         },
       ],
-      classroomTeachingBuilding: [
+      classroomTeachingBuildingId: [
         {
           required: true,
           validator: nonEmptyValidator,
@@ -345,7 +347,7 @@ export default {
           required: false,
         },
       ],
-      classroomType: [
+      classroomTypeId: [
         {
           required: true,
           validator: nonEmptyValidator,
@@ -361,7 +363,7 @@ export default {
           required: false,
         },
       ],
-      classroomDepartment: [
+      classroomDepartmentId: [
         {
           required: false,
         },
@@ -402,18 +404,18 @@ export default {
       if (!formEl) return;
       formEl.validate((validate) => {
         if (validate) {
-          ClassroomStore.Add({
+          locationStore.AddClassroom({
             id: uuid(),
-            campus: formInput.classroomCampus,
+            campusId: formInput.classroomCampus,
             name: formInput.classroomName,
             code: formInput.classroomCode,
-            teachingbuilding: formInput.classroomTeachingBuilding,
+            teachingBuildingId: formInput.classroomTeachingBuilding,
             floor: formInput.classroomFloor,
             tags: formInput.classroomTags,
-            type: formInput.classroomType,
+            typeId: formInput.classroomType,
             capacity: formInput.classroomCapacity,
             describe: formInput.classroomDescribe,
-            department: formInput.classroomDepartment,
+            department: formInput.classroomDepartmentId,
             classhour: formInput.classhour,
             area: formInput.classroomArea,
             desktype: formInput.desktype,
@@ -433,18 +435,18 @@ export default {
         console.log(validate);
         if (validate) {
           if (
-            ClassroomStore.edit({
+            locationStore.EditClassroom({
               id: data.id,
-              Campus: formInput.classroomCampus,
+              CampusId: formInput.classroomCampusId,
               name: formInput.classroomName,
               code: formInput.classroomCode,
-              teachingbuilding: formInput.classroomTeachingBuilding,
+              teachingbuilding: formInput.classroomTeachingBuildingId,
               floor: formInput.classroomFloor,
               tags: formInput.classroomTags,
-              type: formInput.classroomType,
+              type: formInput.classroomTypeId,
               capacity: formInput.classroomCapacity,
               describe: formInput.classroomDescribe,
-              department: formInput.classroomDepartment,
+              department: formInput.classroomDepartmentId,
               classhour: formInput.classhour,
               area: formInput.classroomArea,
               desktype: formInput.desktype,
@@ -462,6 +464,7 @@ export default {
 
     const ClearInput = () => {
       classroomFormRef.value.resetFields();
+      console.log("qwq");
     };
 
     return {
@@ -475,7 +478,7 @@ export default {
       classroomFormRef,
       inputRule,
       filtedArray,
-      types,
+      classroomtypes,
     };
   },
 };

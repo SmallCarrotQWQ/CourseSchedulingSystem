@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
-import { ArrayDelete,SingleDelete } from "@/hooks/list/useDelete.js" ;
+import { ArrayDelete, SingleDelete } from "@/hooks/list/useDelete.js";
 import { EditArray } from "@/hooks/input/useEdit";
+import { initialCampuses } from "@/data/locations"
 
 export const useCampusStore = defineStore('campus', {
     state: () => ({
@@ -12,22 +13,7 @@ export const useCampusStore = defineStore('campus', {
         // }
     }),
     actions: {
-        Add(value) {
-            this.campuses.push(value)
-        },
-
-        edit(obj) {
-            if (obj) {
-                for (const key of Object.keys(obj)) {
-                    if (key == "id") continue
-                    EditArray(this.campuses, key, obj[key], obj.id)
-                }
-            }
-            else {
-                return false
-            }
-            return true
-        },
+        
         HandleArrayDelete(deleteValue) {
             ElMessageBox.confirm(
                 "确认删除吗?",

@@ -31,10 +31,10 @@
           class="campusName"
         />
       </el-form-item>
-      <el-form-item label="所属校区" prop="teachingBuildingCampus"
+      <el-form-item label="所属校区" prop="teachingBuildingCampusId"
         ><!--下拉框-->
         <el-select
-          v-model="formInput.teachingBuildingCampus"
+          v-model="formInput.teachingBuildingCampusId"
           placeholder="请选择校区"
           filterable
           value-key="id"
@@ -42,7 +42,7 @@
           <el-option
             v-for="obj of campuses"
             :label="obj.name"
-            :value="obj"
+            :value="obj.id"
           />
         </el-select>
       </el-form-item>
@@ -64,7 +64,11 @@
           <span>修改</span>
         </el-button>
 
-        <el-button type="primary" @click="addItem(teachingBuildingFormRef)" v-show="mode">
+        <el-button
+          type="primary"
+          @click="addItem(teachingBuildingFormRef)"
+          v-show="mode"
+        >
           <span>添加</span>
         </el-button>
 
@@ -77,38 +81,37 @@
 </template>
 
 <script>
-import { reactive, ref, toRefs } from "vue";
+import { onMounted, reactive, ref, toRefs } from "vue";
 import { v1 as uuid } from "uuid";
 import bus from "@/bus/bus";
-import { useCampusStore } from "@/store/campus";
-import { useTeachingBuildingStore } from "@/store/teachingBuilding";
+import { useLocationStore } from "@/store/locationStore/index.js";
+
 import nonEmptyValidator from "@/hooks/validator/useNonEmpty";
 import { storeToRefs } from "pinia";
 export default {
   name: "TeachingBuildingEditDialog",
-  mounted() {
-    bus.on("showTeachingBuildingEdit", (value) => {
-      this.mode = false;
-      this.isDialogFormVisible = true; //List中按下按钮弹窗
-      this.id = value.id;
-      this.formInput.teachingBuildingCode = value.code;
-      this.formInput.teachingBuildingName = value.name;
-      this.formInput.teachingBuildingCampus = value.campus;
-      this.formInput.isAvailable = value.available;
-    });
-
-    bus.on("showTeachingBuildingAdd", (campus) => {
-      console.log(campus);
-      this.mode = true;
-      this.isDialogFormVisible = true; //List中按下按钮弹窗
-      this.formInput.teachingBuildingCampus = campus
-    });
-  },
   setup() {
-    const campusStore = useCampusStore();
-    const teachingBuildingStore = useTeachingBuildingStore();
-    const { campuses } = storeToRefs(campusStore);
+    const locationStore = useLocationStore();
+    const { campuses } = storeToRefs(locationStore);
     const teachingBuildingFormRef = ref();
+
+    onMounted(() => {
+      bus.on("showTeachingBuildingEdit", (value) => {
+        data.mode = false;
+        data.isDialogFormVisible = true; //List中按下按钮弹窗
+        data.id = value.id;
+        formInput.teachingBuildingCode = value.code;
+        formInput.teachingBuildingName = value.name;
+        formInput.teachingBuildingCampusId = value.campusId;
+        formInput.isAvailable = value.available;
+      });
+
+      bus.on("showTeachingBuildingAdd", (campusId) => {
+        data.mode = true;
+        data.isDialogFormVisible = true; //List中按下按钮弹窗
+        formInput.teachingBuildingCampusId = campusId;
+      });
+    });
     const data = reactive({
       isDialogFormVisible: false, //是否弹窗
       id: "",
@@ -118,7 +121,7 @@ export default {
     const formInput = reactive({
       teachingBuildingCode: "",
       teachingBuildingName: "",
-      teachingBuildingCampus: "",
+      teachingBuildingCampusId: "",
       isAvailable: true,
     });
 
@@ -139,7 +142,7 @@ export default {
           message: "请输入教学楼名称!",
         },
       ],
-      teachingBuildingCampus: [
+      teachingBuildingCampusId: [
         {
           required: true,
           validator: nonEmptyValidator,
@@ -153,11 +156,11 @@ export default {
       if (!formEl) return;
       formEl.validate((validate) => {
         if (validate) {
-          teachingBuildingStore.Add({
+          locationStore.AddTeachingBuilding({
             id: uuid(),
             code: formInput.teachingBuildingCode,
             name: formInput.teachingBuildingName,
-            campus: formInput.teachingBuildingCampus,
+            campusId: formInput.teachingBuildingCampusId,
             available: formInput.isAvailable,
           });
           data.isDialogFormVisible = false; //确认后关闭弹窗
@@ -171,11 +174,11 @@ export default {
       formEl.validate((validate) => {
         if (validate) {
           if (
-            teachingBuildingStore.edit({
+            locationStore.EditTeachingBuilding({
               id: data.id,
               code: formInput.teachingBuildingCode,
               name: formInput.teachingBuildingName,
-              campus: formInput.teachingBuildingCampus,
+              campusId: formInput.teachingBuildingCampusId,
               available: formInput.isAvailable,
             })
           ) {

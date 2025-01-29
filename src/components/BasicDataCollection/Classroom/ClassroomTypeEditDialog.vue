@@ -50,7 +50,7 @@ console.log(app);
 import { reactive, ref, toRefs } from "vue";
 import { v1 as uuid } from "uuid";
 import bus from "@/bus/bus";
-import { useClassroomStore } from "@/store/classroom";
+import { useLocationStore } from "@/store/locationStore/index.js";
 import nonEmptyValidator from "@/hooks/validator/useNonEmpty";
 export default {
   name: "ClassroomTypeEditDialog",
@@ -68,7 +68,7 @@ export default {
     });
   },
   setup() {
-    const ClassroomStore = useClassroomStore();
+    const locationStore = useLocationStore();
     const classroomTypeFormRef = ref();
     const data = reactive({
       isDialogFormVisible: false, //是否弹窗
@@ -95,7 +95,7 @@ export default {
       if (!formEl) return;
       formEl.validate((validate) => {
         if (validate) {
-          ClassroomStore.AddType({
+          locationStore.AddType({
             id: uuid(),
             name: formInput.typeName,
           });
@@ -110,7 +110,7 @@ export default {
       formEl.validate((validate) => {
         if (validate) {
           if (
-            ClassroomStore.EditType({
+            locationStore.EditType({
               id: data.id,
               name: formInput.typeName,
             })
@@ -132,7 +132,6 @@ export default {
       ClearInput,
       editItem,
       addItem,
-      ClassroomStore,
       classroomTypeFormRef,
       inputRule,
     };

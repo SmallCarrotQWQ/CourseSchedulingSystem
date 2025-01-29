@@ -60,7 +60,11 @@
           </el-button>
         </template>
         <el-option label="全部" value="*" />
-        <el-option v-for="type of types" :label="type.name" :value="type.id" />
+        <el-option
+          v-for="type of classroomtypes"
+          :label="type.name"
+          :value="type.id"
+        />
       </el-select>
     </div>
     <el-table
@@ -77,29 +81,29 @@
         fixed="left"
         min-width="155px"
       />
-      <el-table-column prop="campus" label="所属校区" min-width="155px" />
+      <el-table-column prop="campus.name" label="所属校区" min-width="155px" />
       <el-table-column
-        prop="teachingbuilding"
+        prop="teachingbuilding.name"
         label="教学楼"
         min-width="100px"
       />
       <el-table-column prop="floor" label="所在楼层" min-width="100px" />
       <el-table-column prop="tage" label="教室标签" min-width="100px" />
-      <el-table-column prop="type" label="教室类型" min-width="100px" />
+      <el-table-column prop="type.name" label="教室类型" min-width="100px" />
       <el-table-column prop="capacity" label="可容纳人数" min-width="100px" />
       <el-table-column
         prop="assigned"
-        :formatter="isAssigned"
+        :formatter="assignedToYesNo"
         label="固定教室"
       />
       <el-table-column
         prop="airconditioner"
-        :formatter="isAssigned"
+        :formatter="airconditionerToYesNo"
         label="是否有空调"
       />
       <el-table-column
         prop="available"
-        :formatter="isAssigned"
+        :formatter="availableToYesNo"
         label="是否启用"
       />
       <el-table-column prop="describe" label="教室描述" />
@@ -131,17 +135,12 @@
 <script>
 import bus from "@/bus/bus.js";
 import { storeToRefs } from "pinia";
-import { computed, reactive, toRefs } from "vue";
+import { computed, onBeforeMount, onMounted, reactive, toRefs } from "vue";
 import { ElMessageBox } from "element-plus";
-
 import ClassroomEditDialog from "./ClassroomEditDialog.vue";
 import ClassroomTypeListDrawer from "./ClassroomTypeListDrawer.vue";
-
 import { ArrayDelete, SingleDelete } from "@/hooks/list/useDelete.js";
-
-import { useClassroomStore } from "@/store/classroom.js";
-import { useCampusStore } from "@/store/campus.js";
-import { useTeachingBuildingStore } from "@/store/teachingBuilding.js";
+import { useLocationStore } from "@/store/locationStore/index.js";
 
 export default {
   name: "ClassroomList",
@@ -149,15 +148,20 @@ export default {
     ClassroomEditDialog,
     ClassroomTypeListDrawer,
   },
-  mounted() {},
   setup() {
-    const ClassroomStore = useClassroomStore();
-    const CampusStore = useCampusStore();
-    const TeachingBuildingStore = useTeachingBuildingStore();
-    const { classrooms, types } = storeToRefs(ClassroomStore);
-    const { campuses } = storeToRefs(CampusStore);
-    const { teachingBuildings } = storeToRefs(TeachingBuildingStore);
+    const locationStore = useLocationStore();
+    const {
+      classrooms,
+      teachingBuildings,
+      campuses,
+      classroomtypes,
+      campusMap,
+    } = storeToRefs(locationStore);
 
+    onMounted(() => {});
+    onBeforeMount(() => {
+      locationStore.initLocationDatas();
+    });
     const data = reactive({
       isDeleteShow: false,
       deleteValue: [],
@@ -172,63 +176,60 @@ export default {
     const filtedArray = reactive({
       filtedTeachingBuildingOptions: computed(() => {
         if (filterCriteria.campus == "*") {
-          return [];
+          return teachingBuildings.value;
         } else {
-          return teachingBuildings.value.filter((obj) => {
-            return obj.campus.id == filterCriteria.campus;
-          });
+          return locationStore.getBuildingsByCampus(filterCriteria.campus);
         }
       }),
-      filtedClassrooms: computed(
-        () => {
+      filtedClassrooms: computed(() => {
+        let temp = "";
+        if (filterCriteria.type == "*") {
           if (filterCriteria.campus == "*") {
-            if (filterCriteria.type == "*") {
-              return classrooms.value;
+            if (filterCriteria.teachingbuilding == "*") {
+              temp = classrooms.value;
             } else {
-              return classrooms.value.filter((classroom) => {
-                return classroom.type == filterCriteria.type;
-              });
+              temp = locationStore.getClassroomsByBuilding(
+                filterCriteria.teachingbuilding
+              );
             }
           } else {
-            if (filterCriteria.teachingbuilding == "*") {
-              if (filterCriteria.type == "*") {
-                return classrooms.value.filter((classroom) => {
-                  return classroom.campus == filterCriteria.campus;
-                });
-              } else {
-                return classrooms.value
-                  .filter((classroom) => {
-                    return classroom.campus == filterCriteria.campus;
-                  })
-                  .filter((classroom) => {
-                    return classroom.type == filterCriteria.type;
-                  });
-              }
-            } else {
-              if (filterCriteria.type == "*") {
-                return classrooms.value.filter((classroom) => {
-                  return (
-                    classroom.teachingbuilding ==
-                    filterCriteria.teachingbuilding
-                  );
-                });
-              }else{
-                return classrooms.value.filter((classroom) => {
-                  return (
-                    classroom.teachingbuilding ==
-                    filterCriteria.teachingbuilding
-                  );
-                }).filter((classroom)=>{
-                  return classroom.type == filterCriteria.type;
-                });
-                
-              }
-            }
+            temp = locationStore.getClassroomsByCampus(filterCriteria.campus);
           }
-        },
-        { immediate: true }
-      ),
+        } else {
+          //------------------------------------------------------------------
+          if (filterCriteria.campus == "*") {
+            if (filterCriteria.teachingbuilding == "*") {
+              temp = locationStore.getClassroomsByType(filterCriteria.type);
+            } else {
+              temp = locationStore.getClassroomsByBuildingAndType(
+                filterCriteria.teachingbuilding,
+                filterCriteria.type
+              );
+            }
+          } else {
+            temp = locationStore.getClassroomsByCampusAndType(
+              filterCriteria.campus,
+              filterCriteria.type
+            );
+          }
+        }
+        return temp.map((c) => ({
+          ...c,
+          campus: locationStore.campusMap.get(c.campusId),
+          type: locationStore.classroomTypeMap.get(c.typeId),
+          teachingbuilding: locationStore.teachingbuildingMap.get(
+            c.teachingBuildingId
+          ),
+        }));
+      }),
     });
+
+    // .value.map((c) => ({
+    //     ...c,
+    //     campus: locationStore.campusMap.get(c.campusId),
+    //     type: locationStore.classroomTypeMap.get(c.typeId),
+    //     teachingbuilding:locationStore.teachingbuildingMap.get(c.teachingBuildingId)
+    //   })),
 
     const HandleSelectChange = (value) => {
       data.deleteValue = value;
@@ -280,21 +281,26 @@ export default {
           classrooms.value = SingleDelete(classrooms.value, value);
         })
         .catch(() => {
-          console("canceled...");
+          console.log("canceled...");
         });
     };
 
-    const isAssigned = (row) => {
+    const assignedToYesNo = (row) => {
       return row.assigned ? "是" : "否";
+    };
+    const airconditionerToYesNo = (row) => {
+      return row.airconditioner ? "是" : "否";
+    };
+    const availableToYesNo = (row) => {
+      return row.available ? "是" : "否";
     };
 
     return {
       ...toRefs(data),
       classrooms,
-      types,
+      classroomtypes,
       campuses,
       teachingBuildings,
-      ClassroomStore,
       HandleArrayDelete,
       HandleSingleDelete,
       HandleSelectChange,
@@ -302,9 +308,11 @@ export default {
       HandleEditClick,
       HandleTypeEditClick,
       rowStyle,
-      isAssigned,
       filterCriteria,
       filtedArray,
+      assignedToYesNo,
+      airconditionerToYesNo,
+      availableToYesNo,
     };
   },
 };

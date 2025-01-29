@@ -15,7 +15,6 @@
       label-position="right"
       label-width="auto"
       ref="campusFormRef"
-
     >
       <el-form-item label="校区名称:" prop="campusName">
         <el-input
@@ -25,32 +24,16 @@
         />
       </el-form-item>
 
-      <el-form-item label="备注:" prop="campusRemark">
-        <el-input
-          type="textarea"
-          class="remark"
-          show-word-limit="true"
-          maxlength="100"
-          size="large"
-          v-model="formInput.campusRemark"
-        >
-        </el-input>
-      </el-form-item>
-
       <el-form-item class="btn">
         <el-button
           type="primary"
-          @click="editItem(campusFormRef);"
+          @click="editItem(campusFormRef)"
           v-show="!mode"
         >
           <span>修改</span>
         </el-button>
 
-        <el-button
-          type="primary"
-          @click="addItem(campusFormRef);"
-          v-show="mode"
-        >
+        <el-button type="primary" @click="addItem(campusFormRef)" v-show="mode">
           <span>添加</span>
         </el-button>
 
@@ -67,7 +50,7 @@ console.log(app);
 import { reactive, ref, toRefs } from "vue";
 import { v1 as uuid } from "uuid";
 import bus from "@/bus/bus";
-import { useCampusStore } from "@/store/campus";
+import { useLocationStore } from "@/store/locationStore/index.js";
 import nonEmptyValidator from "@/hooks/validator/useNonEmpty";
 export default {
   name: "CampusEditDialog",
@@ -77,7 +60,6 @@ export default {
       this.isDialogFormVisible = true; //List中按下按钮弹窗
       this.id = value.id;
       this.formInput.campusName = value.name;
-      this.formInput.campusRemark = value.remark;
     });
 
     bus.on("showCampusAdd", () => {
@@ -86,8 +68,7 @@ export default {
     });
   },
   setup() {
-    const campusStore = useCampusStore();
-    const campuses = useCampusStore().campuses;
+    const locationStore = useLocationStore();
     const campusFormRef = ref();
     const data = reactive({
       isDialogFormVisible: false, //是否弹窗
@@ -97,25 +78,28 @@ export default {
 
     const formInput = reactive({
       campusName: "",
-      campusRemark: "",
     });
 
     const inputRule = {
       campusName: [
-        { required: true,validator:nonEmptyValidator,trigger:"change", message: "请输入校区!" },
+        {
+          required: true,
+          validator: nonEmptyValidator,
+          trigger: "change",
+          message: "请输入校区!",
+        },
       ],
-      campusRemark: [{ required: false }],
     };
 
     const addItem = (formEl) => {
       if (!formEl) return;
       formEl.validate((validate) => {
         if (validate) {
-          campusStore.Add({
+          locationStore.AddCampus({
             id: uuid(),
             name: formInput.campusName,
             remark: formInput.campusRemark,
-            teachingbuildings:[]
+            teachingbuildings: [],
           });
           data.isDialogFormVisible = false; //确认后关闭弹窗
           formEl.resetFields();
@@ -129,7 +113,7 @@ export default {
         console.log(validate);
         if (validate) {
           if (
-            campusStore.Edit({
+            locationStore.EditCampus({
               id: data.id,
               name: formInput.campusName,
               remark: formInput.campusRemark,
@@ -152,7 +136,6 @@ export default {
       ClearInput,
       editItem,
       addItem,
-      campuses,
       campusFormRef,
       inputRule,
     };
