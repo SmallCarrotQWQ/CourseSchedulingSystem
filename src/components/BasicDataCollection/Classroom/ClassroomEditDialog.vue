@@ -255,9 +255,9 @@ export default {
       this.classhour = value.classhour;
       this.classroomArea = value.area;
       this.desktype = value.desktype;
-      this.isAvailable = value.available;
-      this.isAssigned = value.assigned;
-      this.hasAirConditioner = value.airconditioner;
+      this.isAvailable = value.isAvailable;
+      this.isAssigned = value.isAssigned;
+      this.hasAirConditioner = value.hasAirConditioner;
       this.mode = false;
       this.isDialogFormVisible = true; //List中按下按钮弹窗
     });
@@ -269,7 +269,7 @@ export default {
   },
   setup() {
     const locationStore = useLocationStore();
-    const { campuses, classroomtypes, teachingBuildings } =
+    const { campuses, classroomtypes, teachingbuildings } =
       storeToRefs(locationStore);
 
     const classroomFormRef = ref();
@@ -419,9 +419,9 @@ export default {
             classhour: formInput.classhour,
             area: formInput.classroomArea,
             desktype: formInput.desktype,
-            assigned: formInput.isAssigned,
-            airconditioner: formInput.hasAirConditioner,
-            available: formInput.isAvailable,
+            isAssigned: formInput.isAssigned,
+            hasAirConditioner: formInput.hasAirConditioner,
+            isAvailable: formInput.isAvailable,
           });
           data.isDialogFormVisible = false; //确认后关闭弹窗
           formEl.resetFields();
@@ -450,9 +450,9 @@ export default {
               classhour: formInput.classhour,
               area: formInput.classroomArea,
               desktype: formInput.desktype,
-              assigned: formInput.isAssigned,
-              airconditioner: formInput.hasAirConditioner,
-              available: formInput.isAvailable,
+              isAssigned: formInput.isAssigned,
+              hasAirConditioner: formInput.hasAirConditioner,
+              isAvailable: formInput.isAvailable,
             })
           ) {
             data.isDialogFormVisible = false; //确认后关闭弹窗

@@ -103,7 +103,7 @@ export default {
         formInput.teachingBuildingCode = value.code;
         formInput.teachingBuildingName = value.name;
         formInput.teachingBuildingCampusId = value.campusId;
-        formInput.isAvailable = value.available;
+        formInput.isAvailable = value.isAvailable;
       });
 
       bus.on("showTeachingBuildingAdd", (campusId) => {
@@ -161,7 +161,7 @@ export default {
             code: formInput.teachingBuildingCode,
             name: formInput.teachingBuildingName,
             campusId: formInput.teachingBuildingCampusId,
-            available: formInput.isAvailable,
+            isAvailable: formInput.isAvailable,
           });
           data.isDialogFormVisible = false; //确认后关闭弹窗
           formEl.resetFields();
@@ -179,7 +179,7 @@ export default {
               code: formInput.teachingBuildingCode,
               name: formInput.teachingBuildingName,
               campusId: formInput.teachingBuildingCampusId,
-              available: formInput.isAvailable,
+              isAvailable: formInput.isAvailable,
             })
           ) {
             data.isDialogFormVisible = false; //确认后关闭弹窗

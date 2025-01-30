@@ -12,7 +12,7 @@ import {
 export const useLocationStore = defineStore('location', {
     state: () => ({
         campuses: [],
-        teachingBuildings: [],
+        teachingbuildings: [],
         classrooms: [],
         classroomtypes: [],
         classroomMap: new Map(),
@@ -47,7 +47,7 @@ export const useLocationStore = defineStore('location', {
             })
         },
         getBuildingsByCampus(campusId) {
-            return this.teachingBuildings.filter((building) => {
+            return this.teachingbuildings.filter((building) => {
                 return building.campusId == campusId
             })
         },
@@ -85,18 +85,18 @@ export const useLocationStore = defineStore('location', {
             return true
         },
         initTeachingBuildings() {
-            this.teachingBuildings = initialTeachingBuildings;
-            this.teachingbuildingMap = new Map(this.teachingBuildings.map(t => [t.id, t]))
+            this.teachingbuildings = initialTeachingBuildings;
+            this.teachingbuildingMap = new Map(this.teachingbuildings.map(t => [t.id, t]))
         },
         AddTeachingBuilding(value) {
-            this.teachingBuildings.push(value)
+            this.teachingbuildings.push(value)
         },
 
         EditTeachingBuilding(obj) {
             if (obj) {
                 for (const key of Object.keys(obj)) {
                     if (key == "id") continue
-                    EditArray(this.teachingBuildings, key, obj[key], obj.id)
+                    EditArray(this.teachingbuildings, key, obj[key], obj.id)
                 }
             }
             else {

@@ -123,7 +123,7 @@ export default {
     };
 
     const isAvailable = (row) => {
-      return row.available ? "是" : "否";
+      return row.isAvailable ? "是" : "否";
     };
 
     return {

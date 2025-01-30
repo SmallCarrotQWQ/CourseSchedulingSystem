@@ -44,7 +44,7 @@ import TeachingBuildingListDrawer from "../TeachingBuilding/TeachingBuildingList
 
 import bus from "@/bus/bus.js";
 import { storeToRefs } from "pinia";
-import { onMounted,onBeforeMount, reactive, toRefs } from "vue";
+import { onMounted, onBeforeMount, reactive, toRefs } from "vue";
 import { ElMessageBox } from "element-plus";
 import { useLocationStore } from "@/store/locationStore/index.js";
 import { ArrayDelete, SingleDelete } from "@/hooks/list/useDelete.js";
@@ -59,8 +59,7 @@ export default {
     const locationStore = useLocationStore();
     const { campuses } = storeToRefs(locationStore);
 
-    onMounted(() => {
-    });
+    onMounted(() => {});
 
     onBeforeMount(() => {
       locationStore.initLocationDatas();

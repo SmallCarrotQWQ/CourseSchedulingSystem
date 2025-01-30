@@ -22,8 +22,8 @@
           >校区管理</el-menu-item
         >
         <el-menu-item
-          index="faculty"
-          @click="this.$router.push({ name: 'faculty' })"
+          index="department"
+          @click="this.$router.push({ name: 'department' })"
           >院系管理</el-menu-item
         >
         <el-menu-item

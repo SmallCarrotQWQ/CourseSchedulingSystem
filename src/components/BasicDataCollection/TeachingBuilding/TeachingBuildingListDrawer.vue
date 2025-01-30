@@ -25,7 +25,7 @@
         <el-table-column prop="name" label="教学楼名称" />
         <el-table-column prop="campus.name" label="所属校区" />
         <el-table-column
-          prop="available"
+          prop="isAvailable"
           label="是否可用"
           :formatter="isAvailable"
         />
@@ -64,7 +64,7 @@ export default {
   },
   setup() {
     const locationStore = useLocationStore();
-    const { campuses,campusMap,teachingBuildings } = storeToRefs(locationStore);
+    const { campuses,campusMap,teachingbuildings } = storeToRefs(locationStore);
 
     onMounted(() => {
       locationStore.initLocationDatas()
@@ -115,8 +115,8 @@ export default {
         type: "warning",
       })
         .then(() => {
-          teachingBuildings.value = ArrayDelete(
-            teachingBuildings.value,
+          teachingbuildings.value = ArrayDelete(
+            teachingbuildings.value,
             data.deleteValue
           );
         })
@@ -132,8 +132,8 @@ export default {
         type: "warning",
       })
         .then(() => {
-          teachingBuildings.value = SingleDelete(
-            teachingBuildings.value,
+          teachingbuildings.value = SingleDelete(
+            teachingbuildings.value,
             value
           );
         })
@@ -143,13 +143,13 @@ export default {
     };
 
     const isAvailable = (row) => {
-      return row.available ? "是" : "否";
+      return row.isAvailable ? "是" : "否";
     };
 
     return {
       ...toRefs(data),
       campuses,
-      teachingBuildings,
+      teachingbuildings,
       HandleArrayDelete,
       HandleSingleDelete,
       HandleSelectChange,

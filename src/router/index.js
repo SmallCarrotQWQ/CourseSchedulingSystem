@@ -183,9 +183,9 @@ const routes = [
             },
           },
           {
-            name:'faculty',
-            path:'/home/set/faculty',
-            component:()=>import("@/views/BasicData/Faculty.vue"),
+            name:'department',
+            path:'/home/set/department',
+            component:()=>import("@/views/BasicData/Department.vue"),
             meta:{
               title:"院系管理",
               requiresAuth:false,

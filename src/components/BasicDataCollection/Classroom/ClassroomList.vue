@@ -92,17 +92,17 @@
       <el-table-column prop="type.name" label="教室类型" min-width="100px" />
       <el-table-column prop="capacity" label="可容纳人数" min-width="100px" />
       <el-table-column
-        prop="assigned"
+        prop="isAssigned"
         :formatter="assignedToYesNo"
         label="固定教室"
       />
       <el-table-column
-        prop="airconditioner"
+        prop="hasAirConditioner"
         :formatter="airconditionerToYesNo"
         label="是否有空调"
       />
       <el-table-column
-        prop="available"
+        prop="isAvailable"
         :formatter="availableToYesNo"
         label="是否启用"
       />
@@ -152,7 +152,7 @@ export default {
     const locationStore = useLocationStore();
     const {
       classrooms,
-      teachingBuildings,
+      teachingbuildings,
       campuses,
       classroomtypes,
       campusMap,
@@ -176,7 +176,7 @@ export default {
     const filtedArray = reactive({
       filtedTeachingBuildingOptions: computed(() => {
         if (filterCriteria.campus == "*") {
-          return teachingBuildings.value;
+          return teachingbuildings.value;
         } else {
           return locationStore.getBuildingsByCampus(filterCriteria.campus);
         }
@@ -286,13 +286,13 @@ export default {
     };
 
     const assignedToYesNo = (row) => {
-      return row.assigned ? "是" : "否";
+      return row.isAssigned ? "是" : "否";
     };
     const airconditionerToYesNo = (row) => {
-      return row.airconditioner ? "是" : "否";
+      return row.hasAirConditioner ? "是" : "否";
     };
     const availableToYesNo = (row) => {
-      return row.available ? "是" : "否";
+      return row.isAvailable ? "是" : "否";
     };
 
     return {
@@ -300,7 +300,7 @@ export default {
       classrooms,
       classroomtypes,
       campuses,
-      teachingBuildings,
+      teachingbuildings,
       HandleArrayDelete,
       HandleSingleDelete,
       HandleSelectChange,
