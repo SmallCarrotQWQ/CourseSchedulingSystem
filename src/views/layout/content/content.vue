@@ -7,7 +7,6 @@
             <theMain />
         </div>
         <div class="footer">
-            <theFooter />
 
         </div>
   </div>
@@ -17,6 +16,10 @@
 import theHeader from "../header/header.vue";
 import theSidebar from "../sidebar/sidebar.vue";
 import theMain from "../main/main.vue";
+import {useAcademicStore} from "@/store/academicStore/index.js"
+import {useLocationStore} from "@/store/locationStore/index.js"
+import {usePersonnelStore} from "@/store/personnelStore/index.js"
+
 export default {
   name: "Content",
   components: {
@@ -24,6 +27,11 @@ export default {
     theSidebar,
     theMain,
   },
+  mounted(){
+    useAcademicStore().initAcademicDatas()
+    useLocationStore().initLocationDatas()
+    usePersonnelStore().initPersonnelDatas()
+  }
   
 };
 </script>

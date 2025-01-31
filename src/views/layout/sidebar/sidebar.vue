@@ -3,8 +3,6 @@
     <el-menu
       :default-active="route.name"
       class="el-menu-vertical-demo"
-      @open="handleOpen"
-      @close="handleClose"
       unique-opened="true"
     >
       <el-menu-item index="homePage" @click="this.$router.push({ path: '/' })">

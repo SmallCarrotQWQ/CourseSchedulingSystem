@@ -1,7 +1,7 @@
 <template>
   <el-dialog
     v-model="isDialogFormVisible"
-    title="修改班级"
+   :title= 'mode ? "添加":"修改"'
     width="450"
     class="dialog"
     :close-on-click-modal="false"

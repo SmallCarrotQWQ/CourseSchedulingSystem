@@ -1,7 +1,7 @@
 <template>
   <el-dialog
     v-model="isDialogFormVisible"
-    title="修改部门"
+    :title= 'mode ? "添加":"修改"'
     width="450"
     class="dialog"
     :close-on-click-modal="false"
@@ -84,21 +84,24 @@
         </el-select>
       </el-form-item>
       <div class="checkboxGroup">
-        <el-form-item prop="isEnabled">
-          <el-checkbox label="是否启用" v-model="formInput.isEnabled" />
-        </el-form-item>
         <el-form-item prop="isEntity">
           <el-checkbox label="是否为实体" v-model="formInput.isEntity" />
         </el-form-item>
+        <el-form-item prop="isEnabled">
+          <el-checkbox label="是否启用" v-model="formInput.isEnabled" />
+        </el-form-item>
+
         <el-form-item prop="isCourseOffering">
           <el-checkbox
             label="是否为开课院系"
             v-model="formInput.isCourseOffering"
           />
         </el-form-item>
+
         <el-form-item prop="isTeaching">
-          <el-checkbox label="是否为上课院系" :value="formInput.isTeaching" />
+          <el-checkbox label="是否为上课院系" v-model="formInput.isTeaching" />
         </el-form-item>
+
         <el-form-item prop="isTeachingResearchOffice">
           <el-checkbox
             label="是否开课教研室"
@@ -147,20 +150,23 @@ export default {
   mounted() {
     bus.on("showDepartmentEdit", (value) => {
       this.id = value.id;
-      (this.formInput.departmentName = value.name),
-        (this.formInput.departmentEnglishName = value.ename),
-        (this.formInput.departmentAbbr = value.abbr),
-        (this.formInput.departmentCode = value.code),
-        (this.formInput.departmentType = value.type),
-        (this.formInput.teachingbuildingId = value.teachingbuildingId),
-        (this.formInput.isEntity = value.isEntity),
-        (this.formInput.isCourseOffering = value.isCourseOffering),
-        (this.formInput.isTeaching = value.isTeaching),
-        (this.formInput.isEnabled = value.isEnabled),
-        (this.formInput.isTeachingResearchOffice =
-          value.isTeachingResearchOffice),
-        (this.mode = false);
+
+      this.mode = false;
       this.isDialogFormVisible = true; //List中按下按钮弹窗
+      this.$nextTick(() => {
+        (this.formInput.departmentName = value.name),
+          (this.formInput.departmentEnglishName = value.ename),
+          (this.formInput.departmentAbbr = value.abbr),
+          (this.formInput.departmentCode = value.code),
+          (this.formInput.departmentType = value.type),
+          (this.formInput.teachingbuildingId = value.teachingbuildingId),
+          (this.formInput.isEntity = value.isEntity),
+          (this.formInput.isCourseOffering = value.isCourseOffering),
+          (this.formInput.isTeaching = value.isTeaching),
+          (this.formInput.isEnabled = value.isEnabled),
+          (this.formInput.isTeachingResearchOffice =
+            value.isTeachingResearchOffice);
+      });
     });
 
     bus.on("showDepartmentAdd", () => {
@@ -188,6 +194,7 @@ export default {
       departmentCode: "",
       departmentType: "",
       teachingbuildingId: "",
+      teachingbuildingName: "",
       isEntity: true,
       isCourseOffering: false,
       isTeaching: true,
@@ -223,6 +230,31 @@ export default {
           message: "请输入部门名称!",
         },
       ],
+      isEntity: [
+        {
+          required: false,
+        },
+      ],
+      isTeaching: [
+        {
+          required: false,
+        },
+      ],
+      isCourseOffering: [
+        {
+          required: false,
+        },
+      ],
+      isEnabled: [
+        {
+          required: false,
+        },
+      ],
+      isTeachingResearchOffice: [
+        {
+          required: false,
+        },
+      ],
     };
 
     const addItem = (formEl) => {
@@ -238,7 +270,9 @@ export default {
             code: formInput.departmentCode,
             type: formInput.departmentType,
             teachingbuildingId: formInput.teachingbuildingId,
-            teachingbuildingName:locationStore.teachingbuildingMap.get(formInput.teachingbuildingId).name,
+            teachingbuildingName: locationStore.teachingbuildingNameMap.get(
+              formInput.teachingbuildingId
+            ),
             isEntity: formInput.isEntity,
             isCourseOffering: formInput.isCourseOffering,
             isTeaching: formInput.isTeaching,
@@ -264,7 +298,9 @@ export default {
               code: formInput.departmentCode,
               type: formInput.departmentType,
               teachingbuildingId: formInput.teachingbuildingId,
-              teachingbuildingName:locationStore.teachingbuildingMap.get(formInput.teachingbuildingId).name,
+              teachingbuildingName: locationStore.teachingbuildingNameMap.get(
+                formInput.teachingbuildingId
+              ),
               isEntity: formInput.isEntity,
               isCourseOffering: formInput.isCourseOffering,
               isTeaching: formInput.isTeaching,

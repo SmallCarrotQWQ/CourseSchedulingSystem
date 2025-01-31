@@ -1,7 +1,7 @@
 <template>
   <el-dialog
     v-model="isDialogFormVisible"
-    title="修改院系"
+    :title= 'mode ? "添加":"修改"'
     width="450"
     class="dialog"
     :close-on-click-modal="false"
@@ -17,23 +17,12 @@
       ref="teacherFormRef"
       @submit.enter.prevent
     >
-      <el-form-item label="院系:" prop="teacherFaculty">
-        <el-select
-          v-model="formInput.teacherFaculty"
-          value-key="id"
-          placeholder="请选择院系"
-          filterable
-        >
-          <el-option v-for="obj of faculties" :label="obj.name" :value="obj" />
-        </el-select>
-      </el-form-item>
-
-      <el-form-item label="教师号:" prop="teacherId">
+      <el-form-item label="工号:" prop="teacherId">
         <el-input
           v-model="formInput.teacherId"
           maxlength="50"
           class="inputs"
-          placeholder="请输入教师号"
+          placeholder="请输入工号"
         />
       </el-form-item>
 
@@ -45,15 +34,50 @@
           placeholder="请输入教师姓名"
         />
       </el-form-item>
-      <el-form-item label="职称:" prop="teacherTitle">
+      <el-form-item label="英文名:" prop="teacherEname">
+        <el-input
+          v-model="formInput.teacherEname"
+          maxlength="50"
+          class="inputs"
+          placeholder="请输入英文名"
+        />
+      </el-form-item>
+
+      <el-form-item label="性别:" prop="teacherGender">
+        <el-radio-group v-model="formInput.teacherGender">
+          <el-radio value="1">男</el-radio>
+          <el-radio value="0">女</el-radio>
+        </el-radio-group>
+      </el-form-item>
+
+      <el-form-item label="部门:" prop="teacherDepartmentId">
         <el-select
-          v-model="formInput.teacherTitle"
+          v-model="formInput.teacherDepartmentId"
+          value-key="id"
+          placeholder="请选择部门"
+          filterable
+        >
+          <el-option
+            v-for="obj of departments"
+            :label="obj.name"
+            :value="obj.id"
+          />
+        </el-select>
+      </el-form-item>
+
+      <el-form-item label="职称:" prop="teacherTitleId">
+        <el-select
+          v-model="formInput.teacherTitleId"
           value-key="id"
           placeholder="请选择职称"
           filterable
         >
-          <el-option v-for="obj of faculties" :label="obj.name" :value="obj" />
+          <el-option v-for="obj of titles" :label="obj.name" :value="obj.id" />
         </el-select>
+      </el-form-item>
+
+      <el-form-item prop="isExternal">
+        <el-checkbox label="是否外聘" v-model="formInput.isExternal" />
       </el-form-item>
 
       <el-form-item class="btn">
@@ -86,10 +110,10 @@ console.log(app);
 import { reactive, ref, toRefs } from "vue";
 import { v1 as uuid } from "uuid";
 import bus from "@/bus/bus";
-import { useTeacherStore } from "@/store/teacher";
-import { useFacultyStore } from "@/store/faculty";
+import { usePersonnelStore } from "@/store/personnelStore/index.js";
+import { useAcademicStore } from "@/store/academicStore/index.js";
 import nonEmptyValidator from "@/hooks/validator/useNonEmpty";
-import { storeToRefs } from 'pinia';
+import { storeToRefs } from "pinia";
 
 export default {
   name: "TeacherEditDialog",
@@ -97,11 +121,18 @@ export default {
     bus.on("showTeacherEdit", (value) => {
       this.mode = false;
       this.isDialogFormVisible = true; //List中按下按钮弹窗
-      this.formInput.teacherId = value.teacherId;
-      this.formInput.teacherName = value.name;
-      this.formInput.teacherFaculty = value.faculty;
-      this.formInput.teacherTitle = value.title;
-      this.id = value.id;
+      this.$nextTick(() => {
+        this.id = value.id;
+        this.formInput.teacherEname = value.ename;
+        this.formInput.teacherName = value.name;
+        this.formInput.teacherId = value.teacherId;
+        this.formInput.teacherGender = value.gender;
+        this.formInput.teacherEthnicityId = value.ethnicityId;
+        this.formInput.teachertitleId = value.titleId;
+        this.formInput.teacherDepartmentId = value.departmentId;
+        this.formInput.isExternal = value.isExternal;
+        this.formInput.facultyTypeId = value.facultyTypeId;
+      });
     });
 
     bus.on("showTeacherAdd", () => {
@@ -110,9 +141,9 @@ export default {
     });
   },
   setup() {
-    const TeacherStore = useTeacherStore();
-    const facultyStore = useFacultyStore();
-    const {faculties} = storeToRefs(facultyStore);
+    const personnelStore = usePersonnelStore();
+    const academicStore = useAcademicStore();
+    const { departments } = storeToRefs(academicStore)
     const teacherFormRef = ref();
     const data = reactive({
       isDialogFormVisible: false, //是否弹窗
@@ -123,20 +154,70 @@ export default {
     const formInput = reactive({
       teacherId: "",
       teacherName: "",
-      teacherFaculty: "",
-      teacherTitle: "",
+      teacherGender: "2", //teachersex鈦璂鈀鎤了,所以换成gender了
+      teacherEname: "",
+      teacherDepartmentId: "",
+      teacherEthnicityId: "",
+      teachertitleId: "",
+      isExternal: false,
+      facultyTypeId: "",
     });
 
     const inputRule = {
-      teacherId: [{ required: false }],
+
+      teacherId: [
+        {
+          required: true,
+          validator: nonEmptyValidator,
+          message: "请输入教师工号!",
+          trigger: "blur",
+        },
+      ],
       teacherName: [
-        { required: true, validator: nonEmptyValidator, message: "请输入教师姓名!",trigger: "blur" },
+        {
+          required: true,
+          validator: nonEmptyValidator,
+          message: "请输入教师姓名!",
+          trigger: "blur",
+        },
       ],
-      teacherFaculty: [
-        { required: true, validator: nonEmptyValidator, message: "请选择教师所属的院系!",trigger: "blur" },
+      teacherGender: [
+        {
+          required: false,
+        },
       ],
-      teacherTitle: [
-        { required: true, validator: nonEmptyValidator,message: "请选择教师的职称!", trigger: "blur" },
+      teacherEname: [
+        {
+          required: false,
+        },
+      ],
+      teacherDepartmentId: [
+        {
+          required: true,
+          validator: nonEmptyValidator,
+          message: "请选择教师所属部门!",
+          trigger: "change",
+        },
+      ],
+      teacherEthnicityId: [
+        {
+          required: false,
+        },
+      ],
+      teachertitleId: [
+        {
+          required: false,
+        },
+      ],
+      isExternal: [
+        {
+          required: false,
+        },
+      ],
+      facultyTypeId: [
+        {
+          required: false,
+        },
       ],
     };
 
@@ -145,12 +226,20 @@ export default {
       if (!formEl) return;
       formEl.validate((validate) => {
         if (validate) {
-          TeacherStore.Add({
+          personnelStore.AddTeacher({
             id: uuid(),
-            teacherId: formInput.teacherId,
+            teacherId: "1",
             name: formInput.teacherName,
-            faculty: formInput.teacherFaculty,
-            title: formInput.teacherTitle,
+            gender: formInput.teacherGender, //男1女0未设置2
+            ename: formInput.teacherEname,
+            ethnicityId: formInput.teacherEthnicityId,
+            titleName: formInput.teachertitleId,
+            departmentName: personnelStore.teacherNameMap.get(
+              formInput.teacherDepartmentId
+            ),
+            departmentId: formInput.teacherDepartmentId,
+            isExternal: formInput.isExternal,
+            facultyTypeId: formInput.facultyTypeId,
           });
           data.isDialogFormVisible = false; //确认后关闭弹窗
           formEl.resetFields();
@@ -163,12 +252,20 @@ export default {
       formEl.validate((validate) => {
         if (validate) {
           if (
-            TeacherStore.edit({
+            personnelStore.EditTeacher({
               id: data.id,
-              teacherId: formInput.teacherId,
+              teacherId: "1",
               name: formInput.teacherName,
-              faculty: formInput.teacherFaculty,
-              title: formInput.teacherTitle,
+              gender: formInput.teacherGender, //男1女0未设置2
+              ename: formInput.teacherEname,
+              ethnicityId: formInput.teacherEthnicityId,
+              titleName: formInput.teachertitleId,
+              departmentName: personnelStore.teacherNameMap.get(
+                formInput.teacherDepartmentId
+              ),
+              departmentId: formInput.teacherDepartmentId,
+              isExternal: formInput.isExternal,
+              facultyTypeId: formInput.facultyTypeId,
             })
           ) {
             data.isDialogFormVisible = false; //确认后关闭弹窗
@@ -190,7 +287,7 @@ export default {
       ClearInput,
       teacherFormRef,
       inputRule,
-      faculties
+      departments,
     };
   },
 };

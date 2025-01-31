@@ -67,5 +67,22 @@ export const initialDepartments = [
         isEnabled: true,
         isTeachingResearchOffice:false
     },
+    {
+        id: "gggraet",
+        code: "114444",
+        name: "学校领导",
+        englishname: "boss",
+        abbr: "学校のking",
+        isEntity: true,
+        type: {
+            id: "gdfesfdhfd",
+            name: "行政类"
+        },
+        teachingbuildingId: "",
+        isCourseOffering: false,
+        isTeaching: false,
+        isEnabled: true,
+        isTeachingResearchOffice:false
+    },
 ]
 

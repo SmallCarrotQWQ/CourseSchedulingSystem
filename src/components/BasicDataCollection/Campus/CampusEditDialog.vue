@@ -1,7 +1,7 @@
 <template>
   <el-dialog
     v-model="isDialogFormVisible"
-    title="修改校区"
+    :title= 'mode ? "添加":"修改"'
     width="450"
     class="dialog"
     :close-on-click-modal="false"
@@ -58,8 +58,10 @@ export default {
     bus.on("showCampusEdit", (value) => {
       this.mode = false;
       this.isDialogFormVisible = true; //List中按下按钮弹窗
-      this.id = value.id;
-      this.formInput.campusName = value.name;
+      this.$nextTick(() => {
+        this.id = value.id;
+        this.formInput.campusName = value.name;
+      });
     });
 
     bus.on("showCampusAdd", () => {

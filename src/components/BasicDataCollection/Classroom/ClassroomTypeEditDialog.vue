@@ -33,7 +33,11 @@
           <span>修改</span>
         </el-button>
 
-        <el-button type="primary" @click="addItem(classroomTypeFormRef)" v-show="mode">
+        <el-button
+          type="primary"
+          @click="addItem(classroomTypeFormRef)"
+          v-show="mode"
+        >
           <span>添加</span>
         </el-button>
 
@@ -59,7 +63,9 @@ export default {
       this.mode = false;
       this.isDialogFormVisible = true; //List中按下按钮弹窗
       this.id = value.id;
-      this.formInput.typeName = value.name;
+      this.$nextTick(() => {
+        this.formInput.typeName = value.name;
+      });
     });
 
     bus.on("showClassroomTypeAdd", () => {

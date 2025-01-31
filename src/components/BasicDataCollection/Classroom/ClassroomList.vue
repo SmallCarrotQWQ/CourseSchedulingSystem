@@ -75,15 +75,11 @@
     >
       <el-table-column type="selection" :selectable="selectable" width="40" />
       <el-table-column prop="code" label="教室编号" min-width="155px" />
+      <el-table-column prop="name" label="教室名称" min-width="155px" />
+      <el-table-column prop="campusId" :formatter="campusFormatter" label="所属校区" min-width="155px" />
       <el-table-column
-        prop="name"
-        label="教室名称"
-        fixed="left"
-        min-width="155px"
-      />
-      <el-table-column prop="campus.name" label="所属校区" min-width="155px" />
-      <el-table-column
-        prop="teachingbuilding.name"
+        prop="teachingbuildingId"
+        :formatter="teachbuildingFormatter"
         label="教学楼"
         min-width="100px"
       />
@@ -107,7 +103,7 @@
         label="是否启用"
       />
       <el-table-column prop="describe" label="教室描述" />
-      <el-table-column prop="department" label="管理部门" />
+      <el-table-column prop="departmentName" :formatter="departmentFormatter" label="管理部门" />
       <el-table-column prop="classhour" label="周安排学时" />
       <el-table-column prop="area" label="教室面积" />
       <el-table-column prop="desktype" label="桌椅类型" />
@@ -141,6 +137,8 @@ import ClassroomEditDialog from "./ClassroomEditDialog.vue";
 import ClassroomTypeListDrawer from "./ClassroomTypeListDrawer.vue";
 import { ArrayDelete, SingleDelete } from "@/hooks/list/useDelete.js";
 import { useLocationStore } from "@/store/locationStore/index.js";
+import { useAcademicStore } from "@/store/academicStore/index.js"; //store
+
 
 export default {
   name: "ClassroomList",
@@ -150,14 +148,14 @@ export default {
   },
   setup() {
     const locationStore = useLocationStore();
+    const academicStore = useAcademicStore();
     const {
       classrooms,
       teachingbuildings,
       campuses,
       classroomtypes,
-      campusMap,
     } = storeToRefs(locationStore);
-
+  
     onMounted(() => {});
     onBeforeMount(() => {
       locationStore.initLocationDatas();
@@ -213,14 +211,7 @@ export default {
             );
           }
         }
-        return temp.map((c) => ({
-          ...c,
-          campus: locationStore.campusMap.get(c.campusId),
-          type: locationStore.classroomTypeMap.get(c.typeId),
-          teachingbuilding: locationStore.teachingbuildingMap.get(
-            c.teachingBuildingId
-          ),
-        }));
+        return temp
       }),
     });
 
@@ -228,7 +219,7 @@ export default {
     //     ...c,
     //     campus: locationStore.campusMap.get(c.campusId),
     //     type: locationStore.classroomTypeMap.get(c.typeId),
-    //     teachingbuilding:locationStore.teachingbuildingMap.get(c.teachingBuildingId)
+    //     teachingbuilding:locationStore.teachingbuildingMap.get(c.teachingbuildingId)
     //   })),
 
     const HandleSelectChange = (value) => {
@@ -295,6 +286,17 @@ export default {
       return row.isAvailable ? "是" : "否";
     };
 
+    const departmentFormatter = (row)=>{
+      return academicStore.departmentNameMap.get(row.departmentId)
+    }
+
+    const campusFormatter = (row)=>{
+      return locationStore.campusNameMap.get(row.campusId)
+    }
+    const teachbuildingFormatter = (row)=>{
+      return locationStore.teachingbuildingNameMap.get(row.teachingbuildingId)
+    }
+
     return {
       ...toRefs(data),
       classrooms,
@@ -313,6 +315,9 @@ export default {
       assignedToYesNo,
       airconditionerToYesNo,
       availableToYesNo,
+      departmentFormatter,
+      campusFormatter,
+      teachbuildingFormatter,
     };
   },
 };

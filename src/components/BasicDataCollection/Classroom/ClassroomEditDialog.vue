@@ -1,7 +1,7 @@
 <template>
   <el-dialog
     v-model="isDialogFormVisible"
-    title="修改教室"
+    :title= 'mode ? "添加":"修改"'
     width="42%"
     class="dialog"
     :close-on-click-modal="false"
@@ -42,6 +42,11 @@
                 placeholder="请选择校区"
                 filterable
                 value-key="id"
+                @change="
+                  () => {
+                    formInput.classroomTeachingBuildingId = '';
+                  }
+                "
               >
                 <el-option
                   v-for="obj of campuses"
@@ -148,17 +153,17 @@
 
         <el-tab-pane name="other" label="其他">
           <div>
-            <el-form-item label="管理部门" prop="department"
+            <el-form-item label="管理部门" prop="classroomDepartmentId"
               ><!--下拉框-->
               <el-select
-                v-model="formInput.department"
+                v-model="formInput.classroomDepartmentId"
                 placeholder="请选择管理部门"
                 filterable
               >
                 <el-option
-                  v-for="obj of teachingbuildings"
+                  v-for="obj of departments"
                   :label="obj.name"
-                  :value="obj.name"
+                  :value="obj.id"
                 />
               </el-select>
             </el-form-item>
@@ -234,32 +239,35 @@ import { computed, reactive, ref, toRefs } from "vue";
 import { v1 as uuid } from "uuid";
 import bus from "@/bus/bus";
 import { useLocationStore } from "@/store/locationStore/index.js"; //store
+import { useAcademicStore } from "@/store/academicStore/index.js"; //store
 import nonEmptyValidator from "@/hooks/validator/useNonEmpty";
 import { storeToRefs } from "pinia";
 export default {
   name: "ClassroomEditDialog",
   mounted() {
     bus.on("showClassroomEdit", (value) => {
-      this.id = value.id;
-      this.classroomCampusId = value.campusId;
-      this.classroomTeachingBuildingId = value.teachingBuildingId; //input内容
-      this.classroomName = value.name;
-      this.classroomCode = value.code;
-      this.capacity = value.capacity;
-      this.classroomFloor = value.floor;
-      this.classroomTags = value.tags;
-      this.classroomTypeId = value.typeId;
-      this.classroomCapacity = value.capacity;
-      this.classroomDescribe = value.describe;
-      this.classroomDepartmentId = value.departmentId;
-      this.classhour = value.classhour;
-      this.classroomArea = value.area;
-      this.desktype = value.desktype;
-      this.isAvailable = value.isAvailable;
-      this.isAssigned = value.isAssigned;
-      this.hasAirConditioner = value.hasAirConditioner;
       this.mode = false;
       this.isDialogFormVisible = true; //List中按下按钮弹窗
+      this.$nextTick(() => {
+        this.id = value.id;
+        this.classroomCampusId = value.campusId;
+        this.classroomTeachingBuildingId = value.teachingbuildingId; //input内容
+        this.classroomName = value.name;
+        this.classroomCode = value.code;
+        this.capacity = value.capacity;
+        this.classroomFloor = value.floor;
+        this.classroomTags = value.tags;
+        this.classroomTypeId = value.typeId;
+        this.classroomCapacity = value.capacity;
+        this.classroomDescribe = value.describe;
+        this.classroomDepartmentId = value.departmentId;
+        this.classhour = value.classhour;
+        this.classroomArea = value.area;
+        this.desktype = value.desktype;
+        this.isAvailable = value.isAvailable;
+        this.isAssigned = value.isAssigned;
+        this.hasAirConditioner = value.hasAirConditioner;
+      });
     });
 
     bus.on("showClassroomAdd", () => {
@@ -269,8 +277,9 @@ export default {
   },
   setup() {
     const locationStore = useLocationStore();
-    const { campuses, classroomtypes, teachingbuildings } =
-      storeToRefs(locationStore);
+    const academicStore = useAcademicStore();
+    const { campuses, classroomtypes, teachingbuildings } = storeToRefs(locationStore);
+    const { departments } = storeToRefs(academicStore);
 
     const classroomFormRef = ref();
 
@@ -406,16 +415,16 @@ export default {
         if (validate) {
           locationStore.AddClassroom({
             id: uuid(),
-            campusId: formInput.classroomCampus,
+            campusId: formInput.classroomCampusId,
             name: formInput.classroomName,
             code: formInput.classroomCode,
-            teachingBuildingId: formInput.classroomTeachingBuilding,
+            teachingbuildingId: formInput.classroomTeachingBuildingId,
             floor: formInput.classroomFloor,
             tags: formInput.classroomTags,
-            typeId: formInput.classroomType,
+            typeId: formInput.classroomTypeId,
             capacity: formInput.classroomCapacity,
             describe: formInput.classroomDescribe,
-            department: formInput.classroomDepartmentId,
+            departmentId: formInput.classroomDepartmentId,
             classhour: formInput.classhour,
             area: formInput.classroomArea,
             desktype: formInput.desktype,
@@ -437,16 +446,16 @@ export default {
           if (
             locationStore.EditClassroom({
               id: data.id,
-              CampusId: formInput.classroomCampusId,
+              campusId: formInput.classroomCampusId,
               name: formInput.classroomName,
               code: formInput.classroomCode,
-              teachingbuilding: formInput.classroomTeachingBuildingId,
+              teachingbuildingId: formInput.classroomTeachingBuildingId,
               floor: formInput.classroomFloor,
               tags: formInput.classroomTags,
-              type: formInput.classroomTypeId,
+              typeId: formInput.classroomTypeId,
               capacity: formInput.classroomCapacity,
               describe: formInput.classroomDescribe,
-              department: formInput.classroomDepartmentId,
+              departmentId: formInput.classroomDepartmentId,
               classhour: formInput.classhour,
               area: formInput.classroomArea,
               desktype: formInput.desktype,
@@ -464,7 +473,6 @@ export default {
 
     const ClearInput = () => {
       classroomFormRef.value.resetFields();
-      console.log("qwq");
     };
 
     return {
@@ -479,6 +487,7 @@ export default {
       inputRule,
       filtedArray,
       classroomtypes,
+      departments,
     };
   },
 };

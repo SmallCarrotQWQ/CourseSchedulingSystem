@@ -3,28 +3,30 @@ import { defineStore } from "pinia";
 import { ArrayDelete, SingleDelete } from "@/hooks/list/useDelete.js";
 import { EditArray } from "@/hooks/input/useEdit";
 import {
-    initialDepartments,
-    initialDepartmentTypes,
-} from "@/data/academic"
+    initialEthnicities,
+    initialTeachers,
+    initialFacultyTypes
+} from "@/data/personnel.js"
 
 
-export const useAcademicStore = defineStore('academic', {
+export const usePersonnelStore = defineStore('personnel', {
     state: () => ({
-        departments: [],
-        departmentTypes: [],
-        majors: [],
-        courses: [],
-        departmentMap: new Map(),
-        departmentNameMap: new Map(),
-        departmentTypeMap: new Map(),
-        AcademicDataInitiate:false
+        teachers: [],
+        facultyTypes:[],
+        ethnicities:[],
+        teacherMap: new Map(),
+        teacherNameMap: new Map(),
+        facultyTypeMap: new Map(),
+        ethnicityNameMap:new Map(),
+        PersonnelDataInitiate:false
     }),
     actions: {
-        initAcademicDatas(){
-            if (!this.AcademicDataInitiate) {
-                this.initDepartments()
-                this.initDepartmentTypes()
-                this.AcademicDataInitiate = true
+        initPersonnelDatas(){
+            if (!this.PersonnelDataInitiate) {
+                this.initEthnicities()
+                this.initinitialFacultyTypes()
+                this.initTeachers()
+                this.PersonnelDataInitiate = true
             }
         },
         // getClassroomsByCampus(campusId) {
@@ -41,20 +43,20 @@ export const useAcademicStore = defineStore('academic', {
 
 
 
-        initDepartments() {
-            this.departments = initialDepartments;
-            this.departmentMap = new Map(this.departments.map(c => [c.id, c]))
-            this.departmentNameMap = new Map(this.departments.map(c => [c.id, c.name]))
+        initTeachers() {
+            this.teachers = initialTeachers;
+            this.teacherMap = new Map(this.teachers.map(c => [c.id, c]))
+            this.teacherNameMap = new Map(this.teachers.map(c => [c.id, c.name]))
         },
-        AddDepartment(value) {
-            this.departments.push(value)
+        AddTeacher(value) {
+            this.teachers.push(value)
         },
 
-        EditDepartment(obj) {
+        EditTeacher(obj) {
             if (obj) {
                 for (const key of Object.keys(obj)) {
                     if (key == "id") continue
-                    EditArray(this.departments, key, obj[key], obj.id)
+                    EditArray(this.teachers, key, obj[key], obj.id)
                 }
             }
             else {
@@ -63,19 +65,39 @@ export const useAcademicStore = defineStore('academic', {
             return true
         },
        
-        initDepartmentTypes() {
-            this.departmentTypes = initialDepartmentTypes;
-            this.departmentTypeMap = new Map(this.departmentTypes.map(c => [c.id, c]))
+        initEthnicities() {
+            this.ethnicities = initialEthnicities;
+            this.ethnicityNameMap = new Map(this.ethnicities.map(c => [c.id, c.name]))
         },
-        AddDepartmentType(value) {
-            this.departmentTypes.push(value)
+        AddEthnicity(value) {
+            this.ethnicities.push(value)
         },
 
-        EditDepartmentType(obj) {
+        EditEthnicity(obj) {
             if (obj) {
                 for (const key of Object.keys(obj)) {
                     if (key == "id") continue
-                    EditArray(this.departmentTypes, key, obj[key], obj.id)
+                    EditArray(this.ethnicities, key, obj[key], obj.id)
+                }
+            }
+            else {
+                return false
+            }
+            return true
+        },
+        initinitialFacultyTypes() {
+            this.facultyTypes = initialFacultyTypes;
+            this.facultyTypeMap = new Map(this.facultyTypes.map(c => [c.id, c.name]))
+        },
+        AddFacultyType(value) {
+            this.facultyTypes.push(value)
+        },
+
+        EditFacultyType(obj) {
+            if (obj) {
+                for (const key of Object.keys(obj)) {
+                    if (key == "id") continue
+                    EditArray(this.facultyTypes, key, obj[key], obj.id)
                 }
             }
             else {

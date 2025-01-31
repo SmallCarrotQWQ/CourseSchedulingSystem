@@ -17,8 +17,10 @@ export const useLocationStore = defineStore('location', {
         classroomtypes: [],
         classroomMap: new Map(),
         classroomTypeMap: new Map(),
-        campusMap: new Map(),
+        campusMap: new  Map(),
+        campusNameMap: new  Map(),
         teachingbuildingMap: new Map(),
+        teachingbuildingNameMap: new Map(),
         locationDataInitiate:false
     }),
     actions: {
@@ -38,7 +40,7 @@ export const useLocationStore = defineStore('location', {
         },
         getClassroomsByBuilding(BuildingId) {
             return this.classrooms.filter((classroom) => {
-                return classroom.BuildingId == BuildingId
+                return classroom.teachingbuildingId == BuildingId
             })
         },
         getClassroomsByType(TypeId) {
@@ -53,7 +55,7 @@ export const useLocationStore = defineStore('location', {
         },
         getClassroomsByBuildingAndType(BuildingId,typeId){
             return this.classrooms.filter((classroom) => {
-                return classroom.BuildingId == BuildingId && classroom.typeId ==typeId
+                return classroom.teachingbuildingId == BuildingId && classroom.typeId ==typeId
             })
         },
         getClassroomsByCampusAndType(campusId,typeId){
@@ -66,6 +68,7 @@ export const useLocationStore = defineStore('location', {
 
         initCampuses() {
             this.campuses = initialCampuses;
+            this.campusNameMap = new Map(this.campuses.map(c => [c.id, c.name]))
             this.campusMap = new Map(this.campuses.map(c => [c.id, c]))
         },
         AddCampus(value) {
@@ -87,6 +90,8 @@ export const useLocationStore = defineStore('location', {
         initTeachingBuildings() {
             this.teachingbuildings = initialTeachingBuildings;
             this.teachingbuildingMap = new Map(this.teachingbuildings.map(t => [t.id, t]))
+            this.teachingbuildingNameMap = new Map(this.teachingbuildings.map(t => [t.id, t.name]))
+            console.log(this.teachingbuildingNameMap);
         },
         AddTeachingBuilding(value) {
             this.teachingbuildings.push(value)

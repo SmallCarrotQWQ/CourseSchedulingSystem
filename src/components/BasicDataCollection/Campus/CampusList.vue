@@ -2,6 +2,7 @@
   <div class="List">
     <div class="buttonMenu">
       <el-button type="primary" @click="HandleAddClick">添加</el-button>
+      <el-button type="primary" @click="HandleUploadClick">导入</el-button>
       <el-button type="danger" v-show="isDeleteShow" @click="HandleArrayDelete"
         >删除选中</el-button
       >
@@ -36,11 +37,14 @@
   </div>
   <CampusEditDialog />
   <TeachingBuildingListDrawer />
+  <CampusUploadDialog/>
 </template>
 
 <script>
 import CampusEditDialog from "./CampusEditDialog.vue";
 import TeachingBuildingListDrawer from "../TeachingBuilding/TeachingBuildingListDrawer.vue";
+import CampusUploadDialog from './CampusUploadDialog.vue';
+
 
 import bus from "@/bus/bus.js";
 import { storeToRefs } from "pinia";
@@ -54,6 +58,7 @@ export default {
   components: {
     CampusEditDialog,
     TeachingBuildingListDrawer,
+    CampusUploadDialog
   },
   setup() {
     const locationStore = useLocationStore();
@@ -95,6 +100,9 @@ export default {
     const HandleDrawerClick = (value) => {
       bus.emit("showTeachingBuildingListDrawer", value);
     };
+    const HandleUploadClick = () => {
+      bus.emit("showCampusUploadDialog");
+    };
 
     const HandleArrayDelete = () => {
       ElMessageBox.confirm("确认删除吗?", "警告", {
@@ -133,6 +141,7 @@ export default {
       HandleAddClick,
       HandleEditClick,
       HandleDrawerClick,
+      HandleUploadClick,
       rowStyle,
     };
   },

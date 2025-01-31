@@ -28,17 +28,22 @@
     </div>
 
     <el-table
-      :data="filtedArray"
+      :data="teachers"
       :row-style="rowStyle"
       @selection-change="HandleSelectChange"
     >
       <el-table-column type="selection" :selectable="selectable" width="55" />
       <el-table-column prop="id" label="id" />
-      <el-table-column prop="teacherId" label="教师号" />
-      <el-table-column prop="name" label="教师名" />
-      <el-table-column prop="faculty.name" label="院系" />
-      <el-table-column prop="title.name" label="职称" />
-      <el-table-column label="操作" v-slot="scope">
+      <el-table-column prop="teacherId" label="工号" />
+      <el-table-column prop="name" label="姓名" />
+      <el-table-column prop="gender" label="性别" :formatter="genderFormatter" />
+      <el-table-column prop="ename" label="英文名" />
+      <el-table-column prop="ethnicityName" :formatter="ethnicityFormatter" label="民族" />
+      <el-table-column prop="titleName" label="职称" />
+      <el-table-column prop="departmentName" :formatter="departmentFormatter" label="单位" />
+      <el-table-column prop="isExternal" :formatter="externalFormatter" label="是否外聘" />
+      <el-table-column prop="facultyTypeId" label="教职工类别" />
+      <el-table-column label="操作" v-slot="scope" width="160">
         <div class="RowButtons">
           <el-button type="primary" @click="HandleEditClick(scope.row)"
             >编辑</el-button
@@ -57,9 +62,9 @@
 import bus from "@/bus/bus.js";
 import { computed,reactive, toRefs,ref } from "vue";
 import TeacherEditDialog from "./TeacherEditDialog.vue";
-import { useTeacherStore } from "@/store/teacher";
-import { useFacultyStore } from "@/store/faculty";
+import { usePersonnelStore } from "@/store/personnelStore/index.js"
 import { storeToRefs } from "pinia";
+import { useAcademicStore } from '@/store/academicStore';
 
 export default {
   name: "TeacherList",
@@ -67,11 +72,8 @@ export default {
     TeacherEditDialog,
   },
   setup() {
-    const teacherStore = useTeacherStore();
-    const facultyStore = useFacultyStore();
-    const { teachers } = storeToRefs(teacherStore);
-    const { faculties } = storeToRefs(facultyStore);
-    const { HandleArrayDelete, HandleSingleDelete } = toRefs(teacherStore);
+    const personnelStore = usePersonnelStore();
+    const { teachers } = storeToRefs(personnelStore);
 
     const data = reactive({
       isDeleteShow: false,
@@ -113,6 +115,29 @@ export default {
       bus.emit("showTeacherEdit", value);
     };
 
+    const genderFormatter = (row)=>{
+      switch(row.gender){
+        case "0":
+          return "女";
+        case "1":
+          return "男";
+        case "2":
+          return "未设置";
+      }
+    }
+
+    const ethnicityFormatter = (row)=>{
+      return personnelStore.ethnicityNameMap.get(row.ethnicityId)
+    }
+    const departmentFormatter = (row)=>{
+      return useAcademicStore().departmentNameMap.get(row.departmentId)
+    }
+    const externalFormatter = (row)=>{
+      return row.isExternal ? "是" : "否"
+    }
+
+    
+
     return {
       ...toRefs(data),
       teachers,
@@ -120,11 +145,11 @@ export default {
       HandleAddClick,
       HandleEditClick,
       rowStyle,
-      HandleSingleDelete,
-      HandleArrayDelete,
-      faculty,
-      faculties,
       filtedArray,
+      genderFormatter,
+      ethnicityFormatter,
+      externalFormatter,
+      departmentFormatter,
     };
   },
 };
