@@ -22,7 +22,7 @@
         <el-menu-item
           index="department"
           @click="this.$router.push({ name: 'department' })"
-          >院系管理</el-menu-item
+          >部门管理</el-menu-item
         >
         <el-menu-item
           index="classroom"

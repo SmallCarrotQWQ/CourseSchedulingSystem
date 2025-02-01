@@ -187,7 +187,7 @@ const routes = [
             path:'/home/set/department',
             component:()=>import("@/views/BasicData/Department.vue"),
             meta:{
-              title:"院系管理",
+              title:"部门管理",
               requiresAuth:false,
               requireLogin:true,
             },

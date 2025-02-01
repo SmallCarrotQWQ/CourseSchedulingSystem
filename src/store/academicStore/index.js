@@ -5,26 +5,45 @@ import { EditArray } from "@/hooks/input/useEdit";
 import {
     initialDepartments,
     initialDepartmentTypes,
+    initialMajors,
+    educationalLevels,
+    initialClassses
 } from "@/data/academic"
 
 
 export const useAcademicStore = defineStore('academic', {
     state: () => ({
         departments: [],
-        departmentTypes: [],
+        classes:[],
         majors: [],
-        courses: [],
+
+
+        departmentTypes: [],
+        educationalLevels:[],
         departmentMap: new Map(),
         departmentNameMap: new Map(),
         departmentTypeMap: new Map(),
-        AcademicDataInitiate:false
+        majorMap:new Map(),
+        majorNameMap:new Map(),
+        classMap:new Map(),
+        classNameMap:new Map(),
+        AcademicDatainitiate:false
     }),
+    getters:{
+        faculties:(state)=>{
+            return state.departments.filter(d=>{
+                return d.type == "院系"
+            })
+        }
+    },
     actions: {
         initAcademicDatas(){
-            if (!this.AcademicDataInitiate) {
+            if (!this.AcademicDatainitiate) {
                 this.initDepartments()
                 this.initDepartmentTypes()
-                this.AcademicDataInitiate = true
+                this.initMajors()
+                this.educationalLevels = educationalLevels
+                this.AcademicDatainitiate = true
             }
         },
         // getClassroomsByCampus(campusId) {
@@ -38,7 +57,6 @@ export const useAcademicStore = defineStore('academic', {
         //         return classroom.campusId == campusId && classroom.typeId == typeId
         //     })
         // },
-
 
 
         initDepartments() {
@@ -76,6 +94,49 @@ export const useAcademicStore = defineStore('academic', {
                 for (const key of Object.keys(obj)) {
                     if (key == "id") continue
                     EditArray(this.departmentTypes, key, obj[key], obj.id)
+                }
+            }
+            else {
+                return false
+            }
+            return true
+        },
+        initMajors() {
+            this.majors = initialMajors;
+            this.majorNameMap = new Map(this.majors.map(c => [c.id, c.name]))
+            this.majorMap = new Map(this.majors.map(c => [c.id, c]))
+        },
+        AddMajor(value) {
+            this.majors.push(value)
+        },
+
+        EditMajor(obj) {
+            if (obj) {
+                for (const key of Object.keys(obj)) {
+                    if (key == "id") continue
+                    EditArray(this.majors, key, obj[key], obj.id)
+                }
+            }
+            else {
+                return false
+            }
+            return true
+        },
+
+        initClasses() {
+            this.classes = initialClassses;
+            this.classNameMap = new Map(this.classes.map(c => [c.id, c.name]))
+            this.classMap = new Map(this.classes.map(c => [c.id, c]))
+        },
+        AddClass(value) {
+            this.classes.push(value)
+        },
+
+        EditClass(obj) {
+            if (obj) {
+                for (const key of Object.keys(obj)) {
+                    if (key == "id") continue
+                    EditArray(this.classes, key, obj[key], obj.id)
                 }
             }
             else {

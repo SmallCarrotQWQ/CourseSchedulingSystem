@@ -74,9 +74,7 @@
 import bus from "@/bus/bus.js";
 import { computed,reactive, toRefs,ref } from "vue";
 import ClassEditDialog from "./ClassEditDialog.vue";
-import { useClassStore } from "@/store/class";
-import { useFacultyStore } from "@/store/faculty";
-import { useMajorStore } from "@/store/major";
+
 import { storeToRefs } from "pinia";
 
 export default {

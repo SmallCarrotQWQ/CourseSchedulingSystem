@@ -47,7 +47,7 @@ export default {
         reader.readAsBinaryString(data)
         reader.onload = (fe)=>{
           const res = xlsx.read(fe.target.result,{type:"binary"})
-          console.log(xlsx.utils.sheet_to_json(res.Sheets[res.SheetNames[0]]));
+          console.log(xlsx.utils.sheet_to_json(res.Sheets[res.SheetNames[0]])[0]);
         }
     }
 

@@ -1,8 +1,8 @@
 <template>
   <el-dialog
     v-model="isDialogFormVisible"
-    title="修改专业"
-    width="450"
+    :title="mode ? '添加' : '修改'"
+    width="42%"
     class="dialog"
     :close-on-click-modal="false"
     :show-close="false"
@@ -11,38 +11,99 @@
     <el-form
       class="form"
       :model="formInput"
-      label-position="right"
-      label-width="auto"
       :rules="inputRule"
       ref="majorFormRef"
+      label-position="right"
+      label-width="auto"
       @submit.enter.prevent
     >
-      <el-form-item label="院系:" prop="majorFaculty">
-        <el-select
-          v-model="formInput.majorFaculty"
-          value-key="id"
-          placeholder="请选择院系"
-          filterable
-        >
-          <el-option v-for="obj of faculties" :label="obj.name" :value="obj" />
-        </el-select>
-      </el-form-item>
+      <el-tabs v-model="activeName">
+        <el-tab-pane name="basic" label="基础数据">
+            <el-form-item label="专业编号:" prop="id">
+              <el-input
+                class="inputs"
+                v-model="id"
+                placeholder="请输入专业编号"
+              />
+            </el-form-item>
 
-      <el-form-item label="专业名称:" prop="majorName">
-        <el-input
-          v-model="formInput.majorName"
-          maxlength="50"
-          class="inputs"
-          placeholder="请输入专业名称"
-        />
-      </el-form-item>
+            <el-form-item label="专业名称:" prop="majorName">
+              <el-input
+                v-model="majorName"
+                class="inputs"
+                placeholder="请输入专业名称"
+              />
+            </el-form-item>
+            <el-form-item label="英文名" prop="majorEname"
+              ><!--下拉框-->
+              <el-input
+                v-model="majorEname"
+                class="inputs"
+                placeholder="请输入英文名"
+              />
+            </el-form-item>
+            <el-form-item label="简称" prop="majorAbbr"
+              ><!--下拉框-->
+              <el-input
+                v-model="majorAbbr"
+                class="inputs"
+                placeholder="请输入简称"
+              />
+            </el-form-item>
+
+            <el-form-item label="学制" prop="majorDuration">
+              <el-input-number v-model="majorDuration" controls-position="right">
+                <template #suffix>
+                  年
+                </template>
+              </el-input-number>
+            </el-form-item>
+
+             <el-form-item label="培养层次" prop="educationalLevel"
+              ><!--下拉框-->
+              <el-select
+                v-model="educationalLevel"
+                placeholder="请选择培养层次"
+                filterable
+              >
+                <el-option
+                  v-for="e of educationalLevels"
+                  :label="e"
+                  :value="e"
+                />
+              </el-select>
+            </el-form-item>
+
+             <el-form-item label="所属院系" prop="facultyId"
+              ><!--下拉框-->
+              <el-select
+                v-model="facultyId"
+                placeholder="请选择所属院系"
+                filterable
+                value-key="id"
+              >
+                <el-option
+                  v-for="f of faculties"
+                  :label="f.name"
+                  :value="f.id"
+                />
+              </el-select>
+            </el-form-item>
+
+            <el-form-item prop="isEnabled">
+              <el-checkbox v-model="isEnabled" label="是否开办"/>
+            </el-form-item>
+
+           
+
+            
+        </el-tab-pane>
+      </el-tabs>
 
       <el-form-item class="btn">
         <el-button
           type="primary"
-          @click="
-            editItem(majorFormRef);
-          "
+          @click="editItem(majorFormRef)"
           v-show="!mode"
         >
           <span>修改</span>
@@ -50,9 +111,7 @@
 
         <el-button
           type="primary"
-          @click="
-            addItem(majorFormRef);
-          "
+          @click="addItem(majorFormRef)"
           v-show="mode"
         >
           <span>添加</span>
@@ -66,133 +125,195 @@
   </el-dialog>
 </template>
 
-
 <script>
 console.log(app);
 import { reactive, ref, toRefs } from "vue";
-import { v1 as uuid } from "uuid";
 import bus from "@/bus/bus";
+import { useAcademicStore } from "@/store/academicStore/index.js"; //store
+import {} from "@/data/academic.js";
 import nonEmptyValidator from "@/hooks/validator/useNonEmpty";
-
-import { useFacultyStore } from "@/store/faculty";
-import { useMajorStore } from "@/store/major";
 import { storeToRefs } from "pinia";
 export default {
-  name: "MajorEditDialog",
+  name: "ClassroomEditDialog",
   mounted() {
     bus.on("showMajorEdit", (value) => {
       this.mode = false;
-      this.id = value.id;
-      this.formInput.majorFaculty = value.faculty;
-      this.formInput.majorName = value.name;
-      this.isDialogFormVisible = true; //List中按下修改按钮弹窗
+      this.isDialogFormVisible = true; //List中按下按钮弹窗
+      this.$nextTick(() => {
+        this.id = value.id;
+        this.majorName = value.id;
+        this.majorAbbr = value.abbr;
+        this.majorEname = value.ename;
+        this.majorDuration = value.duration;
+        this.isEnabled = value.isEnabled;
+        this.facultyId = value.facultyId;
+        this.educationalLevel = value.educationalLevel;
+      });
     });
 
     bus.on("showMajorAdd", () => {
       this.mode = true;
-      this.isDialogFormVisible = true; //List中按下添加按钮弹窗
+      this.isDialogFormVisible = true; //List中按下按钮弹窗
     });
   },
   setup() {
-    const facultyStore = useFacultyStore();
-    const { faculties } = storeToRefs(facultyStore);
-    const MajorStore = useMajorStore();
-    const majorFormRef = ref()
+    const academicStore = useAcademicStore();
+    const { faculties,educationalLevels} = storeToRefs(academicStore);
+    const majorFormRef = ref();
+
     const data = reactive({
       isDialogFormVisible: false, //是否弹窗
-      id: "",
       mode: false,
+      activeName: "basic",
     });
 
     const formInput = reactive({
-      //输入框内容
-      majorFaculty: "",
+      id: "",
       majorName: "",
+      majorAbbr: "",
+      majorEname: "",
+      majorDuration: "",
+      isEnabled: "",
+      facultyId: "",
+      educationalLevel: "",
     });
 
-
-
-    const addItem = (formEl) => {
-      if(!formEl)return
-      formEl.validate((validate)=>{
-        if(validate){
-          MajorStore.Add({
-            id: uuid(),
-            faculty: formInput.majorFaculty,
-            name: formInput.majorName,
-          });
-        data.isDialogFormVisible = false; //确认后关闭弹窗
-        formEl.resetFields()
-        }
-      })
-    }
-
-
-
     const inputRule = {
-      majorFaculty: [{ required:true, message: "请选择院系!", trigger: "change" }],
-      majorName:[
-        { required:true,validator:nonEmptyValidator, message: "请输入专业名称!",trigger: "blur" },
+      id: [
+        {
+          required: true,
+          validator: nonEmptyValidator,
+          trigger: "blur",
+          message: "请输入专业编号!",
+        },
+      ],
+      majorName: [
+        {
+          required: true,
+          validator: nonEmptyValidator,
+          trigger: "blur",
+          message: "请输入专业名称!",
+        },
+      ],
+      majorAbbr: [
+        {
+          required: false,
+        },
+      ],
+      majorEname: [
+        {
+          required: false,
+        },
+      ],
+      majorDuration: [
+        {
+          required: true,
+          trigger: "change",
+          message: "请输入学制!",
+        },
+      ],
+      isEnabled: [
+        {
+          required: false,
+        },
+      ],
+      facultyId: [
+        {
+          required: true,
+          validator: nonEmptyValidator,
+          trigger: "change",
+          message: "请选择院系!",
+        },
+      ],
+      educationalLevel: [
+        {
+          required: true,
+          validator: nonEmptyValidator,
+          trigger: "change",
+          message: "请选择培养层次!",
+        },
       ],
     };
 
-    const editItem = (formEl) => {
-      if(!formEl)return
-      formEl.validate((validate)=>{
-        console.log(validate);
-        if(validate){
-          if(MajorStore.edit({
-            id:data.id,
-            faculty: formInput.majorFaculty,
+    const addItem = (formEl) => {
+      if (!formEl) return;
+      formEl.validate((validate) => {
+        if (validate) {
+          academicStore.AddMajor({
+            id: formInput.id,
             name: formInput.majorName,
-          })){
-            data.isDialogFormVisible = false; //确认后关闭弹窗
-            formEl.resetFields()
-          };
-        
+            abbr: formInput.majorAbbr,
+            ename: formInput.majorEname,
+            duration: formInput.majorDuration,
+            isEnabled: formInput.isEnabled,
+            facultyId: formInput.facultyId,
+            educationalLevel: formInput.educationalLevel,
+          });
+          data.isDialogFormVisible = false; //确认后关闭弹窗
+          formEl.resetFields();
         }
-      })
-    }
-
-    const ClearInput = () => {
-      majorFormRef.value.resetFields()
-      // for(key of Object.keys(isInputEmpty)){
-      //   if(typeof(isInputEmpty[key]) == "boolean"){
-      //     formInput[key] = false
-      //   }
+      });
     };
 
-    // formInput.campusName = "";
-    // formInput.capacity = "";
-    // formInput.classroomName = "";
-    // formInput.classroomRemark = "";
-    // formInput.classroomAddress = "";
-    // isInputEmpty.isCapacityEmpty = false;
-    // isInputEmpty.isClassroomAddressEmpty = false;
-    // isInputEmpty.isClassroomNameEmpty = false;
-    // isInputEmpty.isCampusEmpty = false;
+    const editItem = (formEl) => {
+      if (!formEl) return;
+      formEl.validate((validate) => {
+        console.log(validate);
+        if (validate) {
+          if (
+            academicStore.EditMajor({
+              id: formInput.id,
+              name: formInput.majorName,
+              abbr: formInput.majorAbbr,
+              ename: formInput.majorEname,
+              duration: formInput.majorDuration,
+              isEnabled: formInput.isEnabled,
+              facultyId: formInput.facultyId,
+              educationalLevel: formInput.educationalLevel,
+            })
+          ) {
+            data.isDialogFormVisible = false; //确认后关闭弹窗
+            formEl.resetFields();
+          }
+        }
+      });
+    };
+
+    const ClearInput = () => {
+      majorFormRef.value.resetFields();
+    };
 
     return {
       ...toRefs(data),
+      ...toRefs(formInput),
       formInput,
       ClearInput,
       editItem,
       addItem,
-      faculties,
-      inputRule,
       majorFormRef,
+      inputRule,
+      faculties,
+      educationalLevels
     };
   },
 };
 </script>
 
 <style>
+.dialog .el-dialog__body {
+  max-height: 30%;
+  overflow-y: scroll;
+}
+
 .form {
   margin: 20px;
+  display: flex;
+  flex-direction: column;
 }
 
 .inputs,
-.remark {
+.remark,
+.el-select {
   max-width: 300px;
 }
 
@@ -203,5 +324,12 @@ export default {
 .numberInput {
   display: inline-flex;
   flex-direction: column;
+}
+.checkboxGroup {
+  display: inline-flex;
+}
+
+.el-checkbox {
+  margin-left: 10px;
 }
 </style>

@@ -2,44 +2,70 @@
   <div class="List">
     <div class="buttonMenu">
       <el-button type="primary" @click="HandleAddClick">添加</el-button>
-      <el-button
-        type="danger"
-        v-show="isDeleteShow"
-        @click="HandleArrayDelete(deleteValue)"
+      <el-button type="danger" v-show="isDeleteShow" @click="HandleArrayDelete"
         >删除选中</el-button
       >
-      <div class="filters">
-        <el-text>院系:</el-text>
+    </div>
+    <div class="filters">
+      <el-text class="filterLabel">院系:</el-text>
       <el-select
-        v-model="faculty"
+        v-model="filterCriteria.faculty"
         placeholder="搜索院系"
-        class="facultySelect"
+        class="filterSelector"
         value-key="id"
         filterable
       >
-        <el-option label="全部" value="*"/>
+        <el-option label="全部" value="*" />
         <el-option
-          v-for="faculty of faculties"
-          :label="faculty.name"
-          :value="faculty"
+          v-for="campus of faculties"
+          :label="campus.name"
+          :value="campus.id"
         />
       </el-select>
-      </div>
-      
+
+
+      <el-text class="filterLabel">培养层次</el-text>
+      <el-select
+        v-model="filterCriteria.educationalLevel"
+        placeholder="搜索培养层次"
+        class="filterSelector"
+        filterable
+      >
+       
+        <el-option label="全部" value="*" />
+        <el-option
+          v-for="e of educationalLevels"
+          :label="e"
+          :value="e"
+        />
+      </el-select>
     </div>
     <el-table
-      :data="filtedArray"
+      :data="filtedArray.filtedMajors"
       :row-style="rowStyle"
       @selection-change="HandleSelectChange"
+      height="400"
     >
-      <el-table-column type="selection" :selectable="selectable" width="55" />
-      <el-table-column prop="id" label="id" />
+      <el-table-column type="selection" :selectable="selectable" width="40" />
+      <el-table-column prop="id" label="专业编号" min-width="155px" />
+      <el-table-column prop="name" label="专业名称" min-width="155px" />
+      <el-table-column prop="abbr" label="简称" min-width="155px" />
+      <el-table-column prop="ename" label="英文名" min-width="155px" />
+      <el-table-column prop="duration" label="学制" min-width="155px" />
+      <el-table-column prop="isEnabled" :formatter="enabledFormatter" label="开办状态" min-width="60px" />
+      <el-table-column prop="facultyId" :formatter="facultyFormatter" label="所属院系" min-width="170px" />
       <el-table-column
-        prop="faculty.name"
-        label="院系"
+        prop="educationalLevel"
+        label="培养层次"
+        min-width="80px"
       />
-      <el-table-column prop="name" label="专业名称" />
-      <el-table-column label="操作" v-slot="scope">
+
+      <el-table-column
+        label="操作"
+        v-slot="scope"
+        min-width="155px"
+        fixed="right"
+      >
         <div class="RowButtons">
           <el-button type="primary" @click="HandleEditClick(scope.row)"
             >编辑</el-button
@@ -56,12 +82,13 @@
 
 <script>
 import bus from "@/bus/bus.js";
-import { computed, reactive, ref, toRefs } from "vue";
-
-import MajorEditDialog from "./MajorEditDialog.vue";
-import { useFacultyStore } from "@/store/faculty";
-import { useMajorStore } from "@/store/major";
 import { storeToRefs } from "pinia";
+import { computed, onBeforeMount, onMounted, reactive, toRefs } from "vue";
+import { ElMessageBox } from "element-plus";
+import MajorEditDialog from "./MajorEditDialog.vue";
+import { ArrayDelete, SingleDelete } from "@/hooks/list/useDelete.js";
+import { useLocationStore } from "@/store/locationStore/index.js";
+import { useAcademicStore } from "@/store/academicStore/index.js"; //store
 
 export default {
   name: "MajorList",
@@ -69,28 +96,49 @@ export default {
     MajorEditDialog,
   },
   setup() {
-    const facultyStore = useFacultyStore();
-    const majorStore = useMajorStore();
-    const { faculties } = storeToRefs(facultyStore);
-    const { majors } = storeToRefs(majorStore);
-    const { HandleArrayDelete, HandleSingleDelete } = toRefs(majorStore);
+    const locationStore = useLocationStore();
+    const academicStore = useAcademicStore();
+    const { majors,faculties,educationalLevels } = storeToRefs(academicStore);
+
+    onMounted(() => {});
+    onBeforeMount(() => {
+      locationStore.initLocationDatas();
+    });
     const data = reactive({
       isDeleteShow: false,
       deleteValue: [],
     });
 
-    const faculty = ref("*")
-    const filtedArray = computed(()=>{  
-        console.log("fffff:",faculty);
-        if(faculty.value == '*'){
-            return majors.value
-        }
-        else{
-            return majors.value.filter(major =>{
-                return faculty.value == major.faculty
-            })
-        }
-    })
+    const filterCriteria = reactive({
+      faculty: "*",
+      educationalLevel: "*",
+    });
+
+    const filtedArray = reactive({
+      filtedMajors: computed(() => {
+          return majors.value.filter((major)=>{
+            if(filterCriteria.faculty == "*"){
+              return true
+            }else{
+              return major.facultyId == filterCriteria.faculty
+            }
+          }).filter((major)=>{
+            if(filterCriteria.educationalLevel == "*"){
+              return true
+            }else{
+              return major.educationalLevel == filterCriteria.educationalLevel
+            }
+          })
+        
+      }),
+    });
+
+    // .value.map((c) => ({
+    //     ...c,
+    //     campus: locationStore.campusMap.get(c.campusId),
+    //     type: locationStore.classroomTypeMap.get(c.typeId),
+    //     teachingbuilding:locationStore.teachingbuildingMap.get(c.teachingbuildingId)
+    //   })),
 
     const HandleSelectChange = (value) => {
       data.deleteValue = value;
@@ -106,6 +154,7 @@ export default {
         height: "60px",
       };
     };
+
     const HandleAddClick = () => {
       bus.emit("showMajorAdd");
     };
@@ -113,19 +162,62 @@ export default {
     const HandleEditClick = (value) => {
       bus.emit("showMajorEdit", value);
     };
+    const HandleTypeEditClick = () => {
+      bus.emit("showClassroomTypeDrawer");
+    };
+
+    const HandleArrayDelete = () => {
+      ElMessageBox.confirm("确认删除吗?", "警告", {
+        confirmButtonText: "确认",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(() => {
+          classrooms.value = ArrayDelete(classrooms.value, data.deleteValue);
+        })
+        .catch(() => {
+          console("canceled...");
+        });
+    };
+
+    const HandleSingleDelete = (value) => {
+      ElMessageBox.confirm("确认删除吗?", "警告", {
+        confirmButtonText: "确认",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(() => {
+          classrooms.value = SingleDelete(classrooms.value, value);
+        })
+        .catch(() => {
+          console.log("canceled...");
+        });
+    };
+
+    const enabledFormatter = (row) => {
+      return row.isEnabled ? "是" : "否";
+    };
+    const facultyFormatter = (row) => {
+      return academicStore.departmentNameMap.get(row.facultyId)
+    };
+   
 
     return {
       ...toRefs(data),
       majors,
-      faculty,
       faculties,
-      rowStyle,
-      filtedArray,
+      HandleArrayDelete,
+      HandleSingleDelete,
+      HandleSelectChange,
       HandleAddClick,
       HandleEditClick,
-      HandleSingleDelete,
-      HandleArrayDelete,
-      HandleSelectChange,
+      HandleTypeEditClick,
+      rowStyle,
+      filterCriteria,
+      filtedArray,
+      enabledFormatter,
+      facultyFormatter,
+      educationalLevels
     };
   },
 };
@@ -143,6 +235,7 @@ export default {
   display: flex;
   justify-content: flex-start;
   margin: 0px 0px 10px 0px;
+  flex-wrap: nowrap;
 }
 
 tbody td .cell .RowButtons {
@@ -154,14 +247,21 @@ tbody td .cell .RowButtons {
   border: solid 2px #f0f2f5;
 }
 
-.facultySelect {
+.el-table-column {
+  min-width: 200px;
+}
+.filterSelector {
   width: 260px;
   margin-left: 10px;
 }
 
-.filters{
-    margin-left: 20px;
-    display: inline-flex;
-    flex-direction: row;
+.filters {
+  display: inline-flex;
+  flex-direction: row;
+  margin: 10px 0px 10px 0px;
+}
+
+.filterLabel {
+  margin-left: 20px;
 }
 </style>
