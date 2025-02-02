@@ -7,7 +7,8 @@ import {
     initialDepartmentTypes,
     initialMajors,
     educationalLevels,
-    initialClassses
+    initialClassses,
+    iniitialclasstypies,
 } from "@/data/academic"
 
 
@@ -17,9 +18,10 @@ export const useAcademicStore = defineStore('academic', {
         classes:[],
         majors: [],
 
-
         departmentTypes: [],
         educationalLevels:[],
+        classTypies:[],
+
         departmentMap: new Map(),
         departmentNameMap: new Map(),
         departmentTypeMap: new Map(),
@@ -34,7 +36,7 @@ export const useAcademicStore = defineStore('academic', {
             return state.departments.filter(d=>{
                 return d.type == "院系"
             })
-        }
+        },
     },
     actions: {
         initAcademicDatas(){
@@ -42,6 +44,8 @@ export const useAcademicStore = defineStore('academic', {
                 this.initDepartments()
                 this.initDepartmentTypes()
                 this.initMajors()
+                this.initClasses()
+                this.classTypies = iniitialclasstypies
                 this.educationalLevels = educationalLevels
                 this.AcademicDatainitiate = true
             }
@@ -57,6 +61,11 @@ export const useAcademicStore = defineStore('academic', {
         //         return classroom.campusId == campusId && classroom.typeId == typeId
         //     })
         // },
+        getMajorsByfaculty(facultyId){
+            return this.majors.filter((major)=>{
+                return major.facultyId == facultyId
+            })
+        },
 
 
         initDepartments() {

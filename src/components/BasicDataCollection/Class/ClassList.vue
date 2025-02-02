@@ -43,19 +43,38 @@
     </div>
 
     <el-table
-      :data="filtedArray"
+      :data="classes"
       :row-style="rowStyle"
       @selection-change="HandleSelectChange"
     >
       <el-table-column type="selection" :selectable="selectable" width="55" />
-      <el-table-column prop="id" label="id" />
-      <el-table-column prop="faculty.name" label="院系" />
-      <el-table-column prop="major.name" label="专业" />
-      <el-table-column prop="grade" label="年级" />
-      <el-table-column prop="name" label="班级名" />
-      <el-table-column prop="size" label="班级人数" />
-      <el-table-column prop="assigned" label="固定教室" />
-      <el-table-column label="操作" v-slot="scope">
+      <el-table-column prop="id" label="班级编号"  min-width="150px" />
+      <el-table-column prop="name" label="班级名称" min-width="150px" />
+      <el-table-column prop="abbr" label="简称"  min-width="150px"/>
+      <el-table-column prop="duration" label="学制"  min-width="150px" />
+      <el-table-column prop="educationalLevel" label="培养层次"  min-width="150px" />
+      <el-table-column prop="counsellorName" label="辅导员"  min-width="150px"/>
+      <el-table-column prop="headTeacherName" label="班主任"  min-width="150px" />
+      <el-table-column prop="monitorName" label="班长"  min-width="150px" />
+      <el-table-column prop="classAssistantName" label="班助"  min-width="150px"  />
+      <el-table-column prop="enrollmentYear" label="入学年份"  min-width="150px"/>
+      <el-table-column prop="graduationYear" label="预计毕业年份" min-width="150px" />
+      <el-table-column prop="isGraduated" label="是否已经毕业"  :formatter="isGraduatedFormatter" min-width="150px"/>
+      <el-table-column prop="size" label="班级人数" min-width="150px" />
+      <el-table-column prop="maxSize" label="班级最大人数"  min-width="150px"/>
+      <el-table-column prop="genderDistribution" label="性别分布(男/女)"  min-width="150px"/>
+      <el-table-column prop="facultyId" label="所属院系" min-width="150px"/>
+      <el-table-column prop="majorId" label="专业编号" min-width="150px"/>
+      <el-table-column prop="majorName" label="专业" min-width="150px"/>
+      <el-table-column prop="SpecializationId" label="专业方向" min-width="150px"/>
+      <el-table-column prop="campusName" label="校区" min-width="150px"/>
+      <el-table-column prop="classroomId" label="固定教室" min-width="150px"/>
+      <el-table-column prop="remark" label="备注" min-width="150px"/>
+      <el-table-column prop="headTeacherPhoneNumber" label="班主任电话" min-width="150px"/>
+      <el-table-column prop="graduationYearSemester" label="毕业学年学期" min-width="150px"/>
+      <el-table-column prop="isExpanding" label="是否扩招" :formatter="isExpandingFormatter" min-width="150px"/>
+      <el-table-column prop="mentorId" label="学业导师" min-width="150px"/>
+      <el-table-column label="操作" v-slot="scope"  min-width="150px" fixed="right">
         <div class="RowButtons">
           <el-button type="primary" @click="HandleEditClick(scope.row)"
             >编辑</el-button
@@ -74,8 +93,8 @@
 import bus from "@/bus/bus.js";
 import { computed,reactive, toRefs,ref } from "vue";
 import ClassEditDialog from "./ClassEditDialog.vue";
-
 import { storeToRefs } from "pinia";
+import { useAcademicStore } from '@/store/academicStore';
 
 export default {
   name: "ClassList",
@@ -83,13 +102,8 @@ export default {
     ClassEditDialog,
   },
   setup() {
-    const classStore = useClassStore();
-    const facultyStore = useFacultyStore();
-    const majorStore = useMajorStore();
-    const { classes } = storeToRefs(classStore);
-    const { faculties } = storeToRefs(facultyStore);
-    const { majors } = storeToRefs(majorStore);
-    const { HandleArrayDelete, HandleSingleDelete } = toRefs(classStore);
+    const academicStore = useAcademicStore();
+    const { classes } = storeToRefs(academicStore);
 
     const data = reactive({
       isDeleteShow: false,
@@ -132,6 +146,14 @@ export default {
       bus.emit("showClassEdit", value);
     };
 
+
+    const isExpandingFormatter = (row)=>{
+      return row.isExpanding ? "是" : "否"
+    }
+    const isGraduatedFormatter = (row)=>{
+      return row.isGraduated ? "是" : "否"
+    }
+
     return {
       ...toRefs(data),
       classes,
@@ -139,14 +161,9 @@ export default {
       HandleAddClick,
       HandleEditClick,
       rowStyle,
-      HandleSingleDelete,
-      HandleArrayDelete,
-      faculties,
-      majors,
-      faculty,
-      major,
-      faculties,
       filtedArray,
+      isExpandingFormatter,
+      isGraduatedFormatter
     };
   },
 };
