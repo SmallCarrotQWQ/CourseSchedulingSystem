@@ -63,12 +63,12 @@ export default {
   setup() {
     const locationStore = useLocationStore();
     const { campuses } = storeToRefs(locationStore);
-
-    onMounted(() => {});
-
-    onBeforeMount(() => {
-      locationStore.initLocationDatas();
+    onMounted(() => {
+      locationStore.initLocationDatas()
     });
+
+
+
 
     const data = reactive({
       isDeleteShow: false,
@@ -143,6 +143,7 @@ export default {
       HandleDrawerClick,
       HandleUploadClick,
       rowStyle,
+      locationStore
     };
   },
 };

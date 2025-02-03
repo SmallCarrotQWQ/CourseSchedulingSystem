@@ -8,6 +8,9 @@ import {
     initialclassroomTypes
 } from "@/data/locations"
 
+import { getCampusInfos } from "@/api/campus.api";
+
+
 
 export const useLocationStore = defineStore('location', {
     state: () => ({
@@ -32,6 +35,16 @@ export const useLocationStore = defineStore('location', {
                 this.initClassroomTypes()
                 this.locationDataInitiate = true
             }
+        },
+        refreshCampus(){
+            getCampusInfos().then(response =>{
+                this.campuses = response.data.campuses
+             }).catch(error =>{
+                 console.log(error);
+                 return new Error(error)
+             })
+            this.campusNameMap = new Map(this.campuses.map(c => [c.id, c.name]))
+            this.campusMap = new Map(this.campuses.map(c => [c.id, c]))
         },
         getClassroomsByCampus(campusId) {
             return this.classrooms.filter((classroom) => {
@@ -67,7 +80,12 @@ export const useLocationStore = defineStore('location', {
 
 
         initCampuses() {
-            this.campuses = initialCampuses;
+            getCampusInfos().then(response =>{
+                this.campuses = response.data.campuses
+             }).catch(error =>{
+                 console.log(error);
+                 return new Error(error)
+             })
             this.campusNameMap = new Map(this.campuses.map(c => [c.id, c.name]))
             this.campusMap = new Map(this.campuses.map(c => [c.id, c]))
         },
