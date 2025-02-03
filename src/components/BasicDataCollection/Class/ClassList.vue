@@ -63,7 +63,7 @@
       <el-table-column prop="size" label="班级人数" min-width="150px" />
       <el-table-column prop="maxSize" label="班级最大人数"  min-width="150px"/>
       <el-table-column prop="genderDistribution" label="性别分布(男/女)"  min-width="150px"/>
-      <el-table-column prop="facultyId" label="所属院系" min-width="150px"/>
+      <el-table-column prop="facultyName" label="所属院系" min-width="150px"/>
       <el-table-column prop="majorId" label="专业编号" min-width="150px"/>
       <el-table-column prop="majorName" label="专业" min-width="150px"/>
       <el-table-column prop="SpecializationId" label="专业方向" min-width="150px"/>
@@ -153,6 +153,9 @@ export default {
     const isGraduatedFormatter = (row)=>{
       return row.isGraduated ? "是" : "否"
     }
+    const facultyIdFormatter = (row)=>{
+      return academicStore.departmentNameMap.get(row.facultyId)
+    }
 
     return {
       ...toRefs(data),
@@ -163,7 +166,8 @@ export default {
       rowStyle,
       filtedArray,
       isExpandingFormatter,
-      isGraduatedFormatter
+      isGraduatedFormatter,
+      facultyIdFormatter,
     };
   },
 };

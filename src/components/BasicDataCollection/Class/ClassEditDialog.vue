@@ -18,287 +18,295 @@
       @submit.enter.prevent
     >
       <el-tabs v-model="activePan">
-          <el-scrollbar height="400px">
-            <el-form-item label="所在校区:" prop="campusName">
-              <el-select
-                v-model="formInput.campusName"
-                value-key="id"
-                placeholder="请选择所在校区"
-                filterable
-              >
-                <el-option
-                  v-for="campus of campuses"
-                  :label="campus.name"
-                  :value="campus.name"
-                />
-              </el-select>
-            </el-form-item>
-            <el-form-item label="院系:" prop="facultyId">
-              <el-select
-                v-model="formInput.facultyId"
-                value-key="id"
-                placeholder="请选择院系"
-                filterable
-              >
-                <el-option
-                  v-for="faculty of faculties"
-                  :label="faculty.name"
-                  :value="faculty.id"
-                />
-              </el-select>
-            </el-form-item>
-
-            <el-form-item label="专业:" prop="majorId">
-              <el-select
-                v-model="formInput.majorId"
-                value-key="id"
-                placeholder="请选择专业"
-                filterable
-              >
-                <el-option
-                  v-for="major of majorFilter"
-                  :label="major.name"
-                  :value="major.id"
-                />
-              </el-select>
-            </el-form-item>
-
-            <el-form-item label="班级名:" prop="className">
-              <el-input
-                v-model="formInput.className"
-                maxlength="50"
-                class="inputs"
-                placeholder="请输入班级名"
-              />
-            </el-form-item>
-
-            <el-form-item label="学制:" prop="classDuration">
-              <div class="numberInput">
-                <el-input-number
-                  v-model="formInput.classDuration"
-                  max="6"
-                  min="0"
-                  class="inputs"
-                  placeholder="学制"
-                  controls-position="right"
-                >
-                  <template #suffix> 年 </template>
-                </el-input-number>
-              </div>
-            </el-form-item>
-
-            <el-form-item label="培养层次:" prop="educationalLevel">
-              <el-select
-                v-model="formInput.educationalLevel"
-                value-key="id"
-                placeholder="请选择培养层次"
-                filterable
-              >
-                <el-option
-                  v-for="e of educationalLevels"
-                  :label="e"
-                  :value="e"
-                />
-              </el-select>
-            </el-form-item>
-
-            <el-form-item label="班级类型:" prop="classType">
-              <el-select
-                v-model="formInput.classType"
-                value-key="id"
-                placeholder="请选择班级类型"
-                filterable
-              >
-                <el-option
-                  v-for="type of classTypies"
-                  :label="type"
-                  :value="type"
-                />
-              </el-select>
-            </el-form-item>
-
-            <el-form-item label="入学年份:" prop="enrollmentYear">
-              <el-date-picker
-                type="year"
-                v-model="formInput.enrollmentYear"
-                placeholder="选择入学年份"
-                @change="getGraduationYearByEnrollmentYear"
-                value-format="YYYY"
-              />
-            </el-form-item>
-
-            <el-form-item label="预计毕业年份:" prop="graduationYear">
-              <el-date-picker
-                type="year"
-                v-model="formInput.graduationYear"
-                placeholder="选择预计毕业年份"
-                value-format="YYYY"
-              />
-            </el-form-item>
-
-            <el-form-item label="是否毕业:" prop="isGraduated">
-              <el-switch v-model="formInput.isGraduated" />
-            </el-form-item>
-
-            <el-form-item label="是否有固定教室:" prop="isAssigned">
-              <el-switch
-                v-model="formInput.isAssigned"
-                :active-value="true"
-                :inactive-value="false"
-              />
-            </el-form-item>
-
-            <el-form-item
-              label="固定教室:"
-              v-show="formInput.isAssigned"
-              prop="classAssigendClassroom"
+        <el-scrollbar height="400px">
+          <el-form-item label="所在校区:" prop="campusName">
+            <el-select
+              v-model="formInput.campusName"
+              value-key="name"
+              placeholder="请选择所在校区"
+              filterable
             >
-              <el-select
-                v-model="formInput.classAssigendClassroom"
-                value-key="id"
-                placeholder="请选择教室"
-                filterable
+              <el-option
+                v-for="campus of campuses"
+                :label="campus.name"
+                :value="campus.name"
+              />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="院系:" prop="facultyId">
+            <el-select
+              v-model="formInput.facultyId"
+              value-key="id"
+              placeholder="请选择院系"
+              filterable
+              @change="
+                () => {
+                  formInput.majorId = '';
+                }
+              "
+            >
+              <el-option
+                v-for="faculty of faculties"
+                :label="faculty.name"
+                :value="faculty.id"
+              />
+            </el-select>
+          </el-form-item>
+
+          <el-form-item label="专业:" prop="majorId">
+            <el-select
+              v-model="formInput.majorId"
+              value-key="id"
+              placeholder="请选择专业"
+              filterable
+            >
+              <el-option
+                v-for="major of majorFilter"
+                :label="major.name"
+                :value="major.id"
+              />
+            </el-select>
+          </el-form-item>
+
+          <el-form-item label="班级编号:" prop="id">
+            <el-input
+              v-model="formInput.id"
+              maxlength="50"
+              class="inputs"
+              placeholder="请输入班级编号"
+            />
+          </el-form-item>
+          <el-form-item label="班级名:" prop="className">
+            <el-input
+              v-model="formInput.className"
+              maxlength="50"
+              class="inputs"
+              placeholder="请输入班级名"
+            />
+          </el-form-item>
+
+          <el-form-item label="学制:" prop="classDuration">
+            <div class="numberInput">
+              <el-input-number
+                v-model="formInput.classDuration"
+                max="6"
+                min="0"
+                class="inputs"
+                placeholder="学制"
+                controls-position="right"
               >
-                <el-option
-                  v-for="classroom of classrooms"
-                  :label="classroom.name"
-                  :value="classroom"
-                />
-              </el-select>
-            </el-form-item>
+                <template #suffix> 年 </template>
+              </el-input-number>
+            </div>
+          </el-form-item>
 
-            <el-form-item label="班级人数:" prop="classSize">
-              <div class="numberInput">
-                <el-input-number
+          <el-form-item label="培养层次:" prop="educationalLevel">
+            <el-select
+              v-model="formInput.educationalLevel"
+              value-key="id"
+              placeholder="请选择培养层次"
+              filterable
+            >
+              <el-option v-for="e of educationalLevels" :label="e" :value="e" />
+            </el-select>
+          </el-form-item>
 
-                  v-model.number="formInput.classSize"
-                  :max="formInput.classMaxSize"
-                  min="0"
-                  class="inputs"
-                  placeholder="人数"
-                  controls-position="right"
-                />
-              </div>
-            </el-form-item>
-            <el-form-item label="班级最大人数:" prop="classMaxSize">
-              <div class="numberInput">
-                <el-input-number
-                  v-model.number="formInput.classMaxSize"
-                  max="999"
-                  min="0"
-                  class="inputs"
-                  placeholder="最大人数"
-                  controls-position="right"
-                />
-              </div>
-            </el-form-item>
-            <el-form-item label="简称:" prop="classAbbr">
-              <el-input
-                v-model="formInput.classAbbr"
-                maxlength="50"
-                class="inputs"
-                placeholder="请输入简称"
+          <el-form-item label="班级类型:" prop="classType">
+            <el-select
+              v-model="formInput.classType"
+              value-key="id"
+              placeholder="请选择班级类型"
+              filterable
+            >
+              <el-option
+                v-for="type of classTypies"
+                :label="type"
+                :value="type"
               />
-            </el-form-item>
+            </el-select>
+          </el-form-item>
 
-            <el-form-item label="辅导员:" prop="counsellorId">
-              <el-select
-                v-model="formInput.counsellorId"
-                value-key="id"
-                placeholder="请选择辅导员"
-                filterable
-              >
-                <el-option
-                  v-for="grade of grades"
-                  :label="grade"
-                  :value="grade"
-                />
-              </el-select>
-            </el-form-item>
+          <el-form-item label="入学年份:" prop="enrollmentYear">
+            <el-date-picker
+              type="year"
+              v-model="formInput.enrollmentYear"
+              placeholder="选择入学年份"
+              @change="getGraduationYearByEnrollmentYear"
+              value-format="YYYY"
+            />
+          </el-form-item>
 
-            <el-form-item label="班主任:" prop="headTeacherId">
-              <el-select
-                v-model="formInput.headTeacherId"
-                value-key="id"
-                placeholder="请选择班主任"
-                filterable
-              >
-                <el-option
-                  v-for="grade of grades"
-                  :label="grade"
-                  :value="grade"
-                />
-              </el-select>
-            </el-form-item>
+          <el-form-item label="预计毕业年份:" prop="graduationYear">
+            <el-date-picker
+              type="year"
+              v-model="formInput.graduationYear"
+              placeholder="选择预计毕业年份"
+              value-format="YYYY"
+            />
+          </el-form-item>
 
-            <el-form-item label="班长:" prop="monitorName">
-              <el-input
-                v-model="formInput.monitorName"
-                maxlength="20"
-                class="inputs"
-                placeholder="请输入班长姓名"
-              />
-            </el-form-item>
-            <el-form-item label="班助:" prop="classAssistantName">
-              <el-input
-                v-model="formInput.classAssistantName"
-                maxlength="20"
-                class="inputs"
-                placeholder="请输入班助姓名"
-              />
-            </el-form-item>
+          <el-form-item label="是否毕业:" prop="isGraduated">
+            <el-switch v-model="formInput.isGraduated" />
+          </el-form-item>
 
-            <el-form-item label="性别分布" prop="genderDistribution">
-              <el-input
-                v-model="formInput.classAbbr"
-                maxlength="50"
-                class="inputs"
-                placeholder="请输入性别分布"
-              />
-            </el-form-item>
+          <el-form-item label="是否有固定教室:" prop="isAssigned">
+            <el-switch
+              v-model="formInput.isAssigned"
+              :active-value="true"
+              :inactive-value="false"
+            />
+          </el-form-item>
 
-            <el-form-item label="班主任电话号码:" prop="headTeacherPhoneNumber">
-              <el-input
-                v-model="formInput.headTeacherPhoneNumber"
-                maxlength="11"
-                class="inputs"
-                placeholder="请输入电话号码"
+          <el-form-item
+            label="固定教室:"
+            v-show="formInput.isAssigned"
+            prop="classAssigendClassroom"
+          >
+            <el-select
+              v-model="formInput.classAssigendClassroom"
+              value-key="id"
+              placeholder="请选择教室"
+              filterable
+            >
+              <el-option
+                v-for="classroom of classrooms"
+                :label="classroom.name"
+                :value="classroom"
               />
-            </el-form-item>
-            <el-form-item label="毕业学年学期:" prop="graduationYearSemester">
-              <el-input
-                v-model="formInput.graduationYearSemester"
-                maxlength="50"
-                class="inputs"
-                placeholder="请输入毕业学年学期"
-              />
-            </el-form-item>
+            </el-select>
+          </el-form-item>
 
-            <el-form-item label="学业导师:" prop="mentorId">
-              <el-select
-                v-model="formInput.mentorId"
-                value-key="id"
-                placeholder="请选择学业导师"
-                filterable
-              >
-                <el-option
-                  v-for="classroom of classrooms"
-                  :label="classroom.name"
-                  :value="classroom"
-                />
-              </el-select>
-            </el-form-item>
-            <el-form-item label="备注:" prop="remark">
-              <el-input
-                v-model="formInput.remark"
-                maxlength="200"
+          <el-form-item label="班级人数:" prop="classSize">
+            <div class="numberInput">
+              <el-input-number
+                v-model.number="formInput.classSize"
+                max="999"
+                min="0"
                 class="inputs"
-                placeholder="请输入备注"
-                type="textarea"
-                autosize
+                placeholder="人数"
+                controls-position="right"
               />
-            </el-form-item>
-          </el-scrollbar>
+            </div>
+          </el-form-item>
+          <el-form-item label="班级最大人数:" prop="classMaxSize">
+            <div class="numberInput">
+              <el-input-number
+                v-model.number="formInput.classMaxSize"
+                max="999"
+                min="0"
+                class="inputs"
+                placeholder="最大人数"
+                controls-position="right"
+              />
+            </div>
+          </el-form-item>
+          <el-form-item label="简称:" prop="classAbbr">
+            <el-input
+              v-model="formInput.classAbbr"
+              maxlength="50"
+              class="inputs"
+              placeholder="请输入简称"
+            />
+          </el-form-item>
+
+          <el-form-item label="辅导员:" prop="counsellorId">
+            <el-select
+              v-model="formInput.counsellorId"
+              value-key="id"
+              placeholder="请选择辅导员"
+              filterable
+            >
+              <el-option
+                v-for="teacher of teachers"
+                :label="teacher.name"
+                :value="teacher.id"
+              />
+            </el-select>
+          </el-form-item>
+
+          <el-form-item label="班主任:" prop="headTeacherId">
+            <el-select
+              v-model="formInput.headTeacherId"
+              value-key="id"
+              placeholder="请选择班主任"
+              filterable
+            >
+              <el-option
+                v-for="teacher of teachers"
+                :label="teacher.name"
+                :value="teacher.id"
+              />
+            </el-select>
+          </el-form-item>
+
+          <el-form-item label="班长:" prop="monitorName">
+            <el-input
+              v-model="formInput.monitorName"
+              maxlength="20"
+              class="inputs"
+              placeholder="请输入班长姓名"
+            />
+          </el-form-item>
+          <el-form-item label="班助:" prop="classAssistantName">
+            <el-input
+              v-model="formInput.classAssistantName"
+              maxlength="20"
+              class="inputs"
+              placeholder="请输入班助姓名"
+            />
+          </el-form-item>
+
+          <el-form-item label="性别分布" prop="genderDistribution">
+            <el-input
+              v-model="formInput.classAbbr"
+              maxlength="50"
+              class="inputs"
+              placeholder="请输入性别分布"
+            />
+          </el-form-item>
+
+          <el-form-item label="班主任电话号码:" prop="headTeacherPhoneNumber">
+            <el-input
+              v-model="formInput.headTeacherPhoneNumber"
+              maxlength="11"
+              class="inputs"
+              placeholder="请输入电话号码"
+            />
+          </el-form-item>
+          <el-form-item label="毕业学年学期:" prop="graduationYearSemester">
+            <el-input
+              v-model="formInput.graduationYearSemester"
+              maxlength="50"
+              class="inputs"
+              placeholder="请输入毕业学年学期"
+            />
+          </el-form-item>
+
+          <el-form-item label="学业导师:" prop="mentorId">
+            <el-select
+              v-model="formInput.mentorId"
+              value-key="id"
+              placeholder="请选择学业导师"
+              filterable
+            >
+              <el-option
+                v-for="teacher of teachers"
+                :label="teacher.name"
+                :value="teacher.id"
+              />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="备注:" prop="remark">
+            <el-input
+              v-model="formInput.remark"
+              maxlength="200"
+              class="inputs"
+              placeholder="请输入备注"
+              type="textarea"
+              autosize
+            />
+          </el-form-item>
+        </el-scrollbar>
       </el-tabs>
 
       <el-form-item class="btn">
@@ -330,7 +338,8 @@ import bus from "@/bus/bus";
 import nonEmptyValidator from "@/hooks/validator/useNonEmpty";
 import { storeToRefs } from "pinia";
 import { useAcademicStore } from "@/store/academicStore";
-import { useLocationStore } from '@/store/locationStore';
+import { useLocationStore } from "@/store/locationStore";
+import { usePersonnelStore } from "@/store/personnelStore";
 
 export default {
   name: "ClassEditDialog",
@@ -340,6 +349,7 @@ export default {
       this.isDialogFormVisible = true; //List中按下按钮弹窗
       this.$nextTick(() => {
         this.id = value.id;
+        this.formInput.id = value.id;
         this.formInput.className = value.name;
         this.formInput.classAbbr = value.abbr;
         this.formInput.classDuration = value.duration;
@@ -378,15 +388,19 @@ export default {
   setup() {
     const academicStore = useAcademicStore();
     const locationStore = useLocationStore();
+    const personnelStore = usePersonnelStore();
 
-    const { faculties,majors,educationalLevels,classTypies } = storeToRefs(academicStore);
-    const { campuses,} = storeToRefs(locationStore);
+    const { faculties, majors, educationalLevels, classTypies } =
+      storeToRefs(academicStore);
+    const { campuses } = storeToRefs(locationStore);
+    const { teachers } = storeToRefs(personnelStore);
 
     const classFormRef = ref();
     const data = reactive({
       isDialogFormVisible: false, //是否弹窗
       activePan: "base",
       mode: false,
+      id: "",
     });
 
     const formInput = reactive({
@@ -397,17 +411,17 @@ export default {
       educationalLevel: "",
       classType: "",
       counsellorName: "",
+      counsellorId: "",
       headTeacherName: "",
+      headTeacherId: "",
       monitorName: "",
       classAssistantName: "",
       enrollmentYear: "",
       graduationYear: "",
       isGraduated: "",
       classSize: "",
-      classMaxSize: 100,
+      classMaxSize: "",
       genderDistribution: "",
-      facultyId: "", //
-      facultyName: "", //
       majorId: "", //
       majorName: "", //
       SpecializationId: "",
@@ -419,6 +433,7 @@ export default {
       graduationYearSemester: "",
       isExpanding: "",
       mentorId: "",
+      mentorName: "",
     });
 
     const inputRule = reactive({
@@ -427,6 +442,20 @@ export default {
           required: true,
           validator: nonEmptyValidator,
           message: "请输入班级编号!",
+          trigger: "blur",
+        },
+        {
+          validator: (rule, value, callback) => {
+            if (
+              academicStore.classMap.get(value) != undefined &&
+              value != data.id
+            ) {
+              callback(new Error());
+            } else {
+              callback();
+            }
+          },
+          message: "该班级编号已存在!",
           trigger: "blur",
         },
       ],
@@ -448,7 +477,7 @@ export default {
           required: true,
           validator: nonEmptyValidator,
           message: "请输入学制!",
-          trigger: "blur",
+          trigger: "change",
         },
       ],
       educationalLevel: [
@@ -505,16 +534,17 @@ export default {
           trigger: "change",
         },
         {
-          validator:(rule,value,callback)=>{
-            if(formInput.enrollmentYear > value){
-              callback(new Error())
-            }else{
-              callback()
+          validator: (rule, value, callback) => {
+            if (formInput.enrollmentYear > value) {
+              console.log(value);
+              callback(new Error());
+            } else {
+              callback();
             }
           },
           message: "毕业年份小于入学年份!",
           trigger: "change",
-        }
+        },
       ],
       classSize: [
         {
@@ -613,13 +643,45 @@ export default {
       if (!formEl) return;
       formEl.validate((validate) => {
         if (validate) {
-          ClassStore.Add({
-            id: uuid(),
-            faculty: formInput.classFaculty,
-            major: formInput.classMajor,
-            grade: formInput.classGrade,
+          academicStore.AddClass({
+            id: formInput.id,
+            name: formInput.className,
+            abbr: formInput.classAbbr,
+            duration: formInput.classDuration,
+            educationalLevel: formInput.educationalLevel,
+            classType: formInput.classType,
+            counsellorId: formInput.counsellorId,
+            counsellorName: personnelStore.teacherNameMap.get(
+              formInput.counsellorId
+            ),
+            headTeacherName: personnelStore.teacherNameMap.get(
+              formInput.headTeacherId
+            ),
+            headTeacherId: formInput.headTeacherId,
+            monitorName: formInput.monitorName,
+            classAssistantName: formInput.classAssistantName,
+            enrollmentYear: formInput.enrollmentYear,
+            graduationYear: formInput.graduationYear,
+            isGraduated: formInput.isGraduated,
             size: formInput.classSize,
-            assigendClassroom: formInput.classAssigendClassroom,
+            maxSize: formInput.classMaxSize,
+            genderDistribution: formInput.genderDistribution,
+            facultyId: formInput.facultyId,
+            facultyName: academicStore.departmentNameMap.get(
+              formInput.facultyId
+            ),
+            majorId: formInput.majorId,
+            majorName: academicStore.majorNameMap.get(formInput.majorId),
+            SpecializationName: formInput.SpecializationName,
+            campusName: formInput.campusName,
+            hasAssignedClassroom: formInput.hasAssignedClassroom,
+            classroomId: formInput.Classroom,
+            remark: formInput.remark,
+            headTeacherPhoneNumber: formInput.headTeacherPhoneNumber,
+            graduationYearSemester: formInput.graduationYearSemester,
+            isExpanding: formInput.isExpanding,
+            mentorId: formInput.mentorId,
+            mentorName: personnelStore.teacherNameMap.get(formInput.mentorId),
           });
           data.isDialogFormVisible = false; //确认后关闭弹窗
           formEl.resetFields();
@@ -632,14 +694,51 @@ export default {
       formEl.validate((validate) => {
         if (validate) {
           if (
-            ClassStore.edit({
-              id: data.id,
-              faculty: formInput.classFaculty,
-              major: formInput.classMajor,
-              grade: formInput.classGrade,
-              size: formInput.classSize,
-              assigendClassroom: formInput.classAssigendClassroom,
-            })
+            academicStore.EditClass(
+              {
+                id: formInput.id,
+                name: formInput.className,
+                abbr: formInput.classAbbr,
+                duration: formInput.classDuration,
+                educationalLevel: formInput.educationalLevel,
+                classType: formInput.classType,
+                counsellorId: formInput.counsellorId,
+                counsellorName: personnelStore.teacherNameMap.get(
+                  formInput.counsellorId
+                ),
+                headTeacherName: personnelStore.teacherNameMap.get(
+                  formInput.headTeacherId
+                ),
+                headTeacherId: formInput.headTeacherId,
+                monitorName: formInput.monitorName,
+                classAssistantName: formInput.classAssistantName,
+                enrollmentYear: formInput.enrollmentYear,
+                graduationYear: formInput.graduationYear,
+                isGraduated: formInput.isGraduated,
+                size: formInput.classSize,
+                maxSize: formInput.classMaxSize,
+                genderDistribution: formInput.genderDistribution,
+                facultyId: formInput.facultyId,
+                facultyName: academicStore.departmentNameMap.get(
+                  formInput.facultyId
+                ),
+                majorId: formInput.majorId,
+                majorName: academicStore.majorNameMap.get(formInput.majorId),
+                SpecializationName: formInput.SpecializationName,
+                campusName: formInput.campusName,
+                hasAssignedClassroom: formInput.hasAssignedClassroom,
+                classroomId: formInput.Classroom,
+                remark: formInput.remark,
+                headTeacherPhoneNumber: formInput.headTeacherPhoneNumber,
+                graduationYearSemester: formInput.graduationYearSemester,
+                isExpanding: formInput.isExpanding,
+                mentorId: formInput.mentorId,
+                mentorName: personnelStore.teacherNameMap.get(
+                  formInput.mentorId
+                ),
+              },
+              data.id
+            )
           ) {
             data.isDialogFormVisible = false; //确认后关闭弹窗
             formEl.resetFields();
@@ -652,21 +751,17 @@ export default {
       classFormRef.value.resetFields();
     };
 
+    const majorFilter = computed(() => {
+      return academicStore.getMajorsByfaculty(formInput.facultyId);
+    });
 
-    const majorFilter = computed(()=>{
-      return academicStore.getMajorsByfaculty(formInput.facultyId)
-    })
-
-    const getGraduationYearByEnrollmentYear = ()=>{
-      if(formInput.classDuration && formInput.enrollmentYear){
-        console.log(formInput.enrollmentYear);
-        console.log(formInput.graduationYear);
-        console.log(formInput.classDuration);
-        formInput.graduationYear = (parseInt(formInput.enrollmentYear) + formInput.classDuration).toString()
+    const getGraduationYearByEnrollmentYear = () => {
+      if (formInput.classDuration && formInput.enrollmentYear) {
+        formInput.graduationYear = (
+          parseInt(formInput.enrollmentYear) + formInput.classDuration
+        ).toString();
       }
-    }
-
-
+    };
 
     return {
       ...toRefs(data),
@@ -679,6 +774,7 @@ export default {
       campuses,
       faculties,
       majors,
+      teachers,
       educationalLevels,
       classTypies,
       majorFilter,
@@ -707,8 +803,7 @@ export default {
   flex-direction: column;
 }
 
-
-.el-scrollbar{
+.el-scrollbar {
   padding-right: 20px;
 }
 </style>

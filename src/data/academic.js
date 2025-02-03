@@ -158,6 +158,7 @@ export const initialClassses = [
         maxSize:60,
         genderDistribution:"27/7",
         facultyId:"",
+        facultyName:"",
         majorId:"",
         majorName:"",
         SpecializationId:"",

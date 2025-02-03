@@ -75,6 +75,8 @@ export const useAcademicStore = defineStore('academic', {
         },
         AddDepartment(value) {
             this.departments.push(value)
+            this.departmentMap = new Map(this.departments.map(c => [c.id, c]))
+            this.departmentNameMap = new Map(this.departments.map(c => [c.id, c.name]))
         },
 
         EditDepartment(obj) {
@@ -87,6 +89,8 @@ export const useAcademicStore = defineStore('academic', {
             else {
                 return false
             }
+            this.departmentMap = new Map(this.departments.map(c => [c.id, c]))
+            this.departmentNameMap = new Map(this.departments.map(c => [c.id, c.name]))
             return true
         },
        
@@ -96,6 +100,7 @@ export const useAcademicStore = defineStore('academic', {
         },
         AddDepartmentType(value) {
             this.departmentTypes.push(value)
+            this.departmentTypeMap = new Map(this.departmentTypes.map(c => [c.id, c]))
         },
 
         EditDepartmentType(obj) {
@@ -108,6 +113,7 @@ export const useAcademicStore = defineStore('academic', {
             else {
                 return false
             }
+            this.departmentTypeMap = new Map(this.departmentTypes.map(c => [c.id, c]))
             return true
         },
         initMajors() {
@@ -117,6 +123,8 @@ export const useAcademicStore = defineStore('academic', {
         },
         AddMajor(value) {
             this.majors.push(value)
+            this.majorNameMap = new Map(this.majors.map(c => [c.id, c.name]))
+            this.majorMap = new Map(this.majors.map(c => [c.id, c]))
         },
 
         EditMajor(obj) {
@@ -129,6 +137,8 @@ export const useAcademicStore = defineStore('academic', {
             else {
                 return false
             }
+            this.majorNameMap = new Map(this.majors.map(c => [c.id, c.name]))
+            this.majorMap = new Map(this.majors.map(c => [c.id, c]))
             return true
         },
 
@@ -139,18 +149,30 @@ export const useAcademicStore = defineStore('academic', {
         },
         AddClass(value) {
             this.classes.push(value)
+            this.classNameMap = new Map(this.classes.map(c => [c.id, c.name]))
+            this.classMap = new Map(this.classes.map(c => [c.id, c]))
         },
 
-        EditClass(obj) {
-            if (obj) {
+        EditClass(obj,oldId) {
+            if (obj){
                 for (const key of Object.keys(obj)) {
-                    if (key == "id") continue
+                    if (key == "id"){
+                        if(obj.id != oldId){
+                            this.classes.filter((c)=>{
+                                return c.id == oldId
+                            })[0].id = obj.id
+                            continue
+                        }
+                        continue
+                    }
                     EditArray(this.classes, key, obj[key], obj.id)
                 }
             }
             else {
                 return false
             }
+            this.classNameMap = new Map(this.classes.map(c => [c.id, c.name]))
+            this.classMap = new Map(this.classes.map(c => [c.id, c]))
             return true
         },
        
