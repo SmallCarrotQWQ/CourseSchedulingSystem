@@ -76,16 +76,19 @@
       <el-table-column type="selection" :selectable="selectable" width="40" />
       <el-table-column prop="code" label="教室编号" min-width="155px" />
       <el-table-column prop="name" label="教室名称" min-width="155px" />
-      <el-table-column prop="campusId" :formatter="campusFormatter" label="所属校区" min-width="155px" />
+      <el-table-column
+        prop="campusId"
+        :formatter="campusFormatter"
+        label="所属校区"
+        min-width="155px"
+      />
       <el-table-column
         prop="teachingbuildingId"
         :formatter="teachbuildingFormatter"
         label="教学楼"
         min-width="100px"
       />
-      <el-table-column prop="floor" label="所在楼层" min-width="100px" />
-      <el-table-column prop="tage" label="教室标签" min-width="100px" />
-      <el-table-column prop="type.name" label="教室类型" min-width="100px" />
+      <el-table-column prop="typeId" :formatter="typeIdFormatter" label="教室类型" min-width="100px" />
       <el-table-column prop="capacity" label="可容纳人数" min-width="100px" />
       <el-table-column
         prop="isAssigned"
@@ -93,27 +96,21 @@
         label="固定教室"
       />
       <el-table-column
-        prop="hasAirConditioner"
-        :formatter="airconditionerToYesNo"
-        label="是否有空调"
-      />
-      <el-table-column
         prop="isAvailable"
         :formatter="availableToYesNo"
         label="是否启用"
       />
-      <el-table-column prop="describe" label="教室描述" />
-      <el-table-column prop="departmentName" :formatter="departmentFormatter" label="管理部门" />
-      <el-table-column prop="classhour" label="周安排学时" />
-      <el-table-column prop="area" label="教室面积" />
-      <el-table-column prop="desktype" label="桌椅类型" />
+      
       <el-table-column
         label="操作"
         v-slot="scope"
-        min-width="155px"
+        min-width="220px"
         fixed="right"
       >
         <div class="RowButtons">
+          <el-button type="info" @click="HandleShowInfoClick(scope.row)"
+            >查看</el-button
+          >
           <el-button type="primary" @click="HandleEditClick(scope.row)"
             >编辑</el-button
           >
@@ -126,6 +123,7 @@
   </div>
   <ClassroomEditDialog />
   <ClassroomTypeListDrawer />
+  <ClassroomInfoDrawer />
 </template>
 
 <script>
@@ -138,24 +136,21 @@ import ClassroomTypeListDrawer from "./ClassroomTypeListDrawer.vue";
 import { ArrayDelete, SingleDelete } from "@/hooks/list/useDelete.js";
 import { useLocationStore } from "@/store/locationStore/index.js";
 import { useAcademicStore } from "@/store/academicStore/index.js"; //store
-
+import ClassroomInfoDrawer from "./ClassroomInfoDrawer.vue";
 
 export default {
   name: "ClassroomList",
   components: {
     ClassroomEditDialog,
     ClassroomTypeListDrawer,
+    ClassroomInfoDrawer,
   },
   setup() {
     const locationStore = useLocationStore();
     const academicStore = useAcademicStore();
-    const {
-      classrooms,
-      teachingbuildings,
-      campuses,
-      classroomtypes,
-    } = storeToRefs(locationStore);
-  
+    const { classrooms, teachingbuildings, campuses, classroomtypes } =
+      storeToRefs(locationStore);
+
     onMounted(() => {});
     onBeforeMount(() => {
       locationStore.initLocationDatas();
@@ -211,7 +206,7 @@ export default {
             );
           }
         }
-        return temp
+        return temp;
       }),
     });
 
@@ -243,6 +238,9 @@ export default {
 
     const HandleEditClick = (value) => {
       bus.emit("showClassroomEdit", value);
+    };
+    const HandleShowInfoClick = (value) => {
+      bus.emit("showClassroomInfoDrawer", value);
     };
     const HandleTypeEditClick = () => {
       bus.emit("showClassroomTypeDrawer");
@@ -286,16 +284,19 @@ export default {
       return row.isAvailable ? "是" : "否";
     };
 
-    const departmentFormatter = (row)=>{
-      return academicStore.departmentNameMap.get(row.departmentId)
-    }
+    const departmentFormatter = (row) => {
+      return academicStore.departmentNameMap.get(row.departmentId);
+    };
 
-    const campusFormatter = (row)=>{
-      return locationStore.campusNameMap.get(row.campusId)
-    }
-    const teachbuildingFormatter = (row)=>{
-      return locationStore.teachingbuildingNameMap.get(row.teachingbuildingId)
-    }
+    const campusFormatter = (row) => {
+      return locationStore.campusNameMap.get(row.campusId);
+    };
+    const teachbuildingFormatter = (row) => {
+      return locationStore.teachingbuildingNameMap.get(row.teachingbuildingId);
+    };
+    const typeIdFormatter = (row) => {
+      return locationStore.classroomTypeNameMap.get(row.typeId);
+    };
 
     return {
       ...toRefs(data),
@@ -309,6 +310,7 @@ export default {
       HandleAddClick,
       HandleEditClick,
       HandleTypeEditClick,
+      HandleShowInfoClick,
       rowStyle,
       filterCriteria,
       filtedArray,
@@ -318,6 +320,7 @@ export default {
       departmentFormatter,
       campusFormatter,
       teachbuildingFormatter,
+      typeIdFormatter,
     };
   },
 };

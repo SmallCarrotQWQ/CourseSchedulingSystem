@@ -57,7 +57,7 @@ import bus from "@/bus/bus";
 import { useLocationStore } from "@/store/locationStore/index.js";
 import nonEmptyValidator from "@/hooks/validator/useNonEmpty";
 export default {
-  name: "ClassroomTypeEditDialog",
+  name: "specializationEditDialog",
   mounted() {
     bus.on("showClassroomTypeEdit", (value) => {
       this.mode = false;

@@ -47,18 +47,23 @@
       height="400"
     >
       <el-table-column type="selection" :selectable="selectable" width="40" />
-      <el-table-column prop="id" label="专业编号" min-width="155px" />
-      <el-table-column prop="name" label="专业名称" min-width="155px" />
-      <el-table-column prop="abbr" label="简称" min-width="155px" />
-      <el-table-column prop="ename" label="英文名" min-width="155px" />
-      <el-table-column prop="duration" label="学制" min-width="155px" />
-      <el-table-column prop="isEnabled" :formatter="enabledFormatter" label="开办状态" min-width="60px" />
-      <el-table-column prop="facultyId" :formatter="facultyFormatter" label="所属院系" min-width="170px" />
+      <el-table-column prop="id" label="专业编号" min-width="100px" />
+      <el-table-column prop="name" label="专业名称" min-width="100px" />
+      <el-table-column prop="abbr" label="简称" min-width="100px" />
+      <el-table-column prop="ename" label="英文名" min-width="100px" />
+      <el-table-column prop="duration" label="学制" min-width="100px" />
+      <el-table-column prop="isEnabled" :formatter="enabledFormatter" label="开办状态" min-width="100px" />
+      <el-table-column prop="facultyId" :formatter="facultyFormatter" label="所属院系" min-width="100px" />
       <el-table-column
         prop="educationalLevel"
         label="培养层次"
         min-width="80px"
       />
+
+       
+      <el-table-column label="专业方向" min-width="120px" fixed="right"  v-slot="scope">
+          <el-link type="primary" @click="HandleDrawerClick(scope.row)">专业方向管理</el-link>
+      </el-table-column> 
 
       <el-table-column
         label="操作"
@@ -78,6 +83,7 @@
     </el-table>
   </div>
   <MajorEditDialog />
+  <specializationListDrawer/>
 </template>
 
 <script>
@@ -86,14 +92,17 @@ import { storeToRefs } from "pinia";
 import { computed, onBeforeMount, onMounted, reactive, toRefs } from "vue";
 import { ElMessageBox } from "element-plus";
 import MajorEditDialog from "./MajorEditDialog.vue";
+import specializationListDrawer from './specializationListDrawer.vue';
 import { ArrayDelete, SingleDelete } from "@/hooks/list/useDelete.js";
 import { useLocationStore } from "@/store/locationStore/index.js";
 import { useAcademicStore } from "@/store/academicStore/index.js"; //store
+
 
 export default {
   name: "MajorList",
   components: {
     MajorEditDialog,
+    specializationListDrawer
   },
   setup() {
     const locationStore = useLocationStore();
@@ -194,6 +203,10 @@ export default {
         });
     };
 
+    const HandleDrawerClick = (row)=>{
+      bus.emit("showSpecializationListDrawer",row)
+    }
+
     const enabledFormatter = (row) => {
       return row.isEnabled ? "是" : "否";
     };
@@ -212,6 +225,7 @@ export default {
       HandleAddClick,
       HandleEditClick,
       HandleTypeEditClick,
+      HandleDrawerClick,
       rowStyle,
       filterCriteria,
       filtedArray,

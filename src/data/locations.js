@@ -1,11 +1,11 @@
 
 
 
-export const initialCampuses = [
-    { id: "fkxq4vivo50", name: "下沙校区" },
-    { id: "epyc1048596", name: "南浔校区" },
-    { id: "cristinawww", name: "wzz校区" },
-]
+// export const initialCampuses = [
+//     { id: "fkxq4vivo50", name: "下沙校区" },
+//     { id: "epyc1048596", name: "南浔校区" },
+//     { id: "cristinawww", name: "wzz校区" },
+// ]
 
 export const initialTeachingBuildings = [
     { id: "11451419778", name: "求实楼", code: "XDNYSXZX", campusId: "epyc1048596", isAvailable: true },

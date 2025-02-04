@@ -5,6 +5,7 @@ import App from './App.vue'
 import router from './router'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import "element-plus/theme-chalk/el-message-box.css";
+import 'element-plus/theme-chalk/el-message.css';
 import mitt from 'mitt'
 import { createPinia } from 'pinia'
 

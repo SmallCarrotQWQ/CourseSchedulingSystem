@@ -3,6 +3,7 @@
     <div class="buttonMenu">
       <el-button type="primary" @click="HandleAddClick">添加</el-button>
       <el-button type="primary" @click="HandleUploadClick">导入</el-button>
+      <el-button type="primary" @click="HandleRefreshClick">刷新</el-button>
       <el-button type="danger" v-show="isDeleteShow" @click="HandleArrayDelete"
         >删除选中</el-button
       >
@@ -103,6 +104,9 @@ export default {
     const HandleUploadClick = () => {
       bus.emit("showCampusUploadDialog");
     };
+    const HandleRefreshClick = () => {
+      locationStore.refreshCampus()
+    };
 
     const HandleArrayDelete = () => {
       ElMessageBox.confirm("确认删除吗?", "警告", {
@@ -143,7 +147,8 @@ export default {
       HandleDrawerClick,
       HandleUploadClick,
       rowStyle,
-      locationStore
+      locationStore,
+      HandleRefreshClick
     };
   },
 };

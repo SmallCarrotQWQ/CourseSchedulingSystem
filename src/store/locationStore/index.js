@@ -4,11 +4,11 @@ import { EditArray } from "@/hooks/input/useEdit";
 import {
     initialClassrooms,
     initialTeachingBuildings,
-    initialCampuses,
     initialclassroomTypes
 } from "@/data/locations"
 
-import { getCampusInfos } from "@/api/campus.api";
+import { getCampusListApi } from "@/api/campus.api";
+import { ElMessage } from "element-plus";
 
 
 
@@ -19,16 +19,18 @@ export const useLocationStore = defineStore('location', {
         classrooms: [],
         classroomtypes: [],
         classroomMap: new Map(),
+        classroomNameMap: new Map(),
         classroomTypeMap: new Map(),
-        campusMap: new  Map(),
-        campusNameMap: new  Map(),
+        classroomTypeNameMap: new Map(),
+        campusMap: new Map(),
+        campusNameMap: new Map(),
         teachingbuildingMap: new Map(),
         teachingbuildingNameMap: new Map(),
-        locationDataInitiate:false
+        locationDataInitiate: false
     }),
     actions: {
         initLocationDatas() {
-            if(!this.locationDataInitiate){
+            if (!this.locationDataInitiate) {
                 this.initCampuses()
                 this.initTeachingBuildings()
                 this.initClassrooms()
@@ -36,15 +38,27 @@ export const useLocationStore = defineStore('location', {
                 this.locationDataInitiate = true
             }
         },
-        refreshCampus(){
-            getCampusInfos().then(response =>{
+        refreshCampus(parm) {
+            ElMessage({
+                message: "刷新中...",
+                type: "info"
+            })
+            getCampusListApi(parm).then(response => {
                 this.campuses = response.data.campuses
-             }).catch(error =>{
-                 console.log(error);
-                 return new Error(error)
-             })
-            this.campusNameMap = new Map(this.campuses.map(c => [c.id, c.name]))
-            this.campusMap = new Map(this.campuses.map(c => [c.id, c]))
+                this.campusNameMap = new Map(this.campuses.map(c => [c.id, c.name]))
+                this.campusMap = new Map(this.campuses.map(c => [c.id, c]))
+                ElMessage({
+                    message: "刷新成功!",
+                    type: "success"
+                })
+            }).catch(error => {
+                ElMessage({
+                    message: `刷新失败! 错误信息${error}`,
+                    type: "error"
+                })
+                return error
+            })
+           
         },
         getClassroomsByCampus(campusId) {
             return this.classrooms.filter((classroom) => {
@@ -66,28 +80,29 @@ export const useLocationStore = defineStore('location', {
                 return building.campusId == campusId
             })
         },
-        getClassroomsByBuildingAndType(BuildingId,typeId){
+        getClassroomsByBuildingAndType(BuildingId, typeId) {
             return this.classrooms.filter((classroom) => {
-                return classroom.teachingbuildingId == BuildingId && classroom.typeId ==typeId
+                return classroom.teachingbuildingId == BuildingId && classroom.typeId == typeId
             })
         },
-        getClassroomsByCampusAndType(campusId,typeId){
+        getClassroomsByCampusAndType(campusId, typeId) {
             return this.classrooms.filter((classroom) => {
-                return classroom.campusId == campusId && classroom.typeId ==typeId
+                return classroom.campusId == campusId && classroom.typeId == typeId
             })
         },
 
 
 
         initCampuses() {
-            getCampusInfos().then(response =>{
+            getCampusListApi().then(response => {
                 this.campuses = response.data.campuses
-             }).catch(error =>{
-                 console.log(error);
-                 return new Error(error)
-             })
-            this.campusNameMap = new Map(this.campuses.map(c => [c.id, c.name]))
-            this.campusMap = new Map(this.campuses.map(c => [c.id, c]))
+                this.campusNameMap = new Map(this.campuses.map(c => [c.id, c.name]))
+                this.campusMap = new Map(this.campuses.map(c => [c.id, c]))
+            }).catch(error => {
+                console.log(error);
+                return new Error(error)
+            })
+
         },
         AddCampus(value) {
             this.campuses.push(value)
@@ -130,6 +145,7 @@ export const useLocationStore = defineStore('location', {
         initClassrooms() {
             this.classrooms = initialClassrooms;
             this.classroomtypes = initialclassroomTypes;
+            this.classroomNameMap = new Map(this.classrooms.map(c =>[c.id,c.name]))
         },
         AddClassroom(value) {
             this.classrooms.push(value)
@@ -149,6 +165,7 @@ export const useLocationStore = defineStore('location', {
         initClassroomTypes() {
             this.classroomtypes = initialclassroomTypes
             this.classroomTypeMap = new Map(this.classroomtypes.map(c => [c.id, c]))
+            this.classroomTypeNameMap = new Map(this.classroomtypes.map(c => [c.id, c.name]))
         },
         AddType(value) {
             this.classroomtypes.push(value)

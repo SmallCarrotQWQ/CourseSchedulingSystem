@@ -272,6 +272,7 @@ export const initialClassses = [
         educationalLevel:"本科",
         classType:"普通班",
         counsellorName:"",
+        counsellorId:"",
         headTeacherName:"",
         headTeacherId:"",
         monitorName:"",
@@ -286,13 +287,21 @@ export const initialClassses = [
         majorId:"",
         majorName:"",
         SpecializationId:"",
-        campusName:"",
+        campusId:"",
         hasAssignedClassroom:true,
         classroomId:"",
         remark:"",
         headTeacherPhoneNumber:"19557717091",
         graduationYearSemester:"",
         isExpanding:false,
+        mentorName:"",
         mentorId:""
     },
+]
+
+
+export const iniitialSpecializations = [
+    {
+        
+    }
 ]

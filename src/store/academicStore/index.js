@@ -17,6 +17,7 @@ export const useAcademicStore = defineStore('academic', {
         departments: [],
         classes:[],
         majors: [],
+        specializations:[],
 
         departmentTypes: [],
         educationalLevels:[],
@@ -29,6 +30,7 @@ export const useAcademicStore = defineStore('academic', {
         majorNameMap:new Map(),
         classMap:new Map(),
         classNameMap:new Map(),
+        specializationNameMap:new Map(),
         AcademicDatainitiate:false
     }),
     getters:{
@@ -118,6 +120,32 @@ export const useAcademicStore = defineStore('academic', {
         },
         initMajors() {
             this.majors = initialMajors;
+            this.majorNameMap = new Map(this.majors.map(c => [c.id, c.name]))
+            this.majorMap = new Map(this.majors.map(c => [c.id, c]))
+        },
+        AddMajor(value) {
+            this.majors.push(value)
+            this.majorNameMap = new Map(this.majors.map(c => [c.id, c.name]))
+            this.majorMap = new Map(this.majors.map(c => [c.id, c]))
+        },
+
+        EditMajor(obj) {
+            if (obj) {
+                for (const key of Object.keys(obj)) {
+                    if (key == "id") continue
+                    EditArray(this.majors, key, obj[key], obj.id)
+                }
+            }
+            else {
+                return false
+            }
+            this.majorNameMap = new Map(this.majors.map(c => [c.id, c.name]))
+            this.majorMap = new Map(this.majors.map(c => [c.id, c]))
+            return true
+        },
+
+        initSpecializations() {
+            this.specializations = initialMajors;
             this.majorNameMap = new Map(this.majors.map(c => [c.id, c.name]))
             this.majorMap = new Map(this.majors.map(c => [c.id, c]))
         },

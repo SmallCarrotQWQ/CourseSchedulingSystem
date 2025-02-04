@@ -46,15 +46,14 @@ import { computed, reactive, toRefs } from "vue";
 import { ElMessageBox } from "element-plus";
 import { useLocationStore } from "@/store/locationStore/index.js";
 import { ArrayDelete, SingleDelete } from "@/hooks/list/useDelete.js";
-import ClassroomTypeEditDialog from './ClassroomTypeEditDialog.vue';
-
+import specializationEditDialog from './specializationEditDialog.vue';
 export default {
-  name: "ClassroomTypeListDrawer",
+  name: "specializationListDrawer",
   components: {
-    ClassroomTypeEditDialog
+    specializationEditDialog
   },
   mounted() {
-    bus.on("showClassroomTypeDrawer", () => {
+    bus.on("showSpecializationListDrawer", (value) => {
       this.isDrawerVisible = true; //打开抽屉
     });
   },
