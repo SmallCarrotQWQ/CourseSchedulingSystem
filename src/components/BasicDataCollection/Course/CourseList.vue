@@ -6,24 +6,94 @@
         >删除选中</el-button
       >
     </div>
+    <div class="filters">
+      <el-text class="filterLabel">校区:</el-text>
+      <el-select
+        v-model="filterCriteria.campus"
+        placeholder="搜索校区"
+        class="filterSelector"
+        value-key="id"
+        filterable
+        @change="filterCriteria.teachingbuilding = '*'"
+      >
+        <template #header>
+          <el-button type="primary"> 添加校区 </el-button>
+        </template>
+        <el-option label="全部" value="*" />
+        <el-option
+          v-for="campus of campuses"
+          :label="campus.name"
+          :value="campus.id"
+        />
+      </el-select>
+      <el-text class="filterLabel">教学楼:</el-text>
+      <el-select
+        v-model="filterCriteria.teachingbuilding"
+        placeholder="搜索教学楼"
+        class="filterSelector"
+        value-key="id"
+        filterable
+      >
+        <template #header>
+          <el-button type="primary"> 添加教学楼 </el-button>
+          <el-button type="primary"> 导入 </el-button>
+        </template>
+        <el-option label="全部" value="*" />
+        <el-option
+          v-for="option of courses"
+          :label="option.name"
+          :value="option.id"
+        />
+      </el-select>
 
+      
+    </div>
     <el-table
       :data="courses"
       :row-style="rowStyle"
       @selection-change="HandleSelectChange"
+      height="400"
     >
-      <el-table-column type="selection" :selectable="selectable" width="55" />
-      <el-table-column prop="id" label="id" />
-      <el-table-column prop="campus" label="课程号" />
-      <el-table-column prop="name" label="课程名" />
-      <el-table-column prop="name" label="序号" />
-      <el-table-column prop="address" label="教师" />
-      <el-table-column prop="address" label="周次" />
+      <el-table-column type="selection" :selectable="selectable" width="40" />
+      <el-table-column prop="code" label="课程编号" min-width="155px" />
+      <el-table-column prop="name" label="课程名称" min-width="155px" />
+      <el-table-column
+        prop="courseCategoryId"
+        label="课程类别"
+        min-width="155px"
+      />
+      <el-table-column
+        prop="courseAttributeId"
+        label="课程属性"
+        min-width="100px"
+      />
+      <el-table-column prop="courseTypeId" label="课程类型" min-width="100px" />
+      <el-table-column
+        prop="courseNatureId"
+        label="课程性质"
+        min-width="100px"
+      />
+      <el-table-column
+        prop="facultyId"
+        :formatter="departmentFormatter"
+        label="开课院系"
+      />
+      <el-table-column
+        prop="isEnabled"
+        :formatter="isEnableFormatter"
+        label="是否启用"
+      />
 
-      <el-table-column prop="capacity" label="可容纳人数" />
-      <el-table-column prop="remark" label="备注" />
-      <el-table-column label="操作" v-slot="scope">
+      <el-table-column
+        label="操作"
+        v-slot="scope"
+        min-width="220px"
+        fixed="right"
+      >
         <div class="RowButtons">
+          <el-button type="info" @click="HandleShowInfoClick(scope.row)"
+            >查看</el-button
+          >
           <el-button type="primary" @click="HandleEditClick(scope.row)"
             >编辑</el-button
           >
@@ -34,39 +104,54 @@
       </el-table-column>
     </el-table>
   </div>
-  <ClassroomEditDialog />
+  <CourseEditDialog />
+  <CourseInfoDrawer />
 </template>
-
 
 <script>
 import bus from "@/bus/bus.js";
 import { storeToRefs } from "pinia";
-import { reactive, toRefs,onBeforeMount } from "vue";
+import { computed, onBeforeMount, onMounted, reactive, toRefs } from "vue";
 import { ElMessageBox } from "element-plus";
-
-import CourseEditDialog from "./CourseEditDialog.vue";
-
-import { useCourseStore } from "@/store/course.js";
-
 import { ArrayDelete, SingleDelete } from "@/hooks/list/useDelete.js";
+import { useLocationStore } from "@/store/locationStore/index.js";
+import { useAcademicStore } from "@/store/academicStore/index.js"; //store
+import CourseInfoDrawer from './CourseInfoDrawer.vue';
+
 
 export default {
   name: "CourseList",
   components: {
-    CourseEditDialog,
+
+    CourseInfoDrawer,
   },
   setup() {
-    const CourseStore = useCourseStore();
-    const { courses } = storeToRefs(CourseStore);
-
+    const locationStore = useLocationStore();
+    const academicStore = useAcademicStore();
+    const { courses } = storeToRefs(academicStore);
+    onMounted(() => {});
     onBeforeMount(() => {
       locationStore.initLocationDatas();
     });
-
     const data = reactive({
       isDeleteShow: false,
       deleteValue: [],
     });
+
+    const filterCriteria = reactive({
+      campus: "*",
+      teachingbuilding: "*",
+      type: "*",
+    });
+
+
+
+    // .value.map((c) => ({
+    //     ...c,
+    //     campus: locationStore.campusMap.get(c.campusId),
+    //     type: locationStore.classroomTypeMap.get(c.typeId),
+    //     teachingbuilding:locationStore.teachingbuildingMap.get(c.teachingbuildingId)
+    //   })),
 
     const HandleSelectChange = (value) => {
       data.deleteValue = value;
@@ -84,13 +169,14 @@ export default {
     };
 
     const HandleAddClick = () => {
-      bus.emit("showClassroomAdd");
+      bus.emit("showCourseAdd");
     };
-
     const HandleEditClick = (value) => {
-      bus.emit("showClassroomEdit", value);
+      bus.emit("showCourseEdit", value);
     };
-
+    const HandleShowInfoClick = (value) => {
+      bus.emit("showCourseInfoDrawer", value);
+    };
     const HandleArrayDelete = () => {
       ElMessageBox.confirm("确认删除吗?", "警告", {
         confirmButtonText: "确认",
@@ -115,20 +201,31 @@ export default {
           classrooms.value = SingleDelete(classrooms.value, value);
         })
         .catch(() => {
-          console("canceled...");
+          console.log("canceled...");
         });
+    };
+
+    const isEnableFormatter = (row) => {
+      return row.isAvailable ? "是" : "否";
+    };
+
+    const departmentFormatter = (row) => {
+      return academicStore.departmentNameMap.get(row.departmentId);
     };
 
     return {
       ...toRefs(data),
       courses,
-      CourseStore,
       HandleArrayDelete,
       HandleSingleDelete,
       HandleSelectChange,
       HandleAddClick,
       HandleEditClick,
+      HandleShowInfoClick,
       rowStyle,
+      filterCriteria,
+      isEnableFormatter,
+      departmentFormatter,
     };
   },
 };
@@ -146,6 +243,7 @@ export default {
   display: flex;
   justify-content: flex-start;
   margin: 0px 0px 10px 0px;
+  flex-wrap: nowrap;
 }
 
 tbody td .cell .RowButtons {
@@ -155,5 +253,23 @@ tbody td .cell .RowButtons {
 
 .el-table {
   border: solid 2px #f0f2f5;
+}
+
+.el-table-column {
+  min-width: 200px;
+}
+.filterSelector {
+  width: 260px;
+  margin-left: 10px;
+}
+
+.filters {
+  display: inline-flex;
+  flex-direction: row;
+  margin: 10px 0px 10px 0px;
+}
+
+.filterLabel {
+  margin-left: 20px;
 }
 </style>

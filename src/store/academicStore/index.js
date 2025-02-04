@@ -9,6 +9,11 @@ import {
     educationalLevels,
     initialClassses,
     iniitialclasstypies,
+    iniitialCourses,
+    initialCourseNatures,
+    initialCourseTypes,
+    initialCourseAttributes,
+    initialCourseCategories,
 } from "@/data/academic"
 
 
@@ -18,6 +23,7 @@ export const useAcademicStore = defineStore('academic', {
         classes:[],
         majors: [],
         specializations:[],
+        courses:[],
 
         departmentTypes: [],
         educationalLevels:[],
@@ -30,6 +36,7 @@ export const useAcademicStore = defineStore('academic', {
         majorNameMap:new Map(),
         classMap:new Map(),
         classNameMap:new Map(),
+        courseNameMap:new Map(),
         specializationNameMap:new Map(),
         AcademicDatainitiate:false
     }),
@@ -47,6 +54,7 @@ export const useAcademicStore = defineStore('academic', {
                 this.initDepartmentTypes()
                 this.initMajors()
                 this.initClasses()
+                this.initCourses()
                 this.classTypies = iniitialclasstypies
                 this.educationalLevels = educationalLevels
                 this.AcademicDatainitiate = true
@@ -204,6 +212,32 @@ export const useAcademicStore = defineStore('academic', {
             return true
         },
        
+
+
+
+        initCourses() {
+            this.courses = iniitialCourses;
+            this.courseNameMap = new Map(this.courses.map(c => [c.id, c.name]))
+        },
+        AddCourse(value) {
+            this.courses.push(value)
+            this.courseNameMap = new Map(this.courses.map(c => [c.id, c.name]))
+        },
+
+        EditCourse(obj) {
+            if (obj) {
+                for (const key of Object.keys(obj)) {
+                    if (key == "id") continue
+                    EditArray(this.courses, key, obj[key], obj.id)
+                }
+            }
+            else {
+                return false
+            }
+            this.courseNameMap = new Map(this.courses.map(c => [c.id, c.name]))
+            return true
+        },
+
 
         HandleArrayDelete(deleteValue) {
             ElMessageBox.confirm(
