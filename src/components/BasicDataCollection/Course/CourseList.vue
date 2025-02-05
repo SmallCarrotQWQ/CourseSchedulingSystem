@@ -45,8 +45,6 @@
           :value="option.id"
         />
       </el-select>
-
-      
     </div>
     <el-table
       :data="courses"
@@ -55,28 +53,36 @@
       height="400"
     >
       <el-table-column type="selection" :selectable="selectable" width="40" />
-      <el-table-column prop="code" label="课程编号" min-width="155px" />
+      <el-table-column prop="code" label="课程编号" min-width="100px" />
       <el-table-column prop="name" label="课程名称" min-width="155px" />
       <el-table-column
         prop="courseCategoryId"
         label="课程类别"
         min-width="155px"
+        :formatter="courseCategoryFormatter"
       />
       <el-table-column
         prop="courseAttributeId"
         label="课程属性"
         min-width="100px"
+        :formatter="courseAttributeFormatter"
       />
-      <el-table-column prop="courseTypeId" label="课程类型" min-width="100px" />
+      <el-table-column
+        prop="courseTypeId"
+        label="课程类型"
+        min-width="100px"
+        :formatter="courseTypeFormatter"
+      />
       <el-table-column
         prop="courseNatureId"
         label="课程性质"
         min-width="100px"
+        :formatter="courseNatureFormatter"
       />
       <el-table-column
         prop="facultyId"
-        :formatter="departmentFormatter"
         label="开课院系"
+        :formatter="departmentFormatter"
       />
       <el-table-column
         prop="isEnabled"
@@ -116,14 +122,14 @@ import { ElMessageBox } from "element-plus";
 import { ArrayDelete, SingleDelete } from "@/hooks/list/useDelete.js";
 import { useLocationStore } from "@/store/locationStore/index.js";
 import { useAcademicStore } from "@/store/academicStore/index.js"; //store
-import CourseInfoDrawer from './CourseInfoDrawer.vue';
-
+import CourseInfoDrawer from "./CourseInfoDrawer.vue";
+import CourseEditDialog from './CourseEditDialog.vue';
 
 export default {
   name: "CourseList",
   components: {
-
     CourseInfoDrawer,
+    CourseEditDialog,
   },
   setup() {
     const locationStore = useLocationStore();
@@ -143,8 +149,6 @@ export default {
       teachingbuilding: "*",
       type: "*",
     });
-
-
 
     // .value.map((c) => ({
     //     ...c,
@@ -212,6 +216,18 @@ export default {
     const departmentFormatter = (row) => {
       return academicStore.departmentNameMap.get(row.departmentId);
     };
+    const courseCategoryFormatter = (row) => {
+      return academicStore.courseCategoryNameMap.get(row.courseCategoryId);
+    };
+    const courseAttributeFormatter = (row) => {
+      return academicStore.courseAttributeNameMap.get(row.courseAttributeId);
+    };
+    const courseTypeFormatter = (row) => {
+      return academicStore.courseTypeNameMap.get(row.courseTypeId);
+    };
+    const courseNatureFormatter = (row) => {
+      return academicStore.courseNatureNameMap.get(row.courseNatureId);
+    };
 
     return {
       ...toRefs(data),
@@ -226,6 +242,10 @@ export default {
       filterCriteria,
       isEnableFormatter,
       departmentFormatter,
+      courseCategoryFormatter,
+      courseAttributeFormatter,
+      courseTypeFormatter,
+      courseNatureFormatter,
     };
   },
 };

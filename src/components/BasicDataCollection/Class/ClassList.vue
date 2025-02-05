@@ -8,7 +8,10 @@
         @click="HandleArrayDelete(deleteValue)"
         >删除选中</el-button
       >
-      <div class="filters">
+      
+    </div>
+
+    <div class="filters">
         <el-text class="filterLabel">院系:</el-text>
         <el-select
           v-model="faculty"
@@ -40,7 +43,6 @@
           />
         </el-select>
       </div>
-    </div>
 
     <el-table
       :data="classes"
@@ -214,6 +216,7 @@ tbody td .cell .RowButtons {
 .filters {
   display: inline-flex;
   flex-direction: row;
+  margin: 10px 0px 20px 0px;
 }
 .filterLabel {
   margin-left: 20px;

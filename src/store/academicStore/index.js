@@ -24,6 +24,10 @@ export const useAcademicStore = defineStore('academic', {
         majors: [],
         specializations:[],
         courses:[],
+        courseNatures:[],
+        courseTypes:[],
+        courseAttributes:[],
+        courseCategories:[],
 
         departmentTypes: [],
         educationalLevels:[],
@@ -37,6 +41,10 @@ export const useAcademicStore = defineStore('academic', {
         classMap:new Map(),
         classNameMap:new Map(),
         courseNameMap:new Map(),
+        courseNatureNameMap:new Map(),
+        courseTypeNameMap:new Map(),
+        courseAttributeNameMap:new Map(),
+        courseCategoryNameMap:new Map(),
         specializationNameMap:new Map(),
         AcademicDatainitiate:false
     }),
@@ -217,7 +225,15 @@ export const useAcademicStore = defineStore('academic', {
 
         initCourses() {
             this.courses = iniitialCourses;
+            this.courseAttributes = initialCourseAttributes
+            this.courseCategories = initialCourseCategories
+            this.courseNatures = initialCourseNatures
+            this.courseTypes = initialCourseTypes
             this.courseNameMap = new Map(this.courses.map(c => [c.id, c.name]))
+            this.courseAttributeNameMap = new Map(this.courseAttributes.map(c => [c.id, c.name]))
+            this.courseCategoryNameMap = new Map(this.courseCategories.map(c => [c.id, c.name]))
+            this.courseNatureNameMap = new Map(this.courseNatures.map(c => [c.id, c.name]))
+            this.courseTypeNameMap = new Map(this.courseTypes.map(c => [c.id, c.name]))
         },
         AddCourse(value) {
             this.courses.push(value)

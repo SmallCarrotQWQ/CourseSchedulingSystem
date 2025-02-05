@@ -2,7 +2,7 @@
   <el-dialog
     v-model="isDialogFormVisible"
     :title= 'mode ? "添加":"修改"'
-    width="42%"
+    width="30%"
     class="dialog"
     :close-on-click-modal="false"
     :show-close="false"
@@ -19,6 +19,7 @@
     >
       <el-tabs v-model="activeName">
         <el-tab-pane name="basic" label="基础数据">
+          <el-scrollbar height="300px">
           <div>
             <el-form-item label="教室编号:" prop="classroomCode">
               <el-input
@@ -149,6 +150,7 @@
               />
             </el-form-item>
           </div>
+          </el-scrollbar>
         </el-tab-pane>
 
         <el-tab-pane name="other" label="其他">
@@ -495,8 +497,7 @@ export default {
 
 <style>
 .dialog .el-dialog__body {
-  max-height: 30%;
-  overflow-y: scroll;
+  max-height: 10%;
 }
 
 .form {

@@ -40,11 +40,6 @@
           >教师管理</el-menu-item
         >
         <el-menu-item
-          index="grade"
-          @click="this.$router.push({ name: 'grade' })"
-          >年级管理</el-menu-item
-        >
-        <el-menu-item
           index="class"
           @click="this.$router.push({ name: 'class' })"
           >班级管理</el-menu-item
@@ -56,11 +51,6 @@
           >课程管理</el-menu-item
         >
 
-        <el-menu-item
-          index="student"
-          @click="this.$router.push({ name: 'student' })"
-          >学生管理</el-menu-item
-        >
       </el-sub-menu>
       <el-sub-menu index="schedule">
         <template #title>

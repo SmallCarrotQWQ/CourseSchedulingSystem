@@ -8,7 +8,8 @@
         @click="HandleArrayDelete(deleteValue)"
         >删除选中</el-button
       >
-      <div class="filters">
+    </div>
+     <div class="filters">
         <el-text>院系:</el-text>
         <el-select
           v-model="faculty"
@@ -25,7 +26,6 @@
           />
         </el-select>
       </div>
-    </div>
 
     <el-table
       :data="teachers"
@@ -33,16 +33,16 @@
       @selection-change="HandleSelectChange"
     >
       <el-table-column type="selection" :selectable="selectable" width="55" />
-      <el-table-column prop="id" label="id" />
-      <el-table-column prop="teacherId" label="工号" />
-      <el-table-column prop="name" label="姓名" />
-      <el-table-column prop="gender" label="性别" :formatter="genderFormatter" />
-      <el-table-column prop="ename" label="英文名" />
-      <el-table-column prop="ethnicityName" :formatter="ethnicityFormatter" label="民族" />
-      <el-table-column prop="titleName" label="职称" />
-      <el-table-column prop="departmentName" :formatter="departmentFormatter" label="单位" />
-      <el-table-column prop="isExternal" :formatter="externalFormatter" label="是否外聘" />
-      <el-table-column prop="facultyTypeId" label="教职工类别" />
+      <el-table-column prop="id" label="id" min-width="80px" />
+      <el-table-column prop="teacherId" label="工号" min-width="80px" />
+      <el-table-column prop="name" label="姓名"  min-width="80px"/>
+      <el-table-column prop="gender" label="性别" :formatter="genderFormatter" min-width="70px"/>
+      <el-table-column prop="ename" label="英文名" min-width="100px"/>
+      <el-table-column prop="ethnicityName" :formatter="ethnicityFormatter" label="民族" min-width="100px"/>
+      <el-table-column prop="titleName" label="职称" min-width="100px" />
+      <el-table-column prop="departmentName" :formatter="departmentFormatter" label="单位" min-width="100px"/>
+      <el-table-column prop="isExternal" :formatter="externalFormatter" label="是否外聘" min-width="100px"/>
+      <el-table-column prop="facultyTypeId" label="教职工类别" min-width="90px" />
       <el-table-column label="操作" v-slot="scope" width="160">
         <div class="RowButtons">
           <el-button type="primary" @click="HandleEditClick(scope.row)"
@@ -184,7 +184,7 @@ tbody td .cell .RowButtons {
 }
 
 .filters{
-    margin-left: 20px;
+    margin: 10px 0px 20px 20px ;
     display: inline-flex;
     flex-direction: row;
 }

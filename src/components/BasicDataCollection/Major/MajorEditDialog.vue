@@ -2,7 +2,7 @@
   <el-dialog
     v-model="isDialogFormVisible"
     :title="mode ? '添加' : '修改'"
-    width="42%"
+    width="30%"
     class="dialog"
     :close-on-click-modal="false"
     :show-close="false"
@@ -17,8 +17,6 @@
       label-width="auto"
       @submit.enter.prevent
     >
-      <el-tabs v-model="activeName">
-        <el-tab-pane name="basic" label="基础数据">
             <el-form-item label="专业编号:" prop="id">
               <el-input
                 class="inputs"
@@ -93,12 +91,6 @@
             <el-form-item prop="isEnabled">
               <el-checkbox v-model="isEnabled" label="是否开办"/>
             </el-form-item>
-
-           
-
-            
-        </el-tab-pane>
-      </el-tabs>
 
       <el-form-item class="btn">
         <el-button
@@ -302,7 +294,6 @@ export default {
 <style>
 .dialog .el-dialog__body {
   max-height: 30%;
-  overflow-y: scroll;
 }
 
 .form {
