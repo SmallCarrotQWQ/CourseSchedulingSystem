@@ -324,7 +324,7 @@ export default {
     const { campuses, classroomtypes, teachingbuildings } =  storeToRefs(locationStore);
     const { departments } = storeToRefs(academicStore);
 
-    const courseFormRef = ref();
+    const courseFormRef = ref({});
 
     const data = reactive({
       isDialogFormVisible: false, //是否弹窗

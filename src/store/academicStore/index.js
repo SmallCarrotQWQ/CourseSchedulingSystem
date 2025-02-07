@@ -14,6 +14,7 @@ import {
     initialCourseTypes,
     initialCourseAttributes,
     initialCourseCategories,
+    iniitialSpecializations,
 } from "@/data/academic"
 
 
@@ -63,6 +64,7 @@ export const useAcademicStore = defineStore('academic', {
                 this.initMajors()
                 this.initClasses()
                 this.initCourses()
+                this.initSpecializations()
                 this.classTypies = iniitialclasstypies
                 this.educationalLevels = educationalLevels
                 this.AcademicDatainitiate = true
@@ -161,28 +163,25 @@ export const useAcademicStore = defineStore('academic', {
         },
 
         initSpecializations() {
-            this.specializations = initialMajors;
-            this.majorNameMap = new Map(this.majors.map(c => [c.id, c.name]))
-            this.majorMap = new Map(this.majors.map(c => [c.id, c]))
+            this.specializations = iniitialSpecializations;
+            this.specializationNameMap = new Map(this.specializations.map(c => [c.id, c.name]))
         },
-        AddMajor(value) {
-            this.majors.push(value)
-            this.majorNameMap = new Map(this.majors.map(c => [c.id, c.name]))
-            this.majorMap = new Map(this.majors.map(c => [c.id, c]))
+        AddSpecialization(value) {
+            this.specializations.push(value)
+            this.specializationNameMap = new Map(this.specializations.map(c => [c.id, c.name]))
         },
 
-        EditMajor(obj) {
+        Editspecialization(obj) {
             if (obj) {
                 for (const key of Object.keys(obj)) {
                     if (key == "id") continue
-                    EditArray(this.majors, key, obj[key], obj.id)
+                    EditArray(this.specializations, key, obj[key], obj.id)
                 }
             }
             else {
                 return false
             }
-            this.majorNameMap = new Map(this.majors.map(c => [c.id, c.name]))
-            this.majorMap = new Map(this.majors.map(c => [c.id, c]))
+            this.specializationNameMap = new Map(this.specializations.map(c => [c.id, c.name]))
             return true
         },
 

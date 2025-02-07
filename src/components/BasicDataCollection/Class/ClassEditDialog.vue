@@ -395,7 +395,7 @@ export default {
     const { campuses } = storeToRefs(locationStore);
     const { teachers } = storeToRefs(personnelStore);
 
-    const classFormRef = ref();
+    const classFormRef = ref({});
     const data = reactive({
       isDialogFormVisible: false, //是否弹窗
       activePan: "base",

@@ -124,7 +124,6 @@ export const useLocationStore = defineStore('location', {
             this.teachingbuildings = initialTeachingBuildings;
             this.teachingbuildingMap = new Map(this.teachingbuildings.map(t => [t.id, t]))
             this.teachingbuildingNameMap = new Map(this.teachingbuildings.map(t => [t.id, t.name]))
-            console.log(this.teachingbuildingNameMap);
         },
         AddTeachingBuilding(value) {
             this.teachingbuildings.push(value)

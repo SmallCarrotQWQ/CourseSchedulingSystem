@@ -93,7 +93,7 @@ export default {
   setup() {
     const locationStore = useLocationStore();
     const { campuses } = storeToRefs(locationStore);
-    const teachingBuildingFormRef = ref();
+    const teachingBuildingFormRef = ref({});
 
     onMounted(() => {
       bus.on("showTeachingBuildingEdit", (value) => {

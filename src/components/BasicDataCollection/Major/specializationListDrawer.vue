@@ -1,9 +1,9 @@
 <template>
   <el-drawer
     v-model="isDrawerVisible"
-    title="教室类型管理"
+    title="专业方向管理"
     direction="rtl"
-    size="42%"
+    size="55%"
   >
     <div class="List">
       <div class="buttonMenu">
@@ -16,14 +16,34 @@
         >
       </div>
       <el-table
-        :data="classroomtypes"
+        :data="filtedArray"
         :row-style="rowStyle"
         @selection-change="HandleSelectChange"
       >
         <el-table-column type="selection" :selectable="selectable" width="55" />
-        <el-table-column prop="name" label="类型" width="155" />
+        <el-table-column prop="code" label="专业方向编号" width="100" />
+        <el-table-column prop="name" label="专业方向名称" width="80" />
+        <el-table-column prop="grade" label="年级" width="70" />
+        <el-table-column
+          prop="facultyId"
+          :formatter="facultyFormatter"
+          label="院系"
+          width="120"
+        />
+        <el-table-column
+          prop="majorId"
+          :formatter="majorCodeFormatter"
+          label="专业编号"
+          width="120"
+        />
+        <el-table-column
+          prop="majorId"
+          :formatter="majorNameFormatter"
+          label="专业名称  "
+          width="120"
+        />
 
-        <el-table-column label="操作" v-slot="scope">
+        <el-table-column label="操作" v-slot="scope" min-width="144px" fixed="right">
           <div class="RowButtons">
             <el-button type="primary" @click="HandleEditClick(scope.row)"
               >编辑</el-button
@@ -36,7 +56,7 @@
       </el-table>
     </div>
   </el-drawer>
-  <ClassroomTypeEditDialog/>
+  <specializationEditDialog/>
 </template>
 
 <script>
@@ -44,31 +64,37 @@ import bus from "@/bus/bus.js";
 import { storeToRefs } from "pinia";
 import { computed, reactive, toRefs } from "vue";
 import { ElMessageBox } from "element-plus";
-import { useLocationStore } from "@/store/locationStore/index.js";
 import { ArrayDelete, SingleDelete } from "@/hooks/list/useDelete.js";
-import specializationEditDialog from './specializationEditDialog.vue';
+import specializationEditDialog from "./specializationEditDialog.vue";
+import { useAcademicStore } from "@/store/academicStore";
 export default {
   name: "specializationListDrawer",
   components: {
-    specializationEditDialog
+    specializationEditDialog,
   },
   mounted() {
     bus.on("showSpecializationListDrawer", (value) => {
+      this.majorId = value.id
       this.isDrawerVisible = true; //打开抽屉
     });
   },
 
   setup() {
-    const locationStore = useLocationStore();
-    const { classroomtypes } = storeToRefs(locationStore);
+    const academicStore = useAcademicStore();
+    const { specializations } = storeToRefs(academicStore);
 
     const data = reactive({
       isDeleteShow: false,
       isDrawerVisible: false,
       deleteValue: [],
+      majorId:""
     });
 
-
+    const filtedArray = computed(()=>{
+      return academicStore.specializations.filter((s)=>{
+        return s.majorId == data.majorId
+      })
+    })
 
     const HandleSelectChange = (value) => {
       data.deleteValue = value;
@@ -86,11 +112,11 @@ export default {
     };
 
     const HandleAddClick = () => {
-      bus.emit("showClassroomTypeAdd");
+      bus.emit("showSpecializationAdd");
     };
 
     const HandleEditClick = (value) => {
-      bus.emit("showClassroomTypeEdit", value);
+      bus.emit("showSpecializationEdit", value);
     };
 
     const HandleArrayDelete = () => {
@@ -114,7 +140,7 @@ export default {
         type: "warning",
       })
         .then(() => {
-         types.value = SingleDelete(types.value, value);
+          types.value = SingleDelete(types.value, value);
         })
         .catch(() => {
           console("canceled...");
@@ -125,9 +151,19 @@ export default {
       return row.isAvailable ? "是" : "否";
     };
 
+    const facultyFormatter = (row) => {
+      return academicStore.departmentNameMap.get(row.facultyId);
+    };
+    const majorCodeFormatter = (row) => {
+      console.log(academicStore.majorMap.get(row.majorId));
+      return academicStore.majorMap.get(row.majorId).id;
+    };
+    const majorNameFormatter = (row) => {
+      return academicStore.majorNameMap.get(row.majorId);
+    };
+
     return {
       ...toRefs(data),
-      classroomtypes,
       HandleArrayDelete,
       HandleSingleDelete,
       HandleSelectChange,
@@ -135,6 +171,11 @@ export default {
       HandleEditClick,
       rowStyle,
       isAvailable,
+      specializations,
+      facultyFormatter,
+      majorCodeFormatter,
+      majorNameFormatter,
+      filtedArray
     };
   },
 };

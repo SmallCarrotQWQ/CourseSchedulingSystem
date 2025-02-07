@@ -18,7 +18,7 @@
       <el-table-column prop="id" label="id" />
       <el-table-column prop="code" label="部门代码" />
       <el-table-column prop="name" label="部门名称" />
-      <el-table-column prop="type.name" label="单位类别" width="90" />
+      <el-table-column prop="type" label="单位类别" width="90" />
       <el-table-column prop="teachingbuildingName" label="固定教学楼" />
       <el-table-column prop="isEntity" label="是否为实体" :formatter="isEntityToYesNo"/>
       <el-table-column prop="isEnabled" label="是否启用" :formatter="isEnabledToYesNo"/>

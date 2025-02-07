@@ -299,11 +299,72 @@ export const initialClassses = [
     },
 ]
 
-
+//专业方向
 export const iniitialSpecializations = [
     {
-        
-    }
+        id:"sp1",
+        code:"001",
+        name:"方向1",
+        grade:"2021",
+        facultyId:"fac11111",
+        majorId:"major1"
+    },
+    {
+        id:"sp114",
+        code:"0012",
+        name:"方向114",
+        grade:"2022",
+        facultyId:"fac11111",
+        majorId:"major1"
+    },
+    {
+        id:"sp514",
+        code:"0014",
+        name:"方向awa",
+        grade:"2023",
+        facultyId:"fac11111",
+        majorId:"major1"
+    },
+    {
+        id:"sp514",
+        code:"00514",
+        name:"qwq",
+        grade:"2021",
+        facultyId:"fac11111",
+        majorId:"major1"
+    },
+    {
+        id:"sp2",
+        code:"002",
+        name:"方向2",
+        grade:"2022",
+        facultyId:"fac11111",
+        majorId:"major2"
+    },
+    {
+        id:"sp3",
+        code:"003",
+        name:"方向3",
+        grade:"2021",
+        facultyId:"fac22222",
+        majorId:"major3"
+    },
+    {
+        id:"sp4",
+        code:"004",
+        name:"方向4",
+        grade:"2021",
+        facultyId:"fac22222",
+        majorId:"major3"
+    },
+    {
+        id:"sp5",
+        code:"005",
+        name:"方向5",
+        grade:"2021",
+        facultyId:"fac22222",
+        majorId:"major3"
+    },
 ]
 
 export const initialCourseCategories = [

@@ -133,7 +133,7 @@ export default {
       this.isDialogFormVisible = true; //List中按下按钮弹窗
       this.$nextTick(() => {
         this.id = value.id;
-        this.majorName = value.id;
+        this.majorName = value.name;
         this.majorAbbr = value.abbr;
         this.majorEname = value.ename;
         this.majorDuration = value.duration;
@@ -151,7 +151,7 @@ export default {
   setup() {
     const academicStore = useAcademicStore();
     const { faculties,educationalLevels} = storeToRefs(academicStore);
-    const majorFormRef = ref();
+    const majorFormRef = ref({});
 
     const data = reactive({
       isDialogFormVisible: false, //是否弹窗

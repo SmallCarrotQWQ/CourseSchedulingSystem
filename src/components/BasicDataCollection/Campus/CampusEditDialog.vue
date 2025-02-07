@@ -71,7 +71,7 @@ export default {
   },
   setup() {
     const locationStore = useLocationStore();
-    const campusFormRef = ref();
+    const campusFormRef = ref({});
     const data = reactive({
       isDialogFormVisible: false, //是否弹窗
       id: "",

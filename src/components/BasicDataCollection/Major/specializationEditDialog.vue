@@ -14,20 +14,59 @@
       :rules="inputRule"
       label-position="right"
       label-width="auto"
-      ref="classroomTypeFormRef"
+      ref="specializationFormRef"
     >
-      <el-form-item label="教室类型名称:" prop="typeName">
+      <el-form-item label="专业方向编号:" prop="specializationCode">
         <el-input
-          v-model="formInput.typeName"
+          v-model="formInput.specializationCode"
           maxlength="50"
           class="campusName"
+          placeholder="请输入专业方向编号"
         />
+      </el-form-item>
+      <el-form-item label="专业方向名称:" prop="specializationName">
+        <el-input
+          v-model="formInput.specializationName"
+          maxlength="50"
+          class="campusName"
+          placeholder="请输入专业方向名称"
+        />
+      </el-form-item>
+      <el-form-item label="年级:" prop="specializationName">
+        <el-date-picker type="year" v-model="formInput.grade" />
+      </el-form-item>
+
+      <el-form-item label="院系:" prop="facultyId">
+        <el-select
+          v-model="formInput.facultyId"
+          placeholder="请选择院系"
+          filterable
+          value-key="id"
+          @change="
+            () => {
+              formInput.majorId = '';
+            }
+          "
+        >
+          <el-option v-for="f in faculties" :label="f.name" :value="f.id" />
+        </el-select>
+      </el-form-item>
+
+      <el-form-item label="专业:" prop="majorId">
+        <el-select
+          v-model="formInput.majorId"
+          placeholder="请选择专业"
+          filterable
+          value-key="id"
+        >
+          <el-option v-for="m in majorFilter" :label="m.name" :value="m.id" />
+        </el-select>
       </el-form-item>
 
       <el-form-item class="btn">
         <el-button
           type="primary"
-          @click="editItem(classroomTypeFormRef)"
+          @click="editItem(specializationFormRef)"
           v-show="!mode"
         >
           <span>修改</span>
@@ -35,7 +74,7 @@
 
         <el-button
           type="primary"
-          @click="addItem(classroomTypeFormRef)"
+          @click="addItem(specializationFormRef)"
           v-show="mode"
         >
           <span>添加</span>
@@ -51,31 +90,38 @@
 
 <script>
 console.log(app);
-import { reactive, ref, toRefs } from "vue";
+import { reactive, ref, toRefs,computed } from "vue";
 import { v1 as uuid } from "uuid";
 import bus from "@/bus/bus";
-import { useLocationStore } from "@/store/locationStore/index.js";
 import nonEmptyValidator from "@/hooks/validator/useNonEmpty";
+import { useAcademicStore } from "@/store/academicStore";
+import { storeToRefs } from "pinia";
 export default {
   name: "specializationEditDialog",
   mounted() {
-    bus.on("showClassroomTypeEdit", (value) => {
+    bus.on("showSpecializationEdit", (value) => {
       this.mode = false;
       this.isDialogFormVisible = true; //List中按下按钮弹窗
       this.id = value.id;
       this.$nextTick(() => {
-        this.formInput.typeName = value.name;
+        this.formInput.specializationName = value.name;
+        this.formInput.specializationCode = value.code;
+        this.formInput.grade = value.grade;
+        this.formInput.facultyId = value.facultyId;
+        this.formInput.majorId = value.majorId;
       });
     });
 
-    bus.on("showClassroomTypeAdd", () => {
+    bus.on("showSpecializationAdd", () => {
       this.mode = true;
       this.isDialogFormVisible = true; //List中按下按钮弹窗
     });
   },
+
   setup() {
-    const locationStore = useLocationStore();
-    const classroomTypeFormRef = ref();
+    const academicStore = useAcademicStore();
+    const { faculties, majors } = storeToRefs(academicStore);
+    const specializationFormRef = ref({});
     const data = reactive({
       isDialogFormVisible: false, //是否弹窗
       id: "",
@@ -83,16 +129,49 @@ export default {
     });
 
     const formInput = reactive({
-      typeName: "",
+      specializationName: "",
+      specializationCode: "",
+      grade: "",
+      facultyId: "",
+      majorId: "",
     });
 
     const inputRule = {
-      typeName: [
+      specializationName: [
         {
           required: true,
           validator: nonEmptyValidator,
           trigger: "blur",
-          message: "请输入教室类型名称!",
+          message: "请输入专业方向名称!",
+        },
+      ],
+      specializationCode: [
+        {
+          required: true,
+          validator: nonEmptyValidator,
+          trigger: "blur",
+          message: "请输入专业方向编号!",
+        },
+      ],
+      grade: [
+        {
+          required: true,
+          trigger: "change",
+          message: "请输入年级!",
+        },
+      ],
+      facultyId: [
+        {
+          required: true,
+          trigger: "change",
+          message: "请选择院系!",
+        },
+      ],
+      majorId: [
+        {
+          required: true,
+          trigger: "change",
+          message: "请选择专业!",
         },
       ],
     };
@@ -101,9 +180,13 @@ export default {
       if (!formEl) return;
       formEl.validate((validate) => {
         if (validate) {
-          locationStore.AddType({
+          academicStore.AddSpecialization({
             id: uuid(),
-            name: formInput.typeName,
+            name: formInput.specializationName,
+            code: formInput.specializationCode,
+            grade: formInput.grade,
+            facultyId: formInput.facultyId,
+            majorId: formInput.majorId,
           });
           data.isDialogFormVisible = false; //确认后关闭弹窗
           formEl.resetFields();
@@ -116,9 +199,13 @@ export default {
       formEl.validate((validate) => {
         if (validate) {
           if (
-            locationStore.EditType({
+            academicStore.Editspecialization({
               id: data.id,
-              name: formInput.typeName,
+              name: formInput.specializationName,
+              code: formInput.specializationCode,
+              grade: formInput.grade,
+              facultyId: formInput.facultyId,
+              majorId: formInput.majorId,
             })
           ) {
             data.isDialogFormVisible = false; //确认后关闭弹窗
@@ -132,14 +219,21 @@ export default {
       classroomTypeFormRef.value.resetFields();
     };
 
+    const majorFilter = computed(() => {
+      return academicStore.getMajorsByfaculty(formInput.facultyId);
+    });
+
     return {
       ...toRefs(data),
       formInput,
       ClearInput,
       editItem,
       addItem,
-      classroomTypeFormRef,
+      specializationFormRef,
       inputRule,
+      faculties,
+      majors,
+      majorFilter,
     };
   },
 };

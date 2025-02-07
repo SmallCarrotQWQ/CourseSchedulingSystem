@@ -180,7 +180,7 @@ export default {
     const locationStore = useLocationStore();
     const { departmentTypes } = storeToRefs(academicStore);
     const { teachingbuildings } = storeToRefs(locationStore);
-    const departmentFormRef = ref();
+    const departmentFormRef = ref({});
     const data = reactive({
       isDialogFormVisible: false, //是否弹窗
       id: "",

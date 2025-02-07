@@ -144,7 +144,7 @@ export default {
     const personnelStore = usePersonnelStore();
     const academicStore = useAcademicStore();
     const { departments } = storeToRefs(academicStore)
-    const teacherFormRef = ref();
+    const teacherFormRef = ref({});
     const data = reactive({
       isDialogFormVisible: false, //是否弹窗
       id: "",
