@@ -16,14 +16,30 @@
       label-width="auto"
       ref="gradeFormRef"
     >
-      <el-form-item label="年级名称:" prop="gradeName">
+      <el-form-item label="年级名称:">
         <el-input
           v-model="formInput.gradeName"
-          maxlength="50"
           class="campusName"
-          placeholder="请选择入学年份"
+          placeholder="请选择入学年份和学制类型"
           disabled
         />
+      </el-form-item>
+
+      <el-form-item label="学制类型" prop="educationalLevelId"
+        ><!--下拉框-->
+        <el-select
+          v-model="formInput.educationalLevelId"
+          placeholder="请选择学制类型"
+          filterable
+          value-key="id"
+          @change="getDuration"
+        >
+          <el-option
+            v-for="f of educationalLevels"
+            :label="f.name"
+            :value="f.id"
+          />
+        </el-select>
       </el-form-item>
 
       <el-form-item label="学制:" prop="duration">
@@ -35,7 +51,6 @@
             class="inputs"
             placeholder="学制"
             controls-position="right"
-            @change="getGraduationYearByEnrollmentYear"
           />
         </div>
       </el-form-item>
@@ -45,7 +60,6 @@
           type="year"
           v-model="formInput.enrollmentYear"
           placeholder="选择入学年份"
-          @change="getGraduationYearByEnrollmentYear();getGradeName()"
           value-format="YYYY"
         />
       </el-form-item>
@@ -87,7 +101,7 @@
 
 <script>
 console.log(app);
-import { reactive, ref, toRefs } from "vue";
+import { computed, reactive, ref, toRefs } from "vue";
 import { v1 as uuid } from "uuid";
 import bus from "@/bus/bus";
 import nonEmptyValidator from "@/hooks/validator/useNonEmpty";
@@ -101,13 +115,10 @@ export default {
       this.isDialogFormVisible = true; //List中按下按钮弹窗
       this.$nextTick(() => {
         this.id = value.id;
-        this.formInput.gradeName = value.name;
         this.formInput.duration = value.duration;
         this.formInput.enrollmentYear = value.enrollmentYear;
-        this.formInput.graduationYear = value.graduationYear;
         this.formInput.isGraduated = value.isGraduated;
         this.formInput.educationalLevelId = value.educationalLevelId;
-        this.formInput.gradeLevel = value.gradeLevel;
       });
     });
 
@@ -127,20 +138,29 @@ export default {
     });
 
     const formInput = reactive({
-      gradeName: "",
+      gradeName: computed(() => {
+        if (formInput.enrollmentYear) {
+          return `${formInput.enrollmentYear}级-${academicStore.educationalLevelNameMap.get(formInput.educationalLevelId)}`;
+        } else {
+          return "";
+        }
+      }),
       duration: "",
       enrollmentYear: "",
-      graduationYear: "",
+      graduationYear: computed(() => {
+        if (formInput.duration && formInput.enrollmentYear) {
+          return (
+            parseInt(formInput.enrollmentYear) + formInput.duration
+          ).toString();
+        } else {
+          return "";
+        }
+      }),
       isGraduated: false,
+      educationalLevelId: "",
     });
 
     const inputRule = {
-      gradeName: [
-        {
-          required: true,
-          message: "请选择入学年份!",
-        },
-      ],
       duration: [
         {
           required: true,
@@ -160,9 +180,14 @@ export default {
       isGraduated: [
         {
           required: false,
-        }
+        },
       ],
-
+      educationalLevelId: [
+        {
+          required: true,
+          message: "请选择学制类型!",
+        },
+      ],
     };
 
     const addItem = (formEl) => {
@@ -208,23 +233,13 @@ export default {
       });
     };
 
+
+    const getDuration = ()=>{
+      formInput.duration = academicStore.educationalLevelMap.get(formInput.educationalLevelId).max+1
+    }
+
     const ClearInput = () => {
       gradeFormRef.value.resetFields();
-    };
-
-    const getGraduationYearByEnrollmentYear = () => {
-      if (formInput.duration && formInput.enrollmentYear) {
-        formInput.graduationYear = (
-          parseInt(formInput.enrollmentYear) + formInput.duration
-        ).toString();
-      }
-    };
-    const getGradeName = () => {
-      if (formInput.enrollmentYear) {
-        formInput.gradeName = formInput.enrollmentYear + "级"
-      }else{
-        formInput.gradeName = ""
-      }
     };
 
     return {
@@ -235,9 +250,8 @@ export default {
       addItem,
       gradeFormRef,
       inputRule,
-      getGraduationYearByEnrollmentYear,
       educationalLevels,
-      getGradeName
+      getDuration,
     };
   },
 };

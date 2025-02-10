@@ -49,7 +49,11 @@
           @click="this.$router.push({ name: 'class' })"
           >班级管理</el-menu-item
         >
-
+        <el-menu-item
+          index="semester"
+          @click="this.$router.push({ name: 'semester' })"
+          >学期管理</el-menu-item
+        >
         <el-menu-item
           index="course"
           @click="this.$router.push({ name: 'course' })"

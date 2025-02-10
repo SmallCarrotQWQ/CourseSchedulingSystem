@@ -133,6 +133,16 @@ const routes = [
             },
           },
           {
+            name:'semester',
+            path:'/home/set/semester',
+            component:()=>import("@/views/BasicData/Semester.vue"),
+            meta:{
+              title:"学期管理",
+              requiresAuth:false,
+              requireLogin:true,
+            },
+          },
+          {
             name:'grade',
             path:'/home/set/grade',
             component:()=>import("@/views/BasicData/Grade.vue"),

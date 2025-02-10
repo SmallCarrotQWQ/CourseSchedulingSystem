@@ -6,7 +6,7 @@ import {
     initialDepartments,
     initialDepartmentTypes,
     initialMajors,
-    educationalLevels,
+    initialEducationalLevels,
     initialClassses,
     iniitialclasstypies,
     iniitialCourses,
@@ -16,25 +16,32 @@ import {
     initialCourseCategories,
     iniitialSpecializations,
     iniitialGrades,
+    iniitialSemesters
 } from "@/data/academic"
 
 
 export const useAcademicStore = defineStore('academic', {
     state: () => ({
-        departments: [],
-        classes:[],
-        majors: [],
-        specializations:[],
-        courses:[],
-        courseNatures:[],
-        courseTypes:[],
-        courseAttributes:[],
-        courseCategories:[],
-        grades:[],
+        departments: [],//部门
+        departmentTypes: [],//部门类别
 
-        departmentTypes: [],
-        educationalLevels:[],
-        classTypies:[],
+        classes:[],//班级
+        classTypies:[],//班级类型
+
+        majors: [],//专业
+        specializations:[],//专业方向
+
+        courses:[],//课程
+        courseNatures:[],//课程属性
+        courseTypes:[],//课程类型
+        courseAttributes:[],//课程性质
+        courseCategories:[],//课程类别
+
+        grades:[],//年级
+        educationalLevels:[],//学段
+
+        semesters:[],//学期
+
 
         departmentMap: new Map(),
         departmentNameMap: new Map(),
@@ -50,6 +57,9 @@ export const useAcademicStore = defineStore('academic', {
         courseCategoryNameMap:new Map(),
         gradeNameMap:new Map(),
         specializationNameMap:new Map(),
+        educationalLevelMap:new Map(),
+        educationalLevelNameMap:new Map(),
+        semesterNameMap:new Map(),
         AcademicDatainitiate:false
     }),
     getters:{
@@ -69,8 +79,9 @@ export const useAcademicStore = defineStore('academic', {
                 this.initCourses()
                 this.initGrades()
                 this.initSpecializations()
+                this.initEducationalLevels()
+                this.initSemesters()
                 this.classTypies = iniitialclasstypies
-                this.educationalLevels = educationalLevels
                 this.AcademicDatainitiate = true
             }
         },
@@ -188,6 +199,33 @@ export const useAcademicStore = defineStore('academic', {
             this.specializationNameMap = new Map(this.specializations.map(c => [c.id, c.name]))
             return true
         },
+        initEducationalLevels() {
+            this.educationalLevels = initialEducationalLevels;
+            this.educationalLevelNameMap = new Map(this.educationalLevels.map(c => [c.id, c.name]))
+            this.educationalLevelMap = new Map(this.educationalLevels.map(c => [c.id, c]))
+        },
+        AddEducationalLevel(value) {
+            this.educationalLevels.push(value)
+            this.educationalLevelNameMap = new Map(this.educationalLevels.map(c => [c.id, c.name]))
+            this.educationalLevelMap = new Map(this.educationalLevels.map(c => [c.id, c]))
+        },
+
+
+        EditEducationalLevel(obj) {
+            if (obj) {
+                for (const key of Object.keys(obj)) {
+                    if (key == "id") continue
+                    EditArray(this.educationalLevels, key, obj[key], obj.id)
+                }
+                this.educationalLevelNameMap = new Map(this.educationalLevels.map(c => [c.id, c.name]))
+                this.educationalLevelMap = new Map(this.educationalLevels.map(c => [c.id, c]))
+            }
+            else {
+                return false
+            }
+           
+            return true
+        },
 
         initGrades() {
             this.grades = iniitialGrades;
@@ -203,6 +241,50 @@ export const useAcademicStore = defineStore('academic', {
                 for (const key of Object.keys(obj)) {
                     if (key == "id") continue
                     EditArray(this.grades, key, obj[key], obj.id)
+                }
+            }
+            else {
+                return false
+            }
+            this.gradeNameMap = new Map(this.grades.map(c => [c.id, c.name]))
+            return true
+        },
+        initGrades() {
+            this.grades = iniitialGrades;
+            this.gradeNameMap = new Map(this.grades.map(c => [c.id, c.name]))
+        },
+        AddGrade(value) {
+            this.grades.push(value)
+            this.gradeNameMap = new Map(this.grades.map(c => [c.id, c.name]))
+        },
+
+        EditGrade(obj) {
+            if (obj) {
+                for (const key of Object.keys(obj)) {
+                    if (key == "id") continue
+                    EditArray(this.grades, key, obj[key], obj.id)
+                }
+            }
+            else {
+                return false
+            }
+            this.gradeNameMap = new Map(this.grades.map(c => [c.id, c.name]))
+            return true
+        },
+        initSemesters() {
+            this.semesters = iniitialSemesters;
+            this.semesterNameMap = new Map(this.semesters.map(c => [c.id, c.name]))
+        },
+        AddSemester(value) {
+            this.semesters.push(value)
+            this.semesterNameMap = new Map(this.semesters.map(c => [c.id, c.name]))
+        },
+
+        EditSemester(obj) {
+            if (obj) {
+                for (const key of Object.keys(obj)) {
+                    if (key == "id") continue
+                    EditArray(this.semesters, key, obj[key], obj.id)
                 }
             }
             else {

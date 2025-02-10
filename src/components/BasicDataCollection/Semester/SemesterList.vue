@@ -8,18 +8,23 @@
     </div>
 
     <el-table
-      :data="grades"
+      :data="semesters"
       :row-style="rowStyle"
       @selection-change="HandleSelectChange"
+      height="400"
     >
-      <el-table-column type="selection" :selectable="selectable" width="55" />
-      <el-table-column prop="name" label="年级名称" />
-      <el-table-column prop="duration" label="学制" />
-      <el-table-column prop="educationalLevelId" :formatter="educationalLevelFormatter" label="学制类型" />
-      <el-table-column prop="enrollmentYear" label="开始年份" />
-      <el-table-column prop="graduationYear" label="结束年份" />
-      <el-table-column prop="isGraduated" :formatter="isGraduatedFormatter" label="是否毕业" />
-      <el-table-column label="操作" v-slot="scope">
+      <el-table-column type="selection" :selectable="selectable" width="40" />
+      <el-table-column prop="name" label="学期名称" min-width="155px" />
+      <el-table-column prop="academicYear" label="学年" min-width="100px" />
+      <el-table-column prop="semester" label="学期" min-width="100px" />
+      <el-table-column prop="startAndEndDates[0]" label="开始日期" min-width="155px" />
+      <el-table-column prop="startAndEndDates[1]" label="结束日期" min-width="155px" />
+      <el-table-column
+        label="操作"
+        v-slot="scope"
+        min-width="220px"
+        fixed="right"
+      >
         <div class="RowButtons">
           <el-button type="primary" @click="HandleEditClick(scope.row)"
             >编辑</el-button
@@ -31,39 +36,43 @@
       </el-table-column>
     </el-table>
   </div>
-  <GradeEditDialog />
+  <SemesterEditDialog />
 </template>
 
 <script>
-
-
 import bus from "@/bus/bus.js";
 import { storeToRefs } from "pinia";
-import { onMounted, onBeforeMount, reactive, toRefs } from "vue";
+import { computed, onBeforeMount, onMounted, reactive, toRefs } from "vue";
 import { ElMessageBox } from "element-plus";
-import { useLocationStore } from "@/store/locationStore/index.js";
-import { useAcademicStore } from "@/store/academicStore/index.js";
 import { ArrayDelete, SingleDelete } from "@/hooks/list/useDelete.js";
-import GradeEditDialog from './GradeEditDialog.vue';
-
+import { useAcademicStore } from "@/store/academicStore/index.js"; //store
+import SemesterEditDialog from "./SemesterEditDialog.vue";
 export default {
-  name: "gradesList",
+  name: "SemesterList",
   components: {
-    GradeEditDialog
+    SemesterEditDialog,
   },
   setup() {
-    const locationStore = useLocationStore();
     const academicStore = useAcademicStore();
-    const { campuses } = storeToRefs(locationStore);
-    const { grades } = storeToRefs(academicStore);
-    onMounted(() => {
-      locationStore.initLocationDatas()
-    });
-
+    const { semesters } = storeToRefs(academicStore);
+    onMounted(() => {});
     const data = reactive({
       isDeleteShow: false,
       deleteValue: [],
     });
+
+    const filterCriteria = reactive({
+      campus: "*",
+      teachingbuilding: "*",
+      type: "*",
+    });
+
+    // .value.map((c) => ({
+    //     ...c,
+    //     campus: locationStore.campusMap.get(c.campusId),
+    //     type: locationStore.classroomTypeMap.get(c.typeId),
+    //     teachingbuilding:locationStore.teachingbuildingMap.get(c.teachingbuildingId)
+    //   })),
 
     const HandleSelectChange = (value) => {
       data.deleteValue = value;
@@ -81,13 +90,12 @@ export default {
     };
 
     const HandleAddClick = () => {
-      bus.emit("showGradeAdd");
+      bus.emit("showSemesterAdd");
+    };
+    const HandleEditClick = (value) => {
+      bus.emit("showSemesterEdit", value);
     };
 
-    const HandleEditClick = (value) => {
-      bus.emit("showGradeEdit", value);
-    };
- 
 
     const HandleArrayDelete = () => {
       ElMessageBox.confirm("确认删除吗?", "警告", {
@@ -96,10 +104,10 @@ export default {
         type: "warning",
       })
         .then(() => {
-          campuses.value = ArrayDelete(campuses.value, data.deleteValue);
+          classrooms.value = ArrayDelete(classrooms.value, data.deleteValue);
         })
         .catch(() => {
-          console.log("canceled...");
+          console("canceled...");
         });
     };
 
@@ -110,35 +118,23 @@ export default {
         type: "warning",
       })
         .then(() => {
-          campuses.value = SingleDelete(campuses.value, value);
+          classrooms.value = SingleDelete(classrooms.value, value);
         })
         .catch(() => {
-          console("canceled...");
+          console.log("canceled...");
         });
     };
-
-    const isGraduatedFormatter = (row)=>{
-      return row.isGraduated ? "是" : "否"
-    }
-
-    const educationalLevelFormatter = (row)=>{
-      return academicStore.educationalLevelNameMap.get(row.educationalLevelId)
-    }
 
 
     return {
       ...toRefs(data),
-      campuses,
+      semesters,
       HandleArrayDelete,
       HandleSingleDelete,
       HandleSelectChange,
       HandleAddClick,
       HandleEditClick,
       rowStyle,
-      locationStore,
-      grades,
-      isGraduatedFormatter,
-      educationalLevelFormatter
     };
   },
 };
@@ -156,13 +152,33 @@ export default {
   display: flex;
   justify-content: flex-start;
   margin: 0px 0px 10px 0px;
+  flex-wrap: nowrap;
 }
 
 tbody td .cell .RowButtons {
   display: flex;
   flex-wrap: nowrap;
 }
+
 .el-table {
   border: solid 2px #f0f2f5;
+}
+
+.el-table-column {
+  min-width: 200px;
+}
+.filterSelector {
+  width: 260px;
+  margin-left: 10px;
+}
+
+.filters {
+  display: inline-flex;
+  flex-direction: row;
+  margin: 10px 0px 10px 0px;
+}
+
+.filterLabel {
+  margin-left: 20px;
 }
 </style>

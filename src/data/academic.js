@@ -614,30 +614,34 @@ export const iniitialGrades = [
         enrollmentYear: "2021",
         graduationYear: "2024",
         isGraduated: true,
+        educationalLevelId:"4"
     },
     {
         id: "22pt",
         name: "2022级",
-        duration: 3,
+        duration: 4,
         enrollmentYear: "2022",
         graduationYear: "2025",
         isGraduated: false,
+        educationalLevelId:"4"
     },
     {
         id: "23pt",
         name: "2023级",
-        duration: 3,
+        duration: 4,
         enrollmentYear: "2023",
         graduationYear: "2026",
         isGraduated: false,
+        educationalLevelId:"4"
     },
     {
         id: "24pt",
         name: "2024级",
-        duration: 3,
+        duration:4,
         enrollmentYear: "2024",
         graduationYear: "2027",
         isGraduated: false,
+        educationalLevelId:"4"
     },
     {
         id: "23ptxswnz",
@@ -646,12 +650,13 @@ export const iniitialGrades = [
         enrollmentYear: "2021",
         graduationYear: "2026",
         isGraduated: false,
+        educationalLevelId:"3"
     },
 
 ]
 
 
-export const educationalLevels = [
+export const initialEducationalLevels = [
     {
         id: "1",
         name: "专科",
@@ -692,4 +697,42 @@ export const educationalLevels = [
             "大四",
         ]
     }
+]
+
+
+export const iniitialSemesters = [
+    {
+        id:"s1",
+        name:"2024-2025-1",
+        academicYear:"2024-2025",
+        semester:1,
+        startDate:"",
+        endDate:""
+    },
+    {
+        id:"s2",
+        name:"2024-2025-2",
+        academicYear:"2024-2025",
+        semester:2,
+        startDate:"",
+        endDate:""
+    },
+    {
+        id:"s3",
+        name:"2023-2024-1",
+        academicYear:"2023-2024",
+        semester:1,
+        startDate:"",
+        endDate:""
+
+    },
+    {
+        id:"s4",
+        name:"2023-2024-2",
+        academicYear:"2023-2024",
+        semester:2,
+        startDate:"",
+        endDate:""
+    },
+
 ]
