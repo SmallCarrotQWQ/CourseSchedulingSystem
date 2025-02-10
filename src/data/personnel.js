@@ -136,7 +136,7 @@ export const initialTeachers = [
         gender: "0",//男1女0未设置2
         ename: "homura",
         ethnicityId:1,
-        titleName:"军火叫兽",
+        titleName:"",
         departmentName:"计算机科学与技术学院",
         departmentId:"fac11111",
         isExternal:false,

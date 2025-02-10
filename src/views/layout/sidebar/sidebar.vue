@@ -20,7 +20,12 @@
           >校区管理</el-menu-item
         >
         <el-menu-item
-          index="department"
+          index="grade"
+          @click="this.$router.push({ name: 'grade' })"
+          >年级管理</el-menu-item
+        >
+        <el-menu-item
+          index="department"  
           @click="this.$router.push({ name: 'department' })"
           >部门管理</el-menu-item
         >
@@ -60,7 +65,7 @@
         <el-menu-item
           index="scheduleManagement"
           @click="this.$router.push({ name: 'scheduleManagement' })"
-          >排课工具</el-menu-item
+          >排课任务</el-menu-item
         >
         <el-menu-item
           index="showSchedule"

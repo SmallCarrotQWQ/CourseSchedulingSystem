@@ -15,6 +15,7 @@ import {
     initialCourseAttributes,
     initialCourseCategories,
     iniitialSpecializations,
+    iniitialGrades,
 } from "@/data/academic"
 
 
@@ -29,6 +30,7 @@ export const useAcademicStore = defineStore('academic', {
         courseTypes:[],
         courseAttributes:[],
         courseCategories:[],
+        grades:[],
 
         departmentTypes: [],
         educationalLevels:[],
@@ -46,6 +48,7 @@ export const useAcademicStore = defineStore('academic', {
         courseTypeNameMap:new Map(),
         courseAttributeNameMap:new Map(),
         courseCategoryNameMap:new Map(),
+        gradeNameMap:new Map(),
         specializationNameMap:new Map(),
         AcademicDatainitiate:false
     }),
@@ -64,6 +67,7 @@ export const useAcademicStore = defineStore('academic', {
                 this.initMajors()
                 this.initClasses()
                 this.initCourses()
+                this.initGrades()
                 this.initSpecializations()
                 this.classTypies = iniitialclasstypies
                 this.educationalLevels = educationalLevels
@@ -182,6 +186,29 @@ export const useAcademicStore = defineStore('academic', {
                 return false
             }
             this.specializationNameMap = new Map(this.specializations.map(c => [c.id, c.name]))
+            return true
+        },
+
+        initGrades() {
+            this.grades = iniitialGrades;
+            this.gradeNameMap = new Map(this.grades.map(c => [c.id, c.name]))
+        },
+        AddGrade(value) {
+            this.grades.push(value)
+            this.gradeNameMap = new Map(this.grades.map(c => [c.id, c.name]))
+        },
+
+        EditGrade(obj) {
+            if (obj) {
+                for (const key of Object.keys(obj)) {
+                    if (key == "id") continue
+                    EditArray(this.grades, key, obj[key], obj.id)
+                }
+            }
+            else {
+                return false
+            }
+            this.gradeNameMap = new Map(this.grades.map(c => [c.id, c.name]))
             return true
         },
 

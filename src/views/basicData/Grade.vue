@@ -1,12 +1,13 @@
 <template>
-  <ClassroomList/>
+  <GradeListVue/>
 </template>
 
 <script>
-import ClassroomList from "@/components/BasicDataCollection/Classroom/ClassroomList.vue"
+import GradeListVue from '@/components/BasicDataCollection/Grade/GradeList.vue'
+
 export default {
     name:'Grade',
-    components:{ClassroomList}
+    components:{GradeListVue}
 }
 </script>
 

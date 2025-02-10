@@ -53,7 +53,7 @@ const routes = [
             path:'/home/task/scheduleManagement',
             component:()=>import("@/views/Schedule/ScheduleManagement.vue"),
             meta:{
-              title:"排课工具",
+              title:"排课任务",
               requiresAuth:false,
               requireLogin:true,
             },
@@ -128,6 +128,16 @@ const routes = [
             component:()=>import("@/views/BasicData/Campus.vue"),
             meta:{
               title:"校区管理",
+              requiresAuth:false,
+              requireLogin:true,
+            },
+          },
+          {
+            name:'grade',
+            path:'/home/set/grade',
+            component:()=>import("@/views/BasicData/Grade.vue"),
+            meta:{
+              title:"年级管理",
               requiresAuth:false,
               requireLogin:true,
             },
