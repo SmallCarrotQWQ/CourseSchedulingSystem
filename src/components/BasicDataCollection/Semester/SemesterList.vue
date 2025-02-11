@@ -16,7 +16,7 @@
       <el-table-column type="selection" :selectable="selectable" width="40" />
       <el-table-column prop="name" label="学期名称" min-width="155px" />
       <el-table-column prop="academicYear" label="学年" min-width="100px" />
-      <el-table-column prop="semester" label="学期" min-width="100px" />
+      <el-table-column prop="semester" :formatter="semesterFormatter" label="学期" min-width="100px" />
       <el-table-column prop="startAndEndDates[0]" label="开始日期" min-width="155px" />
       <el-table-column prop="startAndEndDates[1]" label="结束日期" min-width="155px" />
       <el-table-column
@@ -125,6 +125,10 @@ export default {
         });
     };
 
+    const semesterFormatter = (row)=>{
+      return `第${row.semester}学期`
+    }
+
 
     return {
       ...toRefs(data),
@@ -135,6 +139,7 @@ export default {
       HandleAddClick,
       HandleEditClick,
       rowStyle,
+      semesterFormatter,
     };
   },
 };

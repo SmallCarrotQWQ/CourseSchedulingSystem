@@ -28,11 +28,14 @@
           placeholder="请选择学年"
           filterable
           value-key="id"
+          @change="()=>{
+            formInput.startAndEndDates = []
+          }"
         >
           <el-option
-            v-for="c of academicStore.courseCategories"
-            :label="c.name"
-            :value="c.name"
+            v-for="c of academicStore.academicYears"
+            :label="`${c}学年`"
+            :value="c"
           />
         </el-select>
       </el-form-item>
@@ -45,11 +48,7 @@
           filterable
           value-key="id"
         >
-          <el-option
-            v-for="c of academicStore.courseAttributes"
-            :label="c.name"
-            :value="c"
-          />
+          <el-option v-for="c of 4" :label="`第${c}学期`" :value="c" />
         </el-select>
       </el-form-item>
 
@@ -103,9 +102,9 @@ export default {
       this.isDialogFormVisible = true; //List中按下按钮弹窗
       this.$nextTick(() => {
         this.id = value.id;
-        this.semesterName = value.name;
-        this.academicYear = value.academicYear;
-        this.startAndEndDates = value.startAndEndDates;
+        this.formInput.academicYear = value.academicYear;
+        this.formInput.startAndEndDates = value.startAndEndDates;
+        this.formInput.semester = value.semester;
       });
     });
 
@@ -116,7 +115,6 @@ export default {
   },
   setup() {
     const academicStore = useAcademicStore();
-
     const semesterFormRef = ref({});
 
     const data = reactive({
@@ -127,7 +125,13 @@ export default {
     });
 
     const formInput = reactive({
-      semesterName: "",
+      semesterName: computed(() => {
+        if (formInput.academicYear && formInput.semester) {
+          return `${formInput.academicYear}-${formInput.semester}`;
+        } else {
+          return "";
+        }
+      }),
       academicYear: "",
       semester: "",
       startAndEndDates: [],
@@ -153,6 +157,25 @@ export default {
           required: true,
           trigger: "change",
           message: "请选择起止日期!",
+        },
+        {
+          type: "array",
+          trigger: "change",
+          validator: (rule, value, callback) => {
+            console.log(value);
+            if (formInput.academicYear) {
+              if (
+                value[0].split("-")[0] > formInput.academicYear.split("-")[0] ||
+                value[0].split("-")[1] > formInput.academicYear.split("-")[1]
+              ) {
+                callback(new Error("起止日期应在学年范围之内!"));
+              } else {
+                callback();
+              }
+            }
+            callback()
+            
+          },
         },
       ],
     };

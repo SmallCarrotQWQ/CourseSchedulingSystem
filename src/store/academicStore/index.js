@@ -16,8 +16,9 @@ import {
     initialCourseCategories,
     iniitialSpecializations,
     iniitialGrades,
-    iniitialSemesters
+    iniitialSemesters,
 } from "@/data/academic"
+import getAcademicYears from "@/utils/getAcademicYears";
 
 
 export const useAcademicStore = defineStore('academic', {
@@ -41,6 +42,8 @@ export const useAcademicStore = defineStore('academic', {
         educationalLevels:[],//学段
 
         semesters:[],//学期
+
+        academicYears:[],//学年
 
 
         departmentMap: new Map(),
@@ -82,6 +85,7 @@ export const useAcademicStore = defineStore('academic', {
                 this.initEducationalLevels()
                 this.initSemesters()
                 this.classTypies = iniitialclasstypies
+                this.academicYears = getAcademicYears()
                 this.AcademicDatainitiate = true
             }
         },

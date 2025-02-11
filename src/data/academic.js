@@ -614,7 +614,7 @@ export const iniitialGrades = [
         enrollmentYear: "2021",
         graduationYear: "2024",
         isGraduated: true,
-        educationalLevelId:"4"
+        educationalLevelId: "4"
     },
     {
         id: "22pt",
@@ -623,7 +623,7 @@ export const iniitialGrades = [
         enrollmentYear: "2022",
         graduationYear: "2025",
         isGraduated: false,
-        educationalLevelId:"4"
+        educationalLevelId: "4"
     },
     {
         id: "23pt",
@@ -632,16 +632,16 @@ export const iniitialGrades = [
         enrollmentYear: "2023",
         graduationYear: "2026",
         isGraduated: false,
-        educationalLevelId:"4"
+        educationalLevelId: "4"
     },
     {
         id: "24pt",
         name: "2024级",
-        duration:4,
+        duration: 4,
         enrollmentYear: "2024",
         graduationYear: "2027",
         isGraduated: false,
-        educationalLevelId:"4"
+        educationalLevelId: "4"
     },
     {
         id: "23ptxswnz",
@@ -650,7 +650,7 @@ export const iniitialGrades = [
         enrollmentYear: "2021",
         graduationYear: "2026",
         isGraduated: false,
-        educationalLevelId:"3"
+        educationalLevelId: "3"
     },
 
 ]
@@ -702,37 +702,41 @@ export const initialEducationalLevels = [
 
 export const iniitialSemesters = [
     {
-        id:"s1",
-        name:"2024-2025-1",
-        academicYear:"2024-2025",
-        semester:1,
-        startDate:"",
-        endDate:""
+        id: "s1",
+        name: "2024-2025-1",
+        academicYear: "2024-2025",
+        semester: 1,
+        startDate: "",
+        endDate: ""
     },
     {
-        id:"s2",
-        name:"2024-2025-2",
-        academicYear:"2024-2025",
-        semester:2,
-        startDate:"",
-        endDate:""
+        id: "s2",
+        name: "2024-2025-2",
+        academicYear: "2024-2025",
+        semester: 2,
+        startDate: "",
+        endDate: ""
     },
     {
-        id:"s3",
-        name:"2023-2024-1",
-        academicYear:"2023-2024",
-        semester:1,
-        startDate:"",
-        endDate:""
+        id: "s3",
+        name: "2023-2024-1",
+        academicYear: "2023-2024",
+        semester: 1,
+        startDate: "",
+        endDate: ""
 
     },
     {
-        id:"s4",
-        name:"2023-2024-2",
-        academicYear:"2023-2024",
-        semester:2,
-        startDate:"",
-        endDate:""
+        id: "s4",
+        name: "2023-2024-2",
+        academicYear: "2023-2024",
+        semester: 2,
+        startDate: "",
+        endDate: ""
     },
 
+]
+
+export const semesterOrders = [
+    "第一学期", "第二学期", "第三学期", "第四学期"
 ]
