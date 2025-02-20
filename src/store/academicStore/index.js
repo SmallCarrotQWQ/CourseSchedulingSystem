@@ -26,54 +26,56 @@ export const useAcademicStore = defineStore('academic', {
         departments: [],//部门
         departmentTypes: [],//部门类别
 
-        classes:[],//班级
-        classTypies:[],//班级类型
+        classes: [],//班级
+        classTypies: [],//班级类型
 
         majors: [],//专业
-        specializations:[],//专业方向
+        specializations: [],//专业方向
 
-        courses:[],//课程
-        courseNatures:[],//课程属性
-        courseTypes:[],//课程类型
-        courseAttributes:[],//课程性质
-        courseCategories:[],//课程类别
+        courses: [],//课程
+        courseNatures: [],//课程属性
+        courseTypes: [],//课程类型
+        courseAttributes: [],//课程性质
+        courseCategories: [],//课程类别
 
-        grades:[],//年级
-        educationalLevels:[],//学段
+        grades: [],//年级
+        educationalLevels: [],//学段
 
-        semesters:[],//学期
+        semesters: [],//学期
 
-        academicYears:[],//学年
+        academicYears: [],//学年
 
 
         departmentMap: new Map(),
         departmentNameMap: new Map(),
         departmentTypeMap: new Map(),
-        majorMap:new Map(),
-        majorNameMap:new Map(),
-        classMap:new Map(),
-        classNameMap:new Map(),
-        courseNameMap:new Map(),
-        courseNatureNameMap:new Map(),
-        courseTypeNameMap:new Map(),
-        courseAttributeNameMap:new Map(),
-        courseCategoryNameMap:new Map(),
-        gradeNameMap:new Map(),
-        specializationNameMap:new Map(),
-        educationalLevelMap:new Map(),
-        educationalLevelNameMap:new Map(),
-        semesterNameMap:new Map(),
-        AcademicDatainitiate:false
+        majorMap: new Map(),
+        majorNameMap: new Map(),
+        classMap: new Map(),
+        classNameMap: new Map(),
+        courseNameMap: new Map(),
+        courseNatureNameMap: new Map(),
+        courseTypeNameMap: new Map(),
+        courseAttributeNameMap: new Map(),
+        courseCategoryNameMap: new Map(),
+        gradeNameMap: new Map(),
+        gradeMap: new Map(),
+        specializationNameMap: new Map(),
+        educationalLevelMap: new Map(),
+        educationalLevelNameMap: new Map(),
+        semesterNameMap: new Map(),
+        AcademicDatainitiate: false
     }),
-    getters:{
-        faculties:(state)=>{
-            return state.departments.filter(d=>{
+    getters: {
+        faculties: (state) => {
+            return state.departments.filter(d => {
                 return d.type == "院系"
             })
         },
+
     },
     actions: {
-        initAcademicDatas(){
+        initAcademicDatas() {
             if (!this.AcademicDatainitiate) {
                 this.initDepartments()
                 this.initDepartmentTypes()
@@ -94,15 +96,20 @@ export const useAcademicStore = defineStore('academic', {
         //         return classroom.campusId == campusId
         //     })
         // },
-       
+
         // getClassroomsByCampusAndType(campusId, typeId) {
         //     return this.classrooms.filter((classroom) => {
         //         return classroom.campusId == campusId && classroom.typeId == typeId
         //     })
         // },
-        getMajorsByfaculty(facultyId){
-            return this.majors.filter((major)=>{
+        getMajorsByfaculty(facultyId) {
+            return this.majors.filter((major) => {
                 return major.facultyId == facultyId
+            })
+        },
+        getGradesByEducationId(Id) {
+            return this.grades.filter((grade) => {
+                return grade.educationalLevelId == Id
             })
         },
 
@@ -132,7 +139,7 @@ export const useAcademicStore = defineStore('academic', {
             this.departmentNameMap = new Map(this.departments.map(c => [c.id, c.name]))
             return true
         },
-       
+
         initDepartmentTypes() {
             this.departmentTypes = initialDepartmentTypes;
             this.departmentTypeMap = new Map(this.departmentTypes.map(c => [c.id, c]))
@@ -227,7 +234,7 @@ export const useAcademicStore = defineStore('academic', {
             else {
                 return false
             }
-           
+
             return true
         },
 
@@ -256,9 +263,12 @@ export const useAcademicStore = defineStore('academic', {
         initGrades() {
             this.grades = iniitialGrades;
             this.gradeNameMap = new Map(this.grades.map(c => [c.id, c.name]))
+            this.gradeMap = new Map(this.grades.map(c => [c.id, c]))
         },
         AddGrade(value) {
             this.grades.push(value)
+
+            this.gradeMap = new Map(this.grades.map(c => [c.id, c]))
             this.gradeNameMap = new Map(this.grades.map(c => [c.id, c.name]))
         },
 
@@ -273,6 +283,7 @@ export const useAcademicStore = defineStore('academic', {
                 return false
             }
             this.gradeNameMap = new Map(this.grades.map(c => [c.id, c.name]))
+            this.gradeMap = new Map(this.grades.map(c => [c.id, c]))
             return true
         },
         initSemesters() {
@@ -309,12 +320,12 @@ export const useAcademicStore = defineStore('academic', {
             this.classMap = new Map(this.classes.map(c => [c.id, c]))
         },
 
-        EditClass(obj,oldId) {
-            if (obj){
+        EditClass(obj, oldId) {
+            if (obj) {
                 for (const key of Object.keys(obj)) {
-                    if (key == "id"){
-                        if(obj.id != oldId){
-                            this.classes.filter((c)=>{
+                    if (key == "id") {
+                        if (obj.id != oldId) {
+                            this.classes.filter((c) => {
                                 return c.id == oldId
                             })[0].id = obj.id
                             continue
@@ -331,7 +342,7 @@ export const useAcademicStore = defineStore('academic', {
             this.classMap = new Map(this.classes.map(c => [c.id, c]))
             return true
         },
-       
+
 
 
 

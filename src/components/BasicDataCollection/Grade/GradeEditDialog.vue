@@ -139,7 +139,7 @@ export default {
 
     const formInput = reactive({
       gradeName: computed(() => {
-        if (formInput.enrollmentYear) {
+        if (formInput.enrollmentYear && formInput.educationalLevelId) {
           return `${formInput.enrollmentYear}级-${academicStore.educationalLevelNameMap.get(formInput.educationalLevelId)}`;
         } else {
           return "";

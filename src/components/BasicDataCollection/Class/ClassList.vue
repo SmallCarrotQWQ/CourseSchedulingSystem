@@ -8,41 +8,36 @@
         @click="HandleArrayDelete(deleteValue)"
         >删除选中</el-button
       >
-      
     </div>
 
     <div class="filters">
-        <el-text class="filterLabel">院系:</el-text>
-        <el-select
-          v-model="faculty"
-          placeholder="搜索院系"
-          class="filterSelector"
-          value-key="id"
-          filterable
-        >
-          <el-option label="全部" value="*" />
-          <el-option
-            v-for="faculty of faculties"
-            :label="faculty.name"
-            :value="faculty"
-          />
-        </el-select>
-        <el-text class="filterLabel">专业:</el-text>
-        <el-select
-          v-model="major"
-          placeholder="搜索专业"
-          class="filterSelector"
-          value-key="id"
-          filterable
-        >
-          <el-option label="全部" value="*" />
-          <el-option
-            v-for="major of majors"
-            :label="major.name"
-            :value="major"
-          />
-        </el-select>
-      </div>
+      <el-text class="filterLabel">院系:</el-text>
+      <el-select
+        v-model="faculty"
+        placeholder="搜索院系"
+        class="filterSelector"
+        value-key="id"
+        filterable
+      >
+        <el-option label="全部" value="*" />
+        <el-option
+          v-for="faculty of faculties"
+          :label="faculty.name"
+          :value="faculty"
+        />
+      </el-select>
+      <el-text class="filterLabel">专业:</el-text>
+      <el-select
+        v-model="major"
+        placeholder="搜索专业"
+        class="filterSelector"
+        value-key="id"
+        filterable
+      >
+        <el-option label="全部" value="*" />
+        <el-option v-for="major of majors" :label="major.name" :value="major" />
+      </el-select>
+    </div>
 
     <el-table
       :data="classes"
@@ -50,13 +45,24 @@
       @selection-change="HandleSelectChange"
     >
       <el-table-column type="selection" :selectable="selectable" width="50" />
-      <el-table-column prop="facultyName" label="所属院系" min-width="100px" />
-
-      <el-table-column prop="name" label="班级名称" min-width="140px" />
-      <el-table-column prop="duration" label="学制" min-width="90px" />
+      <el-table-column prop="facultyId" :formatter="facultyFormatter" label="所属院系" min-width="100px" />
       <el-table-column
-        prop="educationalLevel"
+        prop="gradeId"
+        label="年级"
+        :formatter="gradeIdFormatter"
+        min-width="100px"
+      />
+      <el-table-column prop="name" label="班级名称" min-width="140px" />
+      <el-table-column
+        prop="gradeId"
+        label="学制"
+        :formatter="durationFormatter"
+        min-width="50px"
+      />
+      <el-table-column
+        prop="gradeId"
         label="培养层次"
+        :formatter="educationalLevelFormatter"
         min-width="80px"
       />
 
@@ -64,20 +70,15 @@
         prop="isGraduated"
         label="是否已经毕业"
         :formatter="isGraduatedFormatter"
-        min-width="100px"
+        min-width="50px"
       />
       <el-table-column prop="size" label="班级人数" min-width="100px" />
-
 
       <el-table-column prop="majorName" label="专业" min-width="100px" />
 
       <el-table-column prop="classroomId" label="固定教室" min-width="100px" />
 
-      <el-table-column
-        label="操作"
-        v-slot="scope"
-        min-width="220px"
-      >
+      <el-table-column label="操作" v-slot="scope" min-width="200px">
         <div class="RowButtons">
           <el-button type="info" @click="HandleShowInfoClick(scope.row)"
             >查看</el-button
@@ -162,10 +163,24 @@ export default {
       return row.isExpanding ? "是" : "否";
     };
     const isGraduatedFormatter = (row) => {
-      return row.isGraduated ? "是" : "否";
+      return academicStore.gradeMap.get(row.gradeId).isGraduated ? "是" : "否";
     };
     const facultyIdFormatter = (row) => {
       return academicStore.departmentNameMap.get(row.facultyId);
+    };
+    const gradeIdFormatter = (row) => {
+      return academicStore.gradeNameMap.get(row.gradeId);
+    };
+    const durationFormatter = (row) => {
+      return academicStore.gradeMap.get(row.gradeId).duration;
+    };
+    const educationalLevelFormatter = (row) => {
+      return academicStore.educationalLevelNameMap.get(
+        academicStore.gradeMap.get(row.gradeId).educationalLevelId
+      );
+    };
+    const facultyFormatter = (row) => {
+      return academicStore.departmentNameMap.get(row.facultyId)
     };
 
     return {
@@ -180,6 +195,10 @@ export default {
       isExpandingFormatter,
       isGraduatedFormatter,
       facultyIdFormatter,
+      gradeIdFormatter,
+      durationFormatter,
+      educationalLevelFormatter,
+      facultyFormatter
     };
   },
 };

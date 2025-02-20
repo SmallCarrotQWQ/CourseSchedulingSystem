@@ -31,3 +31,4 @@ export const deleteCampusApi = (parm)=>{
         data:parm
     })
 }
+

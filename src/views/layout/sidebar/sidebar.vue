@@ -1,10 +1,14 @@
 <template>
-  <el-aside width="200px">
+  <el-aside>
     <el-menu
       :default-active="route.name"
       class="el-menu-vertical-demo"
       unique-opened="true"
+      :collapse="isCollapse"
     >
+    <el-button @click="switchCollapse" v-show="isCollapse" class="switchCollapseButton"><el-icon><Expand /></el-icon>展开</el-button>
+    <el-button @click="switchCollapse" v-show="!isCollapse" class="switchCollapseButton"><el-icon><Fold /></el-icon>收起</el-button>
+
       <el-menu-item index="homePage" @click="this.$router.push({ path: '/' })">
         <el-icon><House /></el-icon>
         <span>首页</span>
@@ -99,27 +103,36 @@
 </template>
 
 <script>
+import { ref } from 'vue';
 import { useRoute } from "vue-router";
 
 export default {
   name: "theSidebar",
   setup() {
     const route = useRoute();
+    const isCollapse = ref(false)
+    const switchCollapse = ()=>{
+      isCollapse.value = !isCollapse.value
+    }
     return {
       route,
+      isCollapse,
+      switchCollapse
     };
   },
 };
 </script>
 
-<style>
+<style scoped> 
 .el-aside {
   display: flex;
   justify-content: flex-start;
   flex-direction: column;
   height: 100%;
+  width: max-content;
   background: white;
   border-right: solid 1px #f0f2f5;
+  overflow: unset;
 }
 
 .el-aside h2 {
@@ -134,4 +147,16 @@ export default {
 .el-menu:last-child {
   border-bottom: solid 2px #f0f2f5;
 }
+
+.switchCollapseButton {
+  width: 100%;
+  border: unset;
+  display: flex;
+  align-content:flex-start;
+}
+
+.el-button+.el-button{
+  margin-left:0px;
+}
+
 </style>

@@ -85,29 +85,26 @@
             />
           </el-form-item>
 
-          <el-form-item label="学制:" prop="classDuration">
-            <div class="numberInput">
-              <el-input-number
-                v-model="formInput.classDuration"
-                max="6"
-                min="0"
-                class="inputs"
-                placeholder="学制"
-                controls-position="right"
-              >
-                <template #suffix> 年 </template>
-              </el-input-number>
-            </div>
-          </el-form-item>
-
-          <el-form-item label="培养层次:" prop="educationalLevel">
+          <el-form-item label="培养层次:" prop="educationalLevelId">
             <el-select
-              v-model="formInput.educationalLevel"
+              v-model="formInput.educationalLevelId"
               value-key="id"
               placeholder="请选择培养层次"
               filterable
+              @change="formInput.gradeId = ''"
             >
-              <el-option v-for="e of educationalLevels" :label="e" :value="e" />
+              <el-option v-for="e of educationalLevels" :label="e.name" :value="e.id" />
+            </el-select>
+          </el-form-item>
+
+          <el-form-item label="年级:" prop="gradeId">
+            <el-select
+              v-model="formInput.gradeId"
+              value-key="id"
+              placeholder="请选择年级"
+              filterable
+            >
+              <el-option v-for="g of filtedGrades" :label="g.name" :value="g.id" />
             </el-select>
           </el-form-item>
 
@@ -124,29 +121,6 @@
                 :value="type"
               />
             </el-select>
-          </el-form-item>
-
-          <el-form-item label="入学年份:" prop="enrollmentYear">
-            <el-date-picker
-              type="year"
-              v-model="formInput.enrollmentYear"
-              placeholder="选择入学年份"
-              @change="getGraduationYearByEnrollmentYear"
-              value-format="YYYY"
-            />
-          </el-form-item>
-
-          <el-form-item label="预计毕业年份:" prop="graduationYear">
-            <el-date-picker
-              type="year"
-              v-model="formInput.graduationYear"
-              placeholder="选择预计毕业年份"
-              value-format="YYYY"
-            />
-          </el-form-item>
-
-          <el-form-item label="是否毕业:" prop="isGraduated">
-            <el-switch v-model="formInput.isGraduated" />
           </el-form-item>
 
           <el-form-item label="是否有固定教室:" prop="isAssigned">
@@ -358,10 +332,8 @@ export default {
         this.formInput.counsellorName = value.counsellorName;
         this.formInput.headTeacherName = value.headTeacherName;
         this.formInput.monitorName = value.monitorName;
+        this.formInput.gradeId = value.gradeId;
         this.formInput.classAssistantName = value.classAssistantName;
-        this.formInput.enrollmentYear = value.enrollmentYear;
-        this.formInput.graduationYear = value.graduationYear;
-        this.formInput.isGraduated = value.isGraduated;
         this.formInput.classSize = value.size;
         this.formInput.classMaxSize = value.maxSize;
         this.formInput.genderDistribution = value.genderDistribution;
@@ -390,7 +362,7 @@ export default {
     const locationStore = useLocationStore();
     const personnelStore = usePersonnelStore();
 
-    const { faculties, majors, educationalLevels, classTypies } =
+    const { faculties, majors, educationalLevels, classTypies, grades } =
       storeToRefs(academicStore);
     const { campuses } = storeToRefs(locationStore);
     const { teachers } = storeToRefs(personnelStore);
@@ -408,7 +380,7 @@ export default {
       className: "",
       classAbbr: "",
       classDuration: "",
-      educationalLevel: "",
+      educationalLevelId: "",
       classType: "",
       counsellorName: "",
       counsellorId: "",
@@ -416,8 +388,7 @@ export default {
       headTeacherId: "",
       monitorName: "",
       classAssistantName: "",
-      enrollmentYear: "",
-      graduationYear: "",
+      gradeId: "",
       isGraduated: "",
       classSize: "",
       classMaxSize: "",
@@ -435,6 +406,14 @@ export default {
       mentorId: "",
       mentorName: "",
     });
+
+    const filtedGrades = computed(()=>{
+      if(formInput.educationalLevelId){
+        return academicStore.getGradesByEducationId(formInput.educationalLevelId)
+      }else{
+        return ''
+      }
+    })
 
     const inputRule = reactive({
       id: [
@@ -472,18 +451,17 @@ export default {
           required: false,
         },
       ],
-      classDuration: [
-        {
-          required: true,
-          validator: nonEmptyValidator,
-          message: "请输入学制!",
-          trigger: "change",
-        },
-      ],
-      educationalLevel: [
+      educationalLevelId: [
         {
           required: true,
           message: "请选择培养层次!",
+          trigger: "change",
+        },
+      ],
+      gradeId: [
+        {
+          required: true,
+          message: "请选择年级!",
           trigger: "change",
         },
       ],
@@ -512,38 +490,6 @@ export default {
       classAssistantName: [
         {
           required: false,
-        },
-      ],
-      isGraduated: [
-        {
-          required: false,
-        },
-      ],
-      enrollmentYear: [
-        {
-          required: true,
-          validator: nonEmptyValidator,
-          message: "请选择入学年份!",
-          trigger: "change",
-        },
-      ],
-      graduationYear: [
-        {
-          required: true,
-          message: "请选择预计毕业年份!",
-          trigger: "change",
-        },
-        {
-          validator: (rule, value, callback) => {
-            if (formInput.enrollmentYear > value) {
-              console.log(value);
-              callback(new Error());
-            } else {
-              callback();
-            }
-          },
-          message: "毕业年份小于入学年份!",
-          trigger: "change",
         },
       ],
       classSize: [
@@ -647,8 +593,8 @@ export default {
             id: formInput.id,
             name: formInput.className,
             abbr: formInput.classAbbr,
-            duration: formInput.classDuration,
-            educationalLevel: formInput.educationalLevel,
+            educationalLevelId: formInput.educationalLevelId,
+            gradeId: formInput.gradeId,
             classType: formInput.classType,
             counsellorId: formInput.counsellorId,
             counsellorName: personnelStore.teacherNameMap.get(
@@ -660,9 +606,6 @@ export default {
             headTeacherId: formInput.headTeacherId,
             monitorName: formInput.monitorName,
             classAssistantName: formInput.classAssistantName,
-            enrollmentYear: formInput.enrollmentYear,
-            graduationYear: formInput.graduationYear,
-            isGraduated: formInput.isGraduated,
             size: formInput.classSize,
             maxSize: formInput.classMaxSize,
             genderDistribution: formInput.genderDistribution,
@@ -699,8 +642,8 @@ export default {
                 id: formInput.id,
                 name: formInput.className,
                 abbr: formInput.classAbbr,
-                duration: formInput.classDuration,
-                educationalLevel: formInput.educationalLevel,
+                educationalLevelId: formInput.educationalLevelId,
+                gradeId: formInput.gradeId,
                 classType: formInput.classType,
                 counsellorId: formInput.counsellorId,
                 counsellorName: personnelStore.teacherNameMap.get(
@@ -712,9 +655,6 @@ export default {
                 headTeacherId: formInput.headTeacherId,
                 monitorName: formInput.monitorName,
                 classAssistantName: formInput.classAssistantName,
-                enrollmentYear: formInput.enrollmentYear,
-                graduationYear: formInput.graduationYear,
-                isGraduated: formInput.isGraduated,
                 size: formInput.classSize,
                 maxSize: formInput.classMaxSize,
                 genderDistribution: formInput.genderDistribution,
@@ -779,6 +719,8 @@ export default {
       classTypies,
       majorFilter,
       getGraduationYearByEnrollmentYear,
+      grades,
+      filtedGrades,
     };
   },
 };
