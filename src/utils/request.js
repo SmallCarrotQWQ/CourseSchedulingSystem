@@ -1,4 +1,6 @@
 import axios from "axios";
+import { ElMessage } from "element-plus";
+import { getToken } from "./token/getToken";
 
 
 const request = axios.create({
@@ -9,12 +11,12 @@ const request = axios.create({
 request.interceptors.request.use(
     config => {
         //在这里给header加token
-        const token = "qwq"
+        const token = getToken()
         if (token) {
             config.headers = {
                 ...config.headers,
                 token
-            }
+            }   
         }   
         return config
     },
@@ -25,14 +27,18 @@ request.interceptors.request.use(
 request.interceptors.response.use(
     response => {
         //在这里处理响应码
+        console.log(response);
+        if(response.data.meta.code != 200){
+            
+            if(response.data.meta.message) ElMessage.error(response.data.meta.message)
+        }else{
+            if(response.data.meta.message) ElMessage.success(response.data.meta.message)
+        }
         return response.data
     },
     error => {
         if (error.response) {
-            switch (error.response.status) {
-                case 404:
-                    console.log("请求资源不存在QAQ");
-            }
+            console.log(error);
         }
         return Promise.reject(error)
     }

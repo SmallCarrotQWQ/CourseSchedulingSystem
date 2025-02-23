@@ -6,3 +6,6 @@ export const userLogin = (param)=>{
         ...param
     })
 }   
+export const getUserInfo = ()=>{
+    return request.get('getUserInfo')
+}   

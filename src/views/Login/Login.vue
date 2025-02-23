@@ -60,10 +60,14 @@
 import { reactive, ref, toRefs } from "vue";
 import { userLogin } from "@/api/user.api";
 import { ElMessage } from "element-plus";
+import { useAuthStore } from "@/store/authStore/index.js"
+import { setToken } from "@/utils/token/setToken.js" 
 import router from '@/router';
+import { getToken } from '@/utils/token/getToken';
 export default {
   name: "Login",
   setup() {
+    const authStore = useAuthStore()
     const loginFormRef = ref({});
     const data = reactive({
       username: "",
@@ -80,7 +84,6 @@ export default {
 
     const handleLogin = (formEl) => {
       if (!formEl) return;
-      console.log(formEl);
       formEl.validate((valid) => {
         if (valid) {
           userLogin({
@@ -89,20 +92,16 @@ export default {
             rememberme: data.rememberme,
           })
             .then((res) => {
-              console.log(res);
               if (res.meta.code == 200) {
-                ElMessage({
-                  message: res.meta.message,
-                  type: "success",
-                });
-                localStorage.setItem("token",res.data.token)
-                localStorage.setItem("username",res.data.username)
-                router.push({path:"/"})
-              } else {
-                ElMessage({
-                  message: res.meta.message,
-                  type: "error",
-                });
+                sessionStorage.clear()
+                localStorage.clear()
+                setToken(res.data.token)
+                authStore.getUserInfo()
+                
+              }
+            }).then(()=>{
+              if(getToken()){
+                router.push("/home/index")
               }
             })
             .catch((error) => {

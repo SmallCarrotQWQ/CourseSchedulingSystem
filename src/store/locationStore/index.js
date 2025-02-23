@@ -44,13 +44,12 @@ export const useLocationStore = defineStore('location', {
                 type: "info"
             })
             getCampusListApi(parm).then(response => {
-                this.campuses = response.data.campuses
-                this.campusNameMap = new Map(this.campuses.map(c => [c.id, c.name]))
-                this.campusMap = new Map(this.campuses.map(c => [c.id, c]))
-                ElMessage({
-                    message: "刷新成功!",
-                    type: "success"
-                })
+                if (response.meta.code === 200) {
+                    this.campuses = response.data.campuses
+                    this.campusNameMap = new Map(this.campuses.map(c => [c.id, c.name]))
+                    this.campusMap = new Map(this.campuses.map(c => [c.id, c]))
+                }
+
             }).catch(error => {
                 ElMessage({
                     message: `刷新失败! 错误信息${error}`,
@@ -58,7 +57,7 @@ export const useLocationStore = defineStore('location', {
                 })
                 return error
             })
-           
+
         },
         getClassroomsByCampus(campusId) {
             return this.classrooms.filter((classroom) => {
@@ -144,7 +143,7 @@ export const useLocationStore = defineStore('location', {
         initClassrooms() {
             this.classrooms = initialClassrooms;
             this.classroomtypes = initialclassroomTypes;
-            this.classroomNameMap = new Map(this.classrooms.map(c =>[c.id,c.name]))
+            this.classroomNameMap = new Map(this.classrooms.map(c => [c.id, c.name]))
         },
         AddClassroom(value) {
             this.classrooms.push(value)

@@ -40,20 +40,20 @@
 <script>
 import { ElMessage } from 'element-plus';
 import router from '@/router';
+import { useAuthStore } from '@/store/authStore';
 export default {
   name: "theHeader",
   setup() {
     const handleLogout = ()=>{
-      localStorage.removeItem("token")
-      localStorage.removeItem("username")
+      useAuthStore().Logout()
       ElMessage({
         message:"登出成功!",
         type:"success"
       })
-      router.push({name:"login"})
+      router.push('/login')
     };
 
-    const username = localStorage.getItem("username")
+    const username = useAuthStore().userInfo.username
 
     return{
       handleLogout,

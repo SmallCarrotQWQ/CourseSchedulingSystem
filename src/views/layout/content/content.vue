@@ -28,9 +28,7 @@ export default {
     theMain,
   },
   mounted(){
-    useAcademicStore().initAcademicDatas()
-    useLocationStore().initLocationDatas()
-    usePersonnelStore().initPersonnelDatas()
+
   }
   
 };

@@ -72,7 +72,6 @@ export const useAcademicStore = defineStore('academic', {
                 return d.type == "院系"
             })
         },
-
     },
     actions: {
         initAcademicDatas() {

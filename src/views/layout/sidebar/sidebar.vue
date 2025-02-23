@@ -9,10 +9,12 @@
     <el-button @click="switchCollapse" v-show="isCollapse" class="switchCollapseButton"><el-icon><Expand /></el-icon>展开</el-button>
     <el-button @click="switchCollapse" v-show="!isCollapse" class="switchCollapseButton"><el-icon><Fold /></el-icon>收起</el-button>
 
-      <el-menu-item index="homePage" @click="this.$router.push({ path: '/' })">
+      <el-menu-item   index="homePage" @click="this.$router.push({ path: '/' })">
         <el-icon><House /></el-icon>
         <span>首页</span>
       </el-menu-item>
+
+
       <el-sub-menu index="data">
         <template #title>
           <el-icon><Document /></el-icon>
