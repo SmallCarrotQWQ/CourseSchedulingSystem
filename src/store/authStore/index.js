@@ -1,25 +1,29 @@
 import { defineStore } from "pinia";
 import { getRoutes } from "@/api/routes.api";
 import router from "@/router";
-import { getUserInfo } from "@/api/user.api";
+import { getUserInfo,getNavs } from "@/api/user.api";
+import { getToken } from "@/utils/token/getToken";
 const modules = import.meta.glob('../../views/**/**')
 
 export const useAuthStore = defineStore('auth', {
     state: () => ({
         routes: {},
-        userInfo:{}
+        userInfo: {},
+        navs:[]
+
+        
     }),
     actions: {
-        Logout(){
+        Logout() {
             localStorage.clear()
             sessionStorage.clear()
             this.$reset()
         },
 
-        setRoutes(){
+        setRoutes() {
             return getRoutes().then(res => {
                 this.routes = res.data.routes
-            }).then(()=>{
+            }).then(() => {
                 const childrens = this.setRouterList(this.routes.children)
                 router.addRoute({
                     path: this.routes.path,
@@ -29,8 +33,6 @@ export const useAuthStore = defineStore('auth', {
                     component: modules[`../../views${this.routes.componmentUrl}`],
                     children: childrens
                 })
-                console.log(childrens);
-                console.log(router.getRoutes());
             })
         },
         setRouterList(data) {
@@ -46,7 +48,7 @@ export const useAuthStore = defineStore('auth', {
                 } else {
                     const childrens = []
                     c.children.forEach((c2) => {
-                        console.log("c2",c2);
+
                         childrens.push({
                             name: c2.name,
                             path: c2.path,
@@ -58,21 +60,24 @@ export const useAuthStore = defineStore('auth', {
                         path: c.path,
                         name: c.name,
                         meta: c.meta,
-                        redirect: c.redirect,
-                        children:childrens
+                        redirect: c.redirect,   
+                        children: childrens
                     })
                 }
             })
-            console.log("res",res);
             return res
 
         },
 
-        getUserInfo(){
-            getUserInfo().then(res=>{
+        getUserInfo() {
+            return getUserInfo().then(res => {
                 this.userInfo = res.data
             })
-
+        },
+        getNavs(){
+            return getNavs().then(res=>{
+                this.navs = res.data.navs
+            })
         }
     }
 })

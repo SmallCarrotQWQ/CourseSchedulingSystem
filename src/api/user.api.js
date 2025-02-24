@@ -8,4 +8,9 @@ export const userLogin = (param)=>{
 }   
 export const getUserInfo = ()=>{
     return request.get('getUserInfo')
+}
+
+export const getNavs = ()=>{
+    return request.get('getNav')
 }   
+

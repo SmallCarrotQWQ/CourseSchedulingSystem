@@ -67,7 +67,6 @@ export default {
     const { campuses,campusMap,teachingbuildings } = storeToRefs(locationStore);
 
     onMounted(() => {
-      locationStore.initLocationDatas()
       bus.on("showTeachingBuildingListDrawer", (value) => {
         data.campusId = value.id;
         data.isDrawerVisible = true; //打开抽屉

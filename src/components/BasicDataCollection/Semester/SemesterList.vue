@@ -55,7 +55,8 @@ export default {
   setup() {
     const academicStore = useAcademicStore();
     const { semesters } = storeToRefs(academicStore);
-    onMounted(() => {});
+
+    
     const data = reactive({
       isDeleteShow: false,
       deleteValue: [],

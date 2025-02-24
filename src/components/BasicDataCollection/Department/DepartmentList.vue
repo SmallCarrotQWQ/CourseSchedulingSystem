@@ -57,9 +57,6 @@ export default {
     const academicStore = useAcademicStore();
     const { departments } = storeToRefs(academicStore);
 
-    onMounted(() => {
-      academicStore.initAcademicDatas();
-    });
 
     const data = reactive({
       isDeleteShow: false,
@@ -93,7 +90,6 @@ export default {
         return row.isAssigned ? "是" : "否";
       },
       isTeachingToYesNo: (row) => {
-        console.log(row);
         return row.isTeaching ? "是" : "否";
       },
       isEnabledToYesNo: (row) => {

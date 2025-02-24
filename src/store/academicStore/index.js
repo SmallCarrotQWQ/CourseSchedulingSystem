@@ -19,7 +19,7 @@ import {
     iniitialSemesters,
 } from "@/data/academic"
 import getAcademicYears from "@/utils/getAcademicYears";
-
+import { useLocationStore } from "../locationStore";
 
 export const useAcademicStore = defineStore('academic', {
     state: () => ({
@@ -114,11 +114,13 @@ export const useAcademicStore = defineStore('academic', {
 
 
         initDepartments() {
+            this.initDepartmentTypes()
             this.departments = initialDepartments;
             this.departmentMap = new Map(this.departments.map(c => [c.id, c]))
             this.departmentNameMap = new Map(this.departments.map(c => [c.id, c.name]))
         },
         AddDepartment(value) {
+
             this.departments.push(value)
             this.departmentMap = new Map(this.departments.map(c => [c.id, c]))
             this.departmentNameMap = new Map(this.departments.map(c => [c.id, c.name]))
@@ -309,6 +311,17 @@ export const useAcademicStore = defineStore('academic', {
         },
 
         initClasses() {
+            this.classTypies = iniitialclasstypies
+            this.academicYears = getAcademicYears()
+            this.AcademicDatainitiate = true
+            this.initGrades()
+            useLocationStore().initCampuses()
+            this.initDepartments()
+            this.initEducationalLevels()
+
+
+
+            
             this.classes = initialClassses;
             this.classNameMap = new Map(this.classes.map(c => [c.id, c.name]))
             this.classMap = new Map(this.classes.map(c => [c.id, c]))

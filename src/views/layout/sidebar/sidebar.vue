@@ -6,26 +6,26 @@
       unique-opened="true"
       :collapse="isCollapse"
     >
-    <el-button @click="switchCollapse" v-show="isCollapse" class="switchCollapseButton"><el-icon><Expand /></el-icon>展开</el-button>
-    <el-button @click="switchCollapse" v-show="!isCollapse" class="switchCollapseButton"><el-icon><Fold /></el-icon>收起</el-button>
+    <el-button @click="switchCollapse" v-if="isCollapse" class="switchCollapseButton"><el-icon><Expand /></el-icon>展开</el-button>
+    <el-button @click="switchCollapse" v-else="!isCollapse" class="switchCollapseButton"><el-icon><Fold /></el-icon>收起</el-button>
 
       <el-menu-item   index="homePage" @click="this.$router.push({ path: '/' })">
         <el-icon><House /></el-icon>
         <span>首页</span>
       </el-menu-item>
 
-
-      <el-sub-menu index="data">
+      <el-sub-menu  v-for="item of navs" :index="item.index" :key="item.index">
         <template #title>
-          <el-icon><Document /></el-icon>
-          <span>数据管理</span>
+          <el-icon><component :is="item.icon"></component> </el-icon>
+          <span>{{item.labelName}}</span>
         </template>
         <el-menu-item
-          index="campus"
-          @click="this.$router.push({ name: 'campus' })"
-          >校区管理</el-menu-item
+          v-for="nav of item.children"
+          :index="nav.routeName"
+          @click="this.$router.push({ name:nav.routeName })"
+          >{{nav.labelName}}</el-menu-item
         >
-        <el-menu-item
+        <!-- <el-menu-item
           index="grade"
           @click="this.$router.push({ name: 'grade' })"
           >年级管理</el-menu-item
@@ -81,10 +81,10 @@
           index="showSchedule"
           @click="this.$router.push({ name: 'showSchedule' })"
           >课表查看</el-menu-item
-        >
+        > -->
       </el-sub-menu>
 
-      <el-sub-menu index="system">
+      <!-- <el-sub-menu index="system">
         <template #title>
           <el-icon><Setting /></el-icon>
           <span>系统管理</span>
@@ -99,14 +99,15 @@
           @click="this.$router.push({ name: 'Authoritymanagement' })"
           >角色管理</el-menu-item
         >
-      </el-sub-menu>
+      </el-sub-menu> -->
     </el-menu>
   </el-aside>
 </template>
 
 <script>
-import { ref } from 'vue';
+import { onMounted, reactive, ref } from 'vue';
 import { useRoute } from "vue-router";
+import { useAuthStore } from '@/store/authStore';
 
 export default {
   name: "theSidebar",
@@ -116,10 +117,17 @@ export default {
     const switchCollapse = ()=>{
       isCollapse.value = !isCollapse.value
     }
+    const navs = ref()
+    onMounted(()=>{
+      useAuthStore().getNavs().then(()=>{
+         navs.value = useAuthStore().navs
+      })
+    })
     return {
       route,
       isCollapse,
-      switchCollapse
+      switchCollapse,
+      navs
     };
   },
 };

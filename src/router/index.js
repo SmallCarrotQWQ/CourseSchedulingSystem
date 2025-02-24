@@ -50,25 +50,27 @@ router.beforeEach((to, from, next) => {
   const hasToken = getToken()
   const authStore = useAuthStore()
   if (to.path == "/login" && hasToken) {
-    next('/home')
-  }
-  if (whiteList.includes(to.path)) {
-    next()
+    return next('/home')
+
   } else {
-    if (Object.keys(authStore.routes).length == 0 && hasToken) {
-        authStore.setRoutes().then(() => {
-          next({...to,replace:true})
-        }
-      )
+    if (whiteList.includes(to.path)) {
+      return next()
     } else {
-      if (hasToken && router.hasRoute(to.name)) {
-        console.log("gogogo");
-        next()
+      if (Object.keys(authStore.routes).length == 0 && hasToken) {
+        authStore.setRoutes().then(() => {
+          return next({ ...to, replace: true })
+        }
+        )
       } else {
-        next('/login')
+        if (hasToken && router.hasRoute(to.name)) {
+          return next()
+        } else {
+          return next('/login')
+        }
       }
     }
   }
+
 
 })
 

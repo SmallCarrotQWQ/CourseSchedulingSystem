@@ -1,17 +1,24 @@
 <template>
-  <departmentList/>
+  <departmentList />
 </template>
 
 <script>
-import departmentList from '@/components/BasicDataCollection/Department/DepartmentList.vue'
+import departmentList from "@/components/BasicDataCollection/Department/DepartmentList.vue";
+import { onBeforeMount } from 'vue';
+import { useAcademicStore } from '@/store/academicStore';
 export default {
-    name:'Department',
-    components:{
-      departmentList
-    }
-}
+  name: "Department",
+  components: {
+    departmentList,
+  },
+  setup() {
+    onBeforeMount(() => {
+      useAcademicStore().initDepartments();
+      useAcademicStore().initDepartmentTypes();
+    });
+  },
+};
 </script>
 
 <style>
-
 </style>

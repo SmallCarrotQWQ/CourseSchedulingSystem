@@ -93,6 +93,7 @@ export const useLocationStore = defineStore('location', {
 
 
         initCampuses() {
+            this.initTeachingBuildings()
             getCampusListApi().then(response => {
                 this.campuses = response.data.campuses
                 this.campusNameMap = new Map(this.campuses.map(c => [c.id, c.name]))

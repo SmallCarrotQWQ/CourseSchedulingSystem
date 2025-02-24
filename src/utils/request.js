@@ -27,13 +27,11 @@ request.interceptors.request.use(
 request.interceptors.response.use(
     response => {
         //在这里处理响应码
-        console.log(response);
-        if(response.data.meta.code != 200){
-            
-            if(response.data.meta.message) ElMessage.error(response.data.meta.message)
-        }else{
-            if(response.data.meta.message) ElMessage.success(response.data.meta.message)
-        }
+        // if(response.data.meta.code != 200){
+        //     if(response.data.meta.message) ElMessage.error(response.data.meta.message)
+        // }else{
+        //     if(response.data.meta.message) ElMessage.success(response.data.meta.message)
+        // }
         return response.data
     },
     error => {
