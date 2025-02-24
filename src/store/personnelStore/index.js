@@ -25,7 +25,6 @@ export const usePersonnelStore = defineStore('personnel', {
             if (!this.PersonnelDataInitiate) {
                 this.initEthnicities()
                 this.initinitialFacultyTypes()
-                this.initTeachers()
                 this.PersonnelDataInitiate = true
             }
         },
@@ -44,6 +43,7 @@ export const usePersonnelStore = defineStore('personnel', {
 
 
         initTeachers() {
+            this.initPersonnelDatas()
             this.teachers = initialTeachers;
             this.teacherMap = new Map(this.teachers.map(c => [c.id, c]))
             this.teacherNameMap = new Map(this.teachers.map(c => [c.id, c.name]))

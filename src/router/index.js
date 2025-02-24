@@ -1,241 +1,77 @@
 
+import { useAuthStore } from '@/store/authStore'
+import { getToken } from '@/utils/token/getToken'
 import path from 'path'
 import { createRouter, createWebHistory } from 'vue-router'
 
 
+
 const routes = [
-
   {
-    path:"/:pathMatch(.*)*",
-    component:()=>import("@/views/404.vue")
-  },
-  {
-    path:'/',
-    redirect:"/home",
-    meta:{
-      title:"跳转中...",
-      requiresAuth:false,
-      requireLogin:false,
+    path: '/',
+    redirect: "/login",
+    meta: {
+      title: "跳转中...",
+      requiresAuth: false,
+      requireLogin: false,
     }
   },
   {
-    path:'/login',
-    name:'login',
-    component:()=>import("@/views/Login/Login.vue"),
-    meta:{
-      title:"登录",
-      requiresAuth:false,
-      requireLogin:false,
+    path: '/login',
+    name: 'login',
+    component: () => import("@/views/Login/Login.vue"),
+    meta: {
+      title: "登录",
+      requiresAuth: false,
+      requireLogin: false,
     }
   },
-  {
-    path:'/home',
-    name:'content',
-    redirect:"/home/index",
-    component:()=>import("@/views/layout/content/content.vue"),
-    meta:{
-      title:"首页",
-      requiresAuth:false,
-      requireLogin:true,
-    },
-    children:[
-      {
-        path:'/home/task',
-        redirect:'/home/task/scheduleManagement',
-        meta:{
-          title:"排课管理",
-          requiresAuth:false,
-          requireLogin:true,
-        },
-        children:[
-          {
-            name:'scheduleManagement',
-            path:'/home/task/scheduleManagement',
-            component:()=>import("@/views/Schedule/ScheduleManagement.vue"),
-            meta:{
-              title:"排课任务",
-              requiresAuth:false,
-              requireLogin:true,
-            },
-          },
-          {
-            name:'showSchedule',
-            path:'/home/task/showSchedule',
-            component:()=>import("@/views/Schedule/ShowSchedule.vue"),
-            meta:{
-              title:"查看课表",
-              requiresAuth:false,
-              requireLogin:true,
-            },
-          },
-         
-        ]
-      },
-      {
-        name:"index",
-        path:'/home/index',
-        component:()=>import("@/views/Index/index.vue"),
-        meta:{
-          title:"首页",
-          requiresAuth:false,
-          requireLogin:true,
-        },
-      },
-      {
-        name:'management',
-        path:'/home/management',
-        redirect:'/home/management/accountManagement',
-        meta:{
-          title:"系统管理",
-          requiresAuth:true,
-          requireLogin:true,
-        },
-        children:[
-          {
-            name:'AccountManagement',
-            path:'/home/management/accountManagement',
-            component:()=>import("@/views/Management/AccountManagement.vue"),
-            meta:{
-              title:"账号管理",
-              requiresAuth:true,
-              requireLogin:true,
-            },
-          },
-          {
-            name:'Authoritymanagement',
-            path:'/home/management/authoritymanagement',
-            component:()=>import("@/views/Management/Authoritymanagement.vue"),
-            meta:{
-              title:"角色管理",
-              requiresAuth:true,
-              requireLogin:true,
-            },
-          },
-        ]
-      },
-      {
-        path:'/home/set',
-        redirect:'/home/set/campus',
-        meta:{
-          title:"数据管理",
-          requiresAuth:false,
-          requireLogin:true,
-        },
-        children:[
-          {
-            name:'campus',
-            path:'/home/set/campus',
-            component:()=>import("@/views/BasicData/Campus.vue"),
-            meta:{
-              title:"校区管理",
-              requiresAuth:false,
-              requireLogin:true,
-            },
-          },
-          {
-            name:'semester',
-            path:'/home/set/semester',
-            component:()=>import("@/views/BasicData/Semester.vue"),
-            meta:{
-              title:"学期管理",
-              requiresAuth:false,
-              requireLogin:true,
-            },
-          },
-          {
-            name:'grade',
-            path:'/home/set/grade',
-            component:()=>import("@/views/BasicData/Grade.vue"),
-            meta:{
-              title:"年级管理",
-              requiresAuth:false,
-              requireLogin:true,
-            },
-          },
-          {
-            name:'classroom',
-            path:'/home/set/classroom',
-            component:()=>import("@/views/BasicData/Classroom.vue"),
-            meta:{
-              title:"教室管理",
-              requiresAuth:false,
-              requireLogin:true,
-            },
-          },
-          {
-            name:'student',
-            path:'/home/set/student',
-            component:()=>import("@/views/BasicData/Student.vue"),
-            meta:{
-              title:"学生管理",
-              requiresAuth:false,
-              requireLogin:true,
-            },
-          },
-          {
-            name:'teacher',
-            path:'/home/set/teacher',
-            component:()=>import("@/views/BasicData/Teacher.vue"),
-            meta:{
-              title:"教师管理",
-              requiresAuth:false,
-              requireLogin:true,
-            },
-          },
-          {
-            name:'class',
-            path:'/home/set/class',
-            component:()=>import("@/views/BasicData/Class.vue"),
-            meta:{
-              title:"班级管理",
-              requiresAuth:false,
-              requireLogin:true,
-            },
-          },
-          {
-            name:'course',
-            path:'/home/set/course',
-            component:()=>import("@/views/BasicData/Course.vue"),
-            meta:{
-              title:"课程管理",
-              requiresAuth:false,
-              requireLogin:true,
-            },
-          },
-          {
-            name:'department',
-            path:'/home/set/department',
-            component:()=>import("@/views/BasicData/Department.vue"),
-            meta:{
-              title:"部门管理",
-              requiresAuth:false,
-              requireLogin:true,
-            },
-          },
-          {
-            name:'major',
-            path:'/home/set/major',
-            component:()=>import("@/views/BasicData/Major.vue"),
-            meta:{
-              title:"专业管理",
-              requiresAuth:false,
-              requireLogin:true,
-            },
-          },
 
-        ]
-      },
-    ]
+  {
+    path: "/:pathMatch(.*)*",
+    component: () => import("@/views/errors/404.vue")
   },
-  
-  
-  
- 
+  {
+    path: "/403",
+    component: () => import("@/views/errors/403.vue")
+  },
 ]
 
 const router = createRouter({
-  history:createWebHistory(),
+  history: createWebHistory(),
   routes
+})
+
+const whiteList = ['/login', '/404', '403', '/']
+
+
+router.beforeEach((to, from, next) => {
+  console.log("to:", to);
+  const hasToken = getToken()
+  const authStore = useAuthStore()
+  if (to.path == "/login" && hasToken) {
+    return next('/home')
+
+  } else {
+    if (whiteList.includes(to.path)) {
+      return next()
+    } else {
+      if (Object.keys(authStore.routes).length == 0 && hasToken) {
+        authStore.setRoutes().then(() => {
+          return next({ ...to, replace: true })
+        }
+        )
+      } else {
+        if (hasToken && router.hasRoute(to.name)) {
+          return next()
+        } else {
+          return next('/login')
+        }
+      }
+    }
+  }
+
+
 })
 
 export default router

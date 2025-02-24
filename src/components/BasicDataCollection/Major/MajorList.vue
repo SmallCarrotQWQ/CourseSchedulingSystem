@@ -109,10 +109,8 @@ export default {
     const academicStore = useAcademicStore();
     const { majors,faculties,educationalLevels } = storeToRefs(academicStore);
 
-    onMounted(() => {});
-    onBeforeMount(() => {
-      locationStore.initLocationDatas();
-    });
+
+
     const data = reactive({
       isDeleteShow: false,
       deleteValue: [],

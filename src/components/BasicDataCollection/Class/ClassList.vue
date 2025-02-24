@@ -52,7 +52,7 @@
         :formatter="gradeIdFormatter"
         min-width="100px"
       />
-      <el-table-column prop="name" label="班级名称" min-width="140px" />
+      <el-table-column prop="name" label="班级名称" min-width="120px" />
       <el-table-column
         prop="gradeId"
         label="学制"
@@ -70,7 +70,7 @@
         prop="isGraduated"
         label="是否已经毕业"
         :formatter="isGraduatedFormatter"
-        min-width="50px"
+        min-width="90px"
       />
       <el-table-column prop="size" label="班级人数" min-width="100px" />
 

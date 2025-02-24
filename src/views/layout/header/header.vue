@@ -9,7 +9,7 @@
       <el-dropdown size="large">
         <span class="username">
           <el-icon><User /></el-icon>
-          {{username}}
+          {{ username }}
         </span>
         <template #dropdown>
           <el-dropdown-menu>
@@ -38,27 +38,32 @@
 </template>
 
 <script>
-import { ElMessage } from 'element-plus';
-import router from '@/router';
+import { ElMessage } from "element-plus";
+import router from "@/router";
+import { useAuthStore } from "@/store/authStore";
+import { onBeforeMount, onMounted, ref } from "vue";
 export default {
   name: "theHeader",
   setup() {
-    const handleLogout = ()=>{
-      localStorage.removeItem("token")
-      localStorage.removeItem("username")
-      ElMessage({
-        message:"登出成功!",
-        type:"success"
+    const username = ref();
+    onMounted(() => {
+      useAuthStore().getUserInfo().then(()=>{
+        username.value = useAuthStore().userInfo.username;
       })
-      router.push({name:"login"})
+    });
+    const handleLogout = () => {
+      useAuthStore().Logout();
+      ElMessage({
+        message: "登出成功!",
+        type: "success",
+      });
+      router.push("/login");
     };
 
-    const username = localStorage.getItem("username")
-
-    return{
+    return {
       handleLogout,
-      username
-    }
+      username,
+    };
   },
 };
 </script>

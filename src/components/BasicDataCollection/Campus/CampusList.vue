@@ -64,9 +64,6 @@ export default {
   setup() {
     const locationStore = useLocationStore();
     const { campuses } = storeToRefs(locationStore);
-    onMounted(() => {
-      locationStore.initLocationDatas()
-    });
 
 
 

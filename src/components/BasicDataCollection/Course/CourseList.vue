@@ -135,10 +135,8 @@ export default {
     const locationStore = useLocationStore();
     const academicStore = useAcademicStore();
     const { courses } = storeToRefs(academicStore);
-    onMounted(() => {});
-    onBeforeMount(() => {
-      locationStore.initLocationDatas();
-    });
+
+    
     const data = reactive({
       isDeleteShow: false,
       deleteValue: [],

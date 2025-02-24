@@ -151,10 +151,6 @@ export default {
     const { classrooms, teachingbuildings, campuses, classroomtypes } =
       storeToRefs(locationStore);
 
-    onMounted(() => {});
-    onBeforeMount(() => {
-      locationStore.initLocationDatas();
-    });
     const data = reactive({
       isDeleteShow: false,
       deleteValue: [],
