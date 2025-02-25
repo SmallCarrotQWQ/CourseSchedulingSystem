@@ -97,7 +97,11 @@ export default {
                 localStorage.clear()
                 setToken(res.data.token)
                 authStore.getUserInfo()
-                
+                ElMessage.success("登录成功!")
+              }else{
+                if(res.meta.code == 402){
+                  ElMessage.error("请检查用户名或密码!")
+                }
               }
             }).then(()=>{
               if(getToken()){
