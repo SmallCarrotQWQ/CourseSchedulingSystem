@@ -9,8 +9,7 @@ export const useAuthStore = defineStore('auth', {
     state: () => ({
         routes: {},
         userInfo: {},
-        navs:[]
-
+        navs:[],
         
     }),
     actions: {
@@ -19,7 +18,6 @@ export const useAuthStore = defineStore('auth', {
             sessionStorage.clear()
             this.$reset()
         },
-
         setRoutes() {
             return getRoutes().then(res => {
                 this.routes = res.data.routes
@@ -38,7 +36,7 @@ export const useAuthStore = defineStore('auth', {
         setRouterList(data) {
             let res = []
             data.forEach((c) => {
-                if (c.path == "/home/index") {
+                if (c.path == "/home/index" || c.path == "/home/user") {
                     res.push({
                         name: c.name,
                         path: c.path,

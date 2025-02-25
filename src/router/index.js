@@ -51,7 +51,6 @@ router.beforeEach((to, from, next) => {
   const authStore = useAuthStore()
   if (to.path == "/login" && hasToken) {
     return next('/home')
-
   } else {
     if (whiteList.includes(to.path)) {
       return next()
@@ -65,7 +64,7 @@ router.beforeEach((to, from, next) => {
         if (hasToken && router.hasRoute(to.name)) {
           return next()
         } else {
-          return next('/login')
+          return next('/404')
         }
       }
     }

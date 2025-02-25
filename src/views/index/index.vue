@@ -137,7 +137,7 @@ setInterval(() => {
 }, 1000);
 </script>
 
-<style>
+<style >
 .index {
   display: flex;
   justify-content: center;

@@ -13,7 +13,9 @@
         </span>
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item>个人中心</el-dropdown-item>
+            <el-dropdown-item @click="handleUsereInfo">
+              个人中心
+            </el-dropdown-item>
             <el-dropdown-item @click="handleLogout">退出登录</el-dropdown-item>
           </el-dropdown-menu>
         </template>
@@ -47,9 +49,11 @@ export default {
   setup() {
     const username = ref();
     onMounted(() => {
-      useAuthStore().getUserInfo().then(()=>{
-        username.value = useAuthStore().userInfo.username;
-      })
+      useAuthStore()
+        .getUserInfo()
+        .then(() => {
+          username.value = useAuthStore().userInfo.username;
+        });
     });
     const handleLogout = () => {
       useAuthStore().Logout();
@@ -60,8 +64,13 @@ export default {
       router.push("/login");
     };
 
+    const handleUsereInfo = ()=>{
+      router.push("/home/user")
+    }
+
     return {
       handleLogout,
+      handleUsereInfo,
       username,
     };
   },
@@ -86,6 +95,7 @@ export default {
   height: 100%;
   display: flex;
   text-decoration: none;
+  white-space: nowrap;
 }
 
 .userInfo {

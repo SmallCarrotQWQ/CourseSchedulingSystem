@@ -88,7 +88,12 @@
         label="教学楼"
         min-width="100px"
       />
-      <el-table-column prop="typeId" :formatter="typeIdFormatter" label="教室类型" min-width="100px" />
+      <el-table-column
+        prop="typeId"
+        :formatter="typeIdFormatter"
+        label="教室类型"
+        min-width="100px"
+      />
       <el-table-column prop="capacity" label="可容纳人数" min-width="100px" />
       <el-table-column
         prop="isAssigned"
@@ -100,7 +105,7 @@
         :formatter="availableToYesNo"
         label="是否启用"
       />
-      
+
       <el-table-column
         label="操作"
         v-slot="scope"
@@ -121,9 +126,7 @@
       </el-table-column>
     </el-table>
   </div>
-  <ClassroomEditDialog />
-  <ClassroomTypeListDrawer />
-  <ClassroomInfoDrawer />
+  <roleEditDialog/>
 </template>
 
 <script>
@@ -131,19 +134,15 @@ import bus from "@/bus/bus.js";
 import { storeToRefs } from "pinia";
 import { computed, onBeforeMount, onMounted, reactive, toRefs } from "vue";
 import { ElMessageBox } from "element-plus";
-import ClassroomEditDialog from "./ClassroomEditDialog.vue";
-import ClassroomTypeListDrawer from "./ClassroomTypeListDrawer.vue";
+import roleEditDialog from "./roleEditDialog.vue";
 import { ArrayDelete, SingleDelete } from "@/hooks/list/useDelete.js";
 import { useLocationStore } from "@/store/locationStore/index.js";
 import { useAcademicStore } from "@/store/academicStore/index.js"; //store
-import ClassroomInfoDrawer from "./ClassroomInfoDrawer.vue";
 
 export default {
   name: "ClassroomList",
   components: {
-    ClassroomEditDialog,
-    ClassroomTypeListDrawer,
-    ClassroomInfoDrawer,
+    roleEditDialog,
   },
   setup() {
     const locationStore = useLocationStore();
@@ -362,6 +361,5 @@ tbody td .cell .RowButtons {
 
 .filterLabel {
   margin-left: 20px;
-  white-space: nowrap;
 }
 </style>

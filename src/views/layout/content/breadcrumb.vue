@@ -1,7 +1,7 @@
 <template>
     <div class="border">
         <el-breadcrumb :separator-icon="ArrowRight">
-            <el-breadcrumb-item to="/home" ><el-icon><Menu /></el-icon> <span class="index">首页</span></el-breadcrumb-item>
+            <el-breadcrumb-item to="/home" ><el-icon><Menu /></el-icon> <span>首页</span></el-breadcrumb-item>
             <el-breadcrumb-item :to="obj.path" v-for="obj of breadList">{{obj.meta.title}}</el-breadcrumb-item>
         </el-breadcrumb>
     </div>
@@ -38,7 +38,12 @@ export default {
     border-bottom: solid #E4E7ED 1px;
   }
 
-  .index{
+  span{
     vertical-align:text-top;
+  }
+
+  .el-breadcrumb-item{
+    display: flex;
+    flex-wrap: nowrap;
   }
 </style>

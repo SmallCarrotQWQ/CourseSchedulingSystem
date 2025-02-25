@@ -127,7 +127,8 @@ export default {
 .background {
   height: 100%;
   width: 100%;
-  background-image: url("@/assets/Login_bk.jpg");
+  /* background-image: url("@/assets/Login_bk.jpg"); */
+  background: #F2F6FC;
   background-repeat: no-repeat;
   background-size: cover;
   display: flex;
@@ -148,6 +149,7 @@ export default {
   flex-direction: column;
   align-items: center;
   border-radius: 8px;
+  box-shadow: 6px 6px 1px  #C0C4CC;
 }
 
 .LoginForm {
